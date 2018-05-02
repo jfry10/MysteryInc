@@ -12,13 +12,13 @@ import java.util.Random;
  *
  */
 public class Player {
-	public String detectiveNotes;
+
 	public String suspectName;
 	public String positionOnBoard;
 	public String cards;
 
-	PlayerHand myHand;
-	DetectivePad myNotes;
+	PlayerHand myHand = new PlayerHand();
+	DetectiveNotes myNotes = new DetectiveNotes();
 
 	public void updateSuspectName(String name)
 	{
@@ -30,10 +30,25 @@ public class Player {
 		// Received a card from Client, add it to Hand
 		myHand.addCard(newCard);
 	}
-	
-	public void updateDetectivePad(String note)
+
+	// We receive the Card Type and name, send it to the appropriate
+	// function inside of our Detective Notes
+	public void updateDetectiveNotes(int type, String name)
 	{
-		myNotes.addNotes(note);
+		switch (type)
+		{
+			case Constants.WEAPON_CARD:
+				myNotes.setWeapon(name);
+				break;
+			case Constants.SUSPECT_CARD:
+				myNotes.setSuspect(name);
+				break;
+			case Constants.ROOM_CARD:
+				myNotes.setRoom(name);
+				break;
+			default:
+				break;
+		}
 	}
 
 	public boolean canDisprove(RoomCard room, WeaponCard weapon, SuspectCard suspect)

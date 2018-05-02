@@ -1,16 +1,14 @@
 package clueless;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 public class CardDeck
 {
-	public static final int WEAPON_CARD = 0;
-	public static final int SUSPECT_CARD = 1;
-	public static final int ROOM_CARD = 2;
-	
-	List<Card> cardDeck;
+
+	ArrayList<Card> cardDeck = new ArrayList<Card>();
 
 	public CardDeck()
 	{
@@ -44,22 +42,23 @@ public class CardDeck
 	public Card drawRandomCard(int cardType)
 	{
 		Card randomCard;
+		cardDeck = randomizeRemaining(); // randomize before drawing
 		Iterator cards = cardDeck.iterator();
 		while(cards.hasNext())
 	    {
 			randomCard = (Card) cards.next();
 
-		  	if (cardType == WEAPON_CARD && randomCard instanceof WeaponCard)
+		  	if (cardType == Constants.WEAPON_CARD && randomCard instanceof WeaponCard)
 	    		{
 	    			cards.remove();
 	    			return randomCard;
 	    		}
-	    		if (cardType == SUSPECT_CARD && randomCard instanceof SuspectCard)
+	    		if (cardType == Constants.SUSPECT_CARD && randomCard instanceof SuspectCard)
 	    		{
 	    			cards.remove();
 	    			return randomCard;
 	    		}
-	    		if (cardType == ROOM_CARD && randomCard instanceof RoomCard)
+	    		if (cardType == Constants.ROOM_CARD && randomCard instanceof RoomCard)
 	    		{
 	    			cards.remove();
 	    			return randomCard;
@@ -72,31 +71,30 @@ public class CardDeck
 	public Card drawCard()
 	{
 		Card randomCard = null;
+		cardDeck = randomizeRemaining(); // randomize before drawing
 		if (!cardDeck.isEmpty())
 		{
 			randomCard = cardDeck.remove(0);
-			randomizeRemaining();
 		}
 		return randomCard;
 	}
 	
-	public void randomizeRemaining()
+	public ArrayList<Card> randomizeRemaining()
 	{
 		// Put all the cards into an oldDeck list and save the Size
-		List<Card> oldDeck = cardDeck;
+		ArrayList<Card> newDeck = new ArrayList<Card>();
 		int deckSize = cardDeck.size();
-		// now clear the deck 
-	    cardDeck.clear();
 
 		Random rg = new Random();
 		rg.setSeed(System.currentTimeMillis());
-		while (oldDeck.size() > 0)
+		while (deckSize > 0)
 		{
 			int num = rg.nextInt(deckSize--); // subtract one
-	
+
 			// take a random card from the old deck
-			cardDeck.add((Card) oldDeck.get(num));
-			oldDeck.remove(num); // then remove it
+			newDeck.add((Card) cardDeck.get(num));
+			cardDeck.remove(num); // then remove it
 		}
+		return newDeck;
 	}
 }

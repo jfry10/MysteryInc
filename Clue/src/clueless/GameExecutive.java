@@ -214,9 +214,9 @@ public class GameExecutive
 		cardDeck = new CardDeck();
 		caseFile = new CaseFile();
 		
-		caseFile.addCard(cardDeck.drawRandomCard(CardDeck.WEAPON_CARD));
-		caseFile.addCard(cardDeck.drawRandomCard(CardDeck.SUSPECT_CARD));
-		caseFile.addCard(cardDeck.drawRandomCard(CardDeck.ROOM_CARD));
+		caseFile.addCard(cardDeck.drawRandomCard(Constants.WEAPON_CARD));
+		caseFile.addCard(cardDeck.drawRandomCard(Constants.SUSPECT_CARD));
+		caseFile.addCard(cardDeck.drawRandomCard(Constants.ROOM_CARD));
 		
 		cardDeck.randomizeRemaining();
 		

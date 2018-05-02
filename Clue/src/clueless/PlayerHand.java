@@ -1,15 +1,23 @@
 package clueless;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class PlayerHand {
 
-	List<Card> cards;
+	ArrayList<Card> cards;
 
-	private List<RoomCard> roomCards;
-	private List<WeaponCard> weaponCards;
-	private List<SuspectCard> suspectCards;
+	private ArrayList<RoomCard> roomCards;
+	private ArrayList<WeaponCard> weaponCards;
+	private ArrayList<SuspectCard> suspectCards;
+
+	public PlayerHand()
+	{
+		roomCards = new ArrayList<RoomCard>();
+		weaponCards = new ArrayList<WeaponCard>();
+		suspectCards = new ArrayList<SuspectCard>();
+	}
 
 	public void addCard(Card newCard) {
 

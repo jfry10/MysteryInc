@@ -2,6 +2,10 @@ package clueless;
 
 public class Constants
 {
+	public static final int WEAPON_CARD = 0;
+	public static final int SUSPECT_CARD = 1;
+	public static final int ROOM_CARD = 2;
+
 	public static final int COL_MUSTARD = 0;
 	public static final int PROF_PLUM = 1;
 	public static final int MR_GREEN = 2;

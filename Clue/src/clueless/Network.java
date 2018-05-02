@@ -74,8 +74,9 @@ public class Network {
 		public String text;
 	}
 
-	static public class PrivateMessage {
-		public String notes;
+	static public class DetectiveInfo {
+		public int type;
+		public String name;
 	}
 	
 	static public class ValidMove {

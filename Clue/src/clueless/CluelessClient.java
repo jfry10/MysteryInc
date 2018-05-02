@@ -32,8 +32,8 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
 import clueless.Network.ChatMessage;
+import clueless.Network.DetectiveInfo;
 import clueless.Network.PlayerTurn;
-import clueless.Network.PrivateMessage;
 import clueless.Network.RegisterName;
 import clueless.Network.UpdateNames;
 import clueless.Network.ValidMove;
@@ -131,10 +131,10 @@ public class CluelessClient
                 }
 
                 // The Server sends us a Note / private message
-                if (object instanceof PrivateMessage)
+                if (object instanceof DetectiveInfo)
                 {
-                		PrivateMessage pm = (PrivateMessage)object;
-                		player.updateDetectivePad(pm.notes);
+                		DetectiveInfo pm = (DetectiveInfo)object;
+                		player.updateDetectiveNotes(pm.type, pm.name);
                 		return;
                 }
                 

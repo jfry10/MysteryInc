@@ -5,27 +5,59 @@ package clueless;
  * @author robjose
  *
  */
-public class DetectiveNotes {
+public class DetectiveNotes
+{
 	private boolean[] suspects;
 	private boolean[] weapons;
 	private boolean[] rooms;
 	
-	public DetectiveNotes() {
-		suspects = new boolean[6];
-		weapons = new boolean[6];
-		rooms = new boolean[9];
+	public DetectiveNotes()
+	{
+		suspects = new boolean[Constants.SUSPECTS.length];
+		weapons = new boolean[Constants.WEAPONS.length];
+		rooms = new boolean[Constants.ROOMS.length];
 	}
-	
-	public void setSuspect(int suspect, boolean value) {
-		this.suspects[suspect] = value;
+
+	// We receive the Suspect name, find it in the Constants array
+	// and mark this suspect true in the detective notes
+	public void setSuspect(String name)
+	{
+		for (int index = 0; index < Constants.SUSPECTS.length; index++)
+		{
+			if (Constants.SUSPECTS[index] == name) 
+			{
+				this.suspects[index] = true;
+				return;
+			}
+		}
 	}
-	
-	public void setWeapon(int weapon, boolean value) {
-		this.weapons[weapon] = value;
+
+	// We receive the Weapon name, find it in the Constants array
+	// and mark this weapon true in the detective notes
+	public void setWeapon(String name)
+	{
+		for (int index = 0; index < Constants.WEAPONS.length; index++)
+		{
+			if (Constants.WEAPONS[index] == name) 
+			{
+				this.weapons[index] = true;
+				return;
+			}
+		}
 	}
-	
-	public void setRoom(int room, boolean value) {
-		this.rooms[room] = value;
+
+	// We receive the Room name, find it in the Constants array
+	// and mark this room true in the detective notes
+	public void setRoom(String name)
+	{
+		for (int index = 0; index < Constants.ROOMS.length; index++)
+		{
+			if (Constants.ROOMS[index] == name) 
+			{
+				this.rooms[index] = true;
+				return;
+			}
+		}
 	}
 	
 	public boolean[] getSuspects() {
@@ -96,24 +128,24 @@ public class DetectiveNotes {
 		return sb.toString();
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		DetectiveNotes dn = new DetectiveNotes();
 		
-		dn.setSuspect(Constants.COL_MUSTARD, true);
-		dn.setSuspect(Constants.MR_GREEN, true);
-		dn.setSuspect(Constants.MISS_SCARLET, true);
+		dn.setSuspect(Constants.SUSPECTS[Constants.COL_MUSTARD]);
+		dn.setSuspect(Constants.SUSPECTS[Constants.MR_GREEN]);
+		dn.setSuspect(Constants.SUSPECTS[Constants.MISS_SCARLET]);
 		
-		dn.setWeapon(Constants.KNIFE, true);
-		dn.setWeapon(Constants.ROPE, true);
-		dn.setWeapon(Constants.WRENCH, true);
-		dn.setWeapon(Constants.CANDLESTICK, true);
+		dn.setWeapon(Constants.WEAPONS[Constants.KNIFE]);
+		dn.setWeapon(Constants.WEAPONS[Constants.ROPE]);
+		dn.setWeapon(Constants.WEAPONS[Constants.WRENCH]);
+		dn.setWeapon(Constants.WEAPONS[Constants.CANDLESTICK]);
 		
-		dn.setRoom(Constants.BALL_ROOM, true);
-		dn.setRoom(Constants.HALL, true);
-		dn.setRoom(Constants.LIBRARY, true);
-		dn.setRoom(Constants.STUDY, true);
-		dn.setRoom(Constants.LOUNGE, true);
+		dn.setRoom(Constants.ROOMS[Constants.BALL_ROOM]);
+		dn.setRoom(Constants.ROOMS[Constants.HALL]);
+		dn.setRoom(Constants.ROOMS[Constants.LIBRARY]);
+		dn.setRoom(Constants.ROOMS[Constants.STUDY]);
+		dn.setRoom(Constants.ROOMS[Constants.LOUNGE]);
 		
 		System.out.println(dn);
-	}
+	}*/
 }
