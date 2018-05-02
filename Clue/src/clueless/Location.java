@@ -1,10 +1,54 @@
 package clueless;
 
-abstract public class Location {
+public class Location{
+    String name = null;
+    boolean occupied = false;
+    boolean left = false;
+    boolean right = false;
+    boolean up = false;
+    boolean down = false;
 
-	abstract public void setName(String string);
-	abstract public String getName();
+    public void setName(String newName){
+        name = newName;
+    }
 
-	// Does the Location class actually do anything at all?
-	// Adding words here so it's not completely lonely
+    public String getName(){
+        return name;
+    }
+
+    public boolean isOccupied(){
+        return occupied;
+    }
+
+    public boolean hasLeft(){
+        return left;
+    }
+
+    public boolean hasRight(){
+        return right;
+    }
+
+    public boolean hasUp(){
+        return up;
+    }
+
+    public boolean hasDown(){
+        return down;
+    }
+
+    public void setLeft(){
+        left = true;
+    }
+
+    public void setRight(){
+        right = true;
+    }
+
+    public void setUp(){
+        up = true;
+    }
+
+    public void setDown(){
+        down = true;
+    }
 }
