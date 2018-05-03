@@ -8,19 +8,13 @@ public class PlayerHand {
 
 	ArrayList<Card> cards;
 
-	private ArrayList<RoomCard> roomCards;
-	private ArrayList<WeaponCard> weaponCards;
-	private ArrayList<SuspectCard> suspectCards;
-
 	public PlayerHand()
 	{
-		roomCards = new ArrayList<RoomCard>();
-		weaponCards = new ArrayList<WeaponCard>();
-		suspectCards = new ArrayList<SuspectCard>();
+		cards = new ArrayList<Card>();
 	}
 
-	public void addCard(Card newCard) {
-
+	public void addCard(Card newCard)
+	{
 		cards.add(newCard);
 	}
 
@@ -39,68 +33,5 @@ public class PlayerHand {
 			}
 		}
 		return returnValue;
-	}
-
-	// Retrieves the RoomCard list from the player's Hand
-	public List<RoomCard> getRoomCards()
-	{
-		Card tempCard;
-
-		//Put at least one null card in the list
-		roomCards.clear();
-		roomCards.add(new RoomCard());
-
-		Iterator tempHand = cards.iterator();
-		while (tempHand.hasNext())
-		{
-			tempCard = (Card) tempHand.next();
-			if (tempCard instanceof RoomCard)
-			{
-				roomCards.add((RoomCard) tempCard);
-			}
-		}
-		return roomCards;
-	}
-
-	// Retrieves the WeaponCard list from the player's Hand
-	public List<WeaponCard> getWeaponCards()
-	{
-		Card tempCard;
-
-		//Put at least one null card in the list
-		weaponCards.clear();
-		weaponCards.add(new WeaponCard());
-
-		Iterator tempHand = cards.iterator();
-		while (tempHand.hasNext())
-		{
-			tempCard = (Card) tempHand.next();
-			if (tempCard instanceof WeaponCard)
-			{
-				weaponCards.add((WeaponCard) tempCard);
-			}
-		}
-		return weaponCards;
-	}
-
-	// Retrieves the SuspectCard list from the player's Hand
-	public List<SuspectCard> getSuspectCards()
-	{
-		Card tempCard;
-
-		//Put at least one null card in the list
-		suspectCards.clear();
-		suspectCards.add(new SuspectCard());
-
-		Iterator tempHand = cards.iterator();
-		while (tempHand.hasNext())
-		{
-			tempCard = (Card) tempHand.next();
-			if (tempCard instanceof SuspectCard)
-			{
-				suspectCards.add((SuspectCard) tempCard);
-			}
-		}
-		return suspectCards;
 	}
 }
