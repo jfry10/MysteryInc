@@ -6,15 +6,9 @@ import org.junit.runner.notification.Failure;
 
 public class TestRunner {
    public static void main(String[] args) {
-		
-	  // first generic test
-      Result result = JUnitCore.runClasses(TestJUnit.class);
-      for (Failure failure : result.getFailures()) {
-    	  	System.out.println(failure.toString());
-      }
       
       // CardDeck test
-      result = JUnitCore.runClasses(CardTests.class);
+      Result result = JUnitCore.runClasses(CardTests.class);
       for (Failure failure : result.getFailures()) {
     	  	System.out.println(failure.toString());
       }

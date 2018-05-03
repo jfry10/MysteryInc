@@ -25,7 +25,11 @@ public class CardTests {
 			assertEquals(0, Constants.WEAPON_CARD);
 			assertEquals(1, Constants.SUSPECT_CARD);
 			assertEquals(2, Constants.ROOM_CARD);
-	
+
+			// Draw a non-type card
+			Card non = cd.drawRandomCard(3);
+			assertEquals(null, non);
+
 			// Weapons, Suspects, then Rooms
 			Card w1 = cd.drawRandomCard(Constants.WEAPON_CARD);
 			Card w2 = cd.drawRandomCard(Constants.WEAPON_CARD);
