@@ -16,7 +16,7 @@ public class CardTests {
 	
 	public void testCardDeck()
 	{
-		boolean print = false; // enable/disable printing
+		boolean print = true; // enable/disable printing
 
 		// first run, draw Random Cards by Type
 		{
@@ -144,6 +144,7 @@ public class CardTests {
 			}
 			assertEquals(count, 21); // there are 21 cards
 		}
+
 	}
 
 }
