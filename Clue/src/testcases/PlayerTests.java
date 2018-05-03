@@ -22,7 +22,9 @@ public class PlayerTests
 			p.updateSuspectName("Mr. Green");
 			assertEquals("Mr. Green", p.suspectName);
 			p.updateDetectiveNotes(Constants.WEAPON_CARD, "Knife");
-            // add more testing
+           	p.updateDetectiveNotes(Constants.ROOM_CARD, "Ball Room");
+           	p.updateDetectiveNotes(Constants.SUSPECT_CARD, "Prof. Plum");
+            
 		}
 	}
 }

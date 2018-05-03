@@ -12,7 +12,7 @@ public class DetectiveNotesTest
 	
 	public void testDetectiveNotes()
 	{
-		boolean print = false;
+		boolean print = true;
 		
 		// first test, print out values and true values
 		{
