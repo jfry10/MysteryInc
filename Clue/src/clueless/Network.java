@@ -19,7 +19,7 @@ public class Network {
 		kryo.register(SuspectResponse.class);
         kryo.register(BeginGame.class);
 		kryo.register(DealCard.class);
-		kryo.register(BeginPlay.class);
+		kryo.register(BeginTurn.class);
 		kryo.register(UpdateNames.class);
 		kryo.register(ChatMessage.class);
 		kryo.register(Location.class);
@@ -28,6 +28,9 @@ public class Network {
         kryo.register(EndTurn.class);
 		kryo.register(Card.class);
         kryo.register(String.class);
+        kryo.register(EndSuggestion.class);
+        kryo.register(SuggestionDisprove.class);
+        
 	}
 	
 	static public class RegisterRequest {
@@ -66,7 +69,7 @@ public class Network {
 		public Card card;
 	}
 	
-	static public class BeginPlay {
+	static public class BeginTurn {
 		
 	}
 
@@ -85,14 +88,31 @@ public class Network {
 	
 	static public class PlayerTurn {
 		public boolean turn;
+		public boolean left;
+		public boolean right;
+		public boolean up;
+		public boolean down;
+		public boolean passage;
 	}
 
 	static public class MoveToken {
-		public int positionX;
-		public int positionY;
+		public int direction;
 	}
 
 	static public class EndTurn {
 		public String suspect;
+	}
+	
+	static public class EndSuggestion {
+		
+	}
+	
+	static public class SuggestionDisprove {
+		// Null card means can't disprove
+		public Card card;
+		
+		public SuggestionDisprove(Card card) {
+			this.card = card;
+		}
 	}
 }
