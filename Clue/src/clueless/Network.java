@@ -51,8 +51,15 @@ public class Network {
 	}
 
 	static public class SuspectRequest {
-		public Integer clientId;
 		public String requestedSuspect;
+		
+		public SuspectRequest() {
+			
+		}
+		
+		public SuspectRequest(String requestedSuspect) {
+			this.requestedSuspect = requestedSuspect;
+		}
 	}
 	
 	static public class SuspectResponse {
@@ -75,6 +82,14 @@ public class Network {
 
 	static public class ChatMessage {
 		public String text;
+		
+		public ChatMessage() {
+			
+		}
+		
+		public ChatMessage(String text) {
+			this.text = text;
+		}
 	}
 
 	static public class DetectiveInfo {

@@ -19,4 +19,15 @@ public class Accusation
 		weapon = w;
 		suspect = s;
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder accusationSB = new StringBuilder();
+		accusationSB.append(suspect.getName());
+		accusationSB.append(" in the ");
+		accusationSB.append(room.getName());
+		accusationSB.append(" with a ");
+		accusationSB.append(weapon.getName());
+		return accusationSB.toString();
+	}
 }
