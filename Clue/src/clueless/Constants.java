@@ -6,20 +6,27 @@ public class Constants
 	public static final int SUSPECT_CARD = 1;
 	public static final int ROOM_CARD = 2;
 
-	public static final int COL_MUSTARD = 0;
-	public static final int PROF_PLUM = 1;
-	public static final int MR_GREEN = 2;
-	public static final int MRS_PEACOCK = 3;
-	public static final int MISS_SCARLET = 4;
-	public static final int MRS_WHITE = 5;
+	public static final int MISS_SCARLET = 0;
+	public static final int COL_MUSTARD = 1;
+	public static final int MRS_WHITE = 2;
+	public static final int MR_GREEN = 3;
+	public static final int MRS_PEACOCK = 4;
+	public static final int PROF_PLUM = 5;
+	
+	public static final String COL_MUSTARD_STR = "Col. Mustard";
+	public static final String PROF_PLUM_STR = "Prof. Plum";
+	public static final String MR_GREEN_STR = "Mr. Green";
+	public static final String MRS_PEACOCK_STR = "Mrs. Peacock";
+	public static final String MISS_SCARLET_STR = "Miss Scarlet";
+	public static final String MRS_WHITE_STR = "Mrs. White";
 	
 	public static final String[] SUSPECTS = 
-			new String[] {"Col. Mustard", 
-					"Prof. Plum",
-					"Mr. Green",
-					"Mrs. Peacock",
-					"Miss Scarlet",
-					"Mrs. White"
+			new String[] {MISS_SCARLET_STR,
+					COL_MUSTARD_STR,
+					MRS_WHITE_STR,
+					MR_GREEN_STR,
+					MRS_PEACOCK_STR,
+					PROF_PLUM_STR,
 	};
 	
 	public static final int KNIFE = 0;

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -18,26 +20,35 @@ import clueless.Network.ChatMessage;
 import clueless.Network.RegisterName;
 import clueless.Network.UpdateNames;
 import clueless.Network.BeginGame;
-import clueless.Network.BeginPlay;
+import clueless.Network.BeginTurn;
 import clueless.Network.DealCard;
 import clueless.Network.EndTurn;
 import clueless.Network.MoveToken;
 import clueless.Network.RegisterRequest;
 import clueless.Network.RegisterResponse;
+import clueless.Network.SuggestionDisprove;
 import clueless.Network.SuspectRequest;
 import clueless.Network.SuspectResponse;
+import clueless.Network.EndSuggestion;
 
 public class GameExecutive
 {
 	Server server;
-	int playerID;
+	
 	Suggestion currentSuggestion;
-	Accusation currentAccusation;
-	HashMap<String, Integer> connectionMap;
-	HashMap<String, Integer> suspectConnectionMap;
+	PlayerInfo playerMakingSuggestion;
+
+	LinkedHashMap<String, Integer> suspectConnectionMap;
+	LinkedHashMap<Integer, PlayerInfo> playerInfoMap;
+	
 	CardDeck cardDeck;
 	CaseFile caseFile;
-	ArrayList<String> forfeitPlayerList;
+	
+	ArrayList<Integer> forfeitPlayerList;
+	
+	Location[][] gameBoard;
+	
+	
 
 	public GameExecutive() throws IOException {
 
@@ -60,6 +71,8 @@ public class GameExecutive
 			public void received (Connection c, Object object) {
 				// We know all connections for this server are actually ChatConnections.
 				CluelessConnection conn = (CluelessConnection)c;
+				
+				Integer playerID = conn.getID();
 
 				if (object instanceof RegisterName) {
 					// Ignore the object if a client has already registered a name. This is
@@ -100,17 +113,71 @@ public class GameExecutive
 				// The Client sends us a Suggestion, pass on to other clients
 				if (object instanceof Suggestion)
 				{
-					playerID = conn.getID();
 					currentSuggestion = (Suggestion)object;
-					HandleSuggestion();
+					playerMakingSuggestion = playerInfoMap.get(conn.getID());
+					server.sendToTCP(playerMakingSuggestion.playerToLeft.playerId, currentSuggestion);
+				}
+				
+				if (object instanceof SuggestionDisprove) {
+					if(((SuggestionDisprove)object).card == null) {
+						// cannot disprove -- see if next player can disprove
+						if(playerInfoMap.get(playerID).playerToLeft.equals(playerMakingSuggestion)) {
+							// no one disproved, player can make an accusation
+							server.sendToTCP(playerMakingSuggestion.playerId, new Accusation());
+							playerMakingSuggestion = null;
+							currentSuggestion = null;
+						} else {
+							server.sendToTCP(playerInfoMap.get(playerID).playerToLeft.playerId, currentSuggestion);
+						}
+					} else {
+						server.sendToTCP(playerMakingSuggestion.playerId, object);
+						server.sendToTCP(playerMakingSuggestion.playerId, new EndTurn());
+						playerMakingSuggestion = null;
+						currentSuggestion = null;
+					}
 				}
 				
 				// The Client sends us an Accusation, pass on to other clients
 				if (object instanceof Accusation)
 				{
-					playerID = conn.getID();
-					currentAccusation = (Accusation)object;
-					HandleAccusation();
+					PlayerInfo currentPlayer = playerInfoMap.get(playerID);
+					
+					StringBuilder accusationSB = new StringBuilder();
+					accusationSB.append(currentPlayer.suspectName);
+					accusationSB.append(" has made the accusation: ");
+					accusationSB.append(new ChatMessage(((Accusation)object).toString()));
+					
+					if(caseFile.isAccusationValid(((Accusation)object).room,
+							((Accusation)object).weapon,
+							((Accusation)object).suspect)) {
+						// A WINRAR IS YOU!!1!1!!!
+						StringBuilder messageSB = new StringBuilder();
+						messageSB.append(currentPlayer.suspectName);
+						messageSB.append("'s accusation of ");
+						messageSB.append(((Accusation)object).toString());
+						messageSB.append(" was correct! ");
+						messageSB.append(currentPlayer.suspectName);
+						messageSB.append(" has won the game! ");
+						server.sendToAllTCP(new ChatMessage(messageSB.toString()));
+						endGame();
+					} else {
+						// bzzzzzzt. nope.
+						StringBuilder messageSB = new StringBuilder();
+						messageSB.append(currentPlayer.suspectName);
+						messageSB.append("'s accusation of ");
+						messageSB.append(((Accusation)object).toString());
+						messageSB.append(" was incorrect. ");
+						messageSB.append(currentPlayer.suspectName);
+						messageSB.append("'s future turns are now forfeit.");
+						server.sendToAllTCP(new ChatMessage(messageSB.toString()));
+						
+						// you get added to THE LIST
+						forfeitPlayerList.add(playerID);
+						
+						// next player is up
+						prodNextPlayer(currentPlayer);
+					}
+					
 				}
 				
 				// The Client sends us a Card, determine what to do with it
@@ -124,10 +191,7 @@ public class GameExecutive
 				if (object instanceof String)
 				{
 					String s = (String)object;
-					if (s == "no disprove suggestion")
-					{
-						HandleSuggestion();
-					}
+
 					return;
 				}
 
@@ -164,7 +228,10 @@ public class GameExecutive
 	        	}
 
 				if (object instanceof MoveToken) {
-	        		
+					
+	        		int direction = ((MoveToken)object).direction;
+	        		// 
+
 	        	}
 			}
 
@@ -197,17 +264,53 @@ public class GameExecutive
 	}
 
 	void initSuspectConnectionMap() {
-		suspectConnectionMap = new HashMap<String, Integer>(Constants.SUSPECTS.length);
+		suspectConnectionMap = new LinkedHashMap<String, Integer>(Constants.SUSPECTS.length);
 		for(int i=0; i<Constants.SUSPECTS.length; i++) {
 			suspectConnectionMap.put(Constants.SUSPECTS[i], null);
 		}
 	}
 
 	void startGame() {
+		gameBoard = Gameboard.createNewBoard();
+		
+		initializePlayerInfoObjects();
+		
+		forfeitPlayerList = new ArrayList<Integer>();
+		
 		distributeCards();
 		
-		server.sendToTCP(suspectConnectionMap.get(Constants.SUSPECTS[Constants.MISS_SCARLET]), new BeginPlay());
+		server.sendToTCP(suspectConnectionMap.get(Constants.SUSPECTS[Constants.MISS_SCARLET]), new BeginTurn());
 	}
+	
+	// Creates a singly linked list of player info objects that are linked by 
+	// the player "on the left" of the current player so that we can iterate
+	// through the players in order for dealing and working through suggestions
+	void initializePlayerInfoObjects() {
+		playerInfoMap = new LinkedHashMap<Integer, PlayerInfo>();
+		
+		PlayerInfo first = null;
+		PlayerInfo previous = null;
+		PlayerInfo current = null;
+		for(int i=0; i<Constants.SUSPECTS.length; i++) {
+			Integer playerId = suspectConnectionMap.get(Constants.SUSPECTS[i]);
+			if(playerId != null) {
+				current = new PlayerInfo();
+				current.playerId = playerId;
+				current.suspectName = Constants.SUSPECTS[i];
+				if(previous != null) {
+					previous.playerToLeft = current;
+				}
+				previous = current;
+				if(first == null) {
+					first = current;
+				}
+				
+				playerInfoMap.put(playerId, current);
+			}
+		}
+		current.playerToLeft = first;
+	}
+
 	
 	void distributeCards()
 	{
@@ -222,21 +325,19 @@ public class GameExecutive
 		
 		Card nextCard = null;
 		
-		String[] suspectArray = 
-				suspectConnectionMap.keySet().toArray(new String[suspectConnectionMap.keySet().size()]);
-
-		for(int i=0; (nextCard = cardDeck.drawCard()) != null && i<suspectArray.length; i++) {
-			Integer connId = suspectConnectionMap.get(suspectArray[i]);
-			if(connId != null) {
-				DealCard dealCard = new DealCard();
-				dealCard.card = nextCard;
-				server.sendToTCP(connId, dealCard);
-			}
-			if(i == suspectArray.length-1) {
-				i = -1;
-			}
-		}
+		// Get connection Id of first player
+		Integer[] connIds =  playerInfoMap.keySet().toArray(new Integer[playerInfoMap.size()]);
+		// get player info object for first player
+		PlayerInfo currentPlayer = playerInfoMap.get(connIds[0]);
 		
+		// deal cards around the horn
+		while((nextCard = cardDeck.drawCard()) != null) {
+			DealCard dealCard = new DealCard();
+			dealCard.card = nextCard;
+			server.sendToTCP(currentPlayer.playerId, dealCard);
+			currentPlayer = currentPlayer.playerToLeft;
+		}
+	
 	}
 	
 	String[] getAvailableSuspects() {
@@ -265,26 +366,21 @@ public class GameExecutive
 		server.sendToAllTCP(updateNames);
 	}
 	
-	void HandleSuggestion()
-	{
-		// We might need to send this to all players
-		Connection[] connections = server.getConnections();
-		for (int index = 0; index < connections.length; index++)
-		{
-			// Don't send it back to the player making the suggestion
-			if (connections[index].getID() != playerID)
-			{
-				server.sendToTCP(connections[index].getID(), currentSuggestion);
-			}
+	void prodNextPlayer(PlayerInfo currentPlayer) {
+		Integer nextPlayerId = currentPlayer.playerToLeft.playerId;
+		while(forfeitPlayerList.contains(nextPlayerId)) {
+			PlayerInfo nextPlayer = playerInfoMap.get(nextPlayerId);
+			String message = nextPlayer.suspectName + " forfeits their turn.";
+			server.sendToAllTCP(new ChatMessage(message));
+			nextPlayerId = nextPlayer.playerToLeft.playerId;
 		}
-		return; 
+		server.sendToTCP(nextPlayerId, new BeginTurn());
 	}
 	
-	void HandleAccusation()
-	{
-		return;
+	void endGame() {
+		
 	}
-
+	
 	// This holds per connection state.
 	static class CluelessConnection extends Connection {
 		public String playerName;
@@ -293,5 +389,25 @@ public class GameExecutive
 	public static void main (String[] args) throws IOException {
 		Log.set(Log.LEVEL_DEBUG);
 		new GameExecutive();
+	}
+}
+
+class PlayerInfo {
+	public String suspectName;
+	public Integer playerId;
+	public PlayerInfo playerToLeft;
+	
+	@Override
+	public boolean equals(Object obj) {
+		return playerId.equals(((PlayerInfo)obj).playerId);
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Suspect Name = " + suspectName + "\n");
+		sb.append("playerId = " + playerId + "\n");
+		sb.append("Player to left = " + playerToLeft.suspectName + "\n");
+		return sb.toString();
 	}
 }

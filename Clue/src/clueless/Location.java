@@ -2,6 +2,7 @@ package clueless;
 
 public class Location{
     String name = null;
+    Player occupiedBy = null;
     boolean occupied = false;
     boolean left = false;
     boolean right = false;
@@ -51,4 +52,19 @@ public class Location{
     public void setDown(){
         down = true;
     }
+    
+    public String occupiedBy() {
+    	return occupiedBy.suspectName;
+    }
+    
+    public void changeOccupiedState(Player player) {
+    	occupiedBy = player;
+    	occupied = true;
+    }
+    
+    public void changeOccupiedState() {
+    	occupiedBy = null;
+    	occupied = false;
+    }
 }
+

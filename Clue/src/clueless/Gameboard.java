@@ -2,6 +2,7 @@ package clueless;
 
 public class Gameboard{
 
+	//Creates a new gameboard
     public static Location[][] createNewBoard(){
         int roomNum = 0;
         int hallNum = 0;
@@ -29,6 +30,7 @@ public class Gameboard{
         return gameBoard;
     }
 
+    //prints the board in a crude textual format - needs to be formatted is used
     public static void printBoard(Location[][] currentBoard){
       for(int i = 0; i < 5; i++){
             for(int j = 0; j < 5; j++){
@@ -42,7 +44,8 @@ public class Gameboard{
             System.out.println();	          
       }        
     }
-
+    
+    //used to display which rooms have passages
     public static void printPassages(Location[][] currentBoard){
         for(int k=0; k<5;k++) {
             for(int j=0;j<5;j++) {
@@ -54,7 +57,8 @@ public class Gameboard{
             }
         }
     }
-
+     
+    //list the possible moves a specific location has
     public static void listMoves(Location[][] board, int row, int col){
         System.out.print(board[row][col].getName() + " is able to move: ");
         if(board[row][col].hasLeft()){
@@ -69,6 +73,61 @@ public class Gameboard{
         if (board[row][col].hasDown()){
             System.out.print("Down ");
         }
+        if (board[row][col] instanceof Room){
+        	if(((Room) board[row][col]).hasSecretPassage()){
+                System.out.print("and has Secret_Passage");
+            }
+        }
+        	
         System.out.println();
+    }
+    
+    //creates and sets the starting locations for each player up to 6.
+    public static void startPositions(Location[][] board,Player player, int position) {
+    	if(position == 0) {
+    		board[0][3].changeOccupiedState(player);
+    	}
+    	else if(position == 1) {
+    		board[1][4].changeOccupiedState(player);
+    	}
+    	else if(position == 2) {
+    		board[4][3].changeOccupiedState(player);
+    	}
+    	else if(position == 3) {
+    		board[4][1].changeOccupiedState(player);
+    	}
+    	else if(position == 4) {
+    		board[3][0].changeOccupiedState(player);
+    	}
+    	else if(position == 5) {
+    		board[1][0].changeOccupiedState(player);
+    	}
+    }
+    
+    public static void main (String[] args) {
+    	Location[][] gameboard = createNewBoard();
+    	Player player1 = new Player("Scarlet");
+    	Player player2 = new Player("Mustard");
+    	Player player3 = new Player("White");
+    	Player player4 = new Player("Green");
+    	Player player5 = new Player("Peacock");
+    	Player player6 = new Player("Plum");
+    	Player[] players = {player1, player2, player3,player4,player5,player6};
+    	for(int i=0;i<players.length;i++) {
+    		startPositions(gameboard,players[i],i);
+    	}
+    	
+    	for(int j=0;j<5;j++) {
+    		for(int k=0; k<5;k++) {
+    			if(gameboard[j][k] != null) {
+    				if(gameboard[j][k].isOccupied()) {
+    					String room = gameboard[j][k].getName();
+    					String player = gameboard[j][k].occupiedBy();
+    					System.out.println("The "+room+" is occupied by "+player);
+    				}
+    			}
+    		}
+    	}
+    	
     }
 }
