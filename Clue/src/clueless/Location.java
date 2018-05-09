@@ -1,8 +1,10 @@
 package clueless;
 
+import java.util.ArrayList;
+
 public class Location{
     String name = null;
-    Player occupiedBy = null;
+    ArrayList<Player> occupiedBy = new ArrayList<Player>();
     boolean occupied = false;
     boolean left = false;
     boolean right = false;
@@ -18,7 +20,7 @@ public class Location{
     }
 
     public boolean isOccupied(){
-        return occupied;
+        return (!occupiedBy.isEmpty());
     }
 
     public boolean hasLeft(){
@@ -54,17 +56,15 @@ public class Location{
     }
     
     public String occupiedBy() {
-    	return occupiedBy.suspectName;
+    	return occupiedBy.toString();
     }
     
-    public void changeOccupiedState(Player player) {
-    	occupiedBy = player;
-    	occupied = true;
+    public void enterRoom(Player player) {
+    	occupiedBy.add(player);
     }
     
-    public void changeOccupiedState() {
-    	occupiedBy = null;
-    	occupied = false;
-    }
+    public void leaveRoom(Player player) {
+    	occupiedBy.remove(player);
+    }    
 }
 
