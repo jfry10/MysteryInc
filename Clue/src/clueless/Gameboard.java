@@ -1,5 +1,7 @@
 package clueless;
 
+import java.util.ArrayList;
+
 public class Gameboard{
 
 	//Creates a new gameboard
@@ -85,23 +87,35 @@ public class Gameboard{
     //creates and sets the starting locations for each player up to 6.
     public static void startPositions(Location[][] board,Player player, int position) {
     	if(position == 0) {
-    		board[0][3].changeOccupiedState(player);
+    		board[0][3].enterRoom(player);
     	}
     	else if(position == 1) {
-    		board[1][4].changeOccupiedState(player);
+    		board[1][4].enterRoom(player);
     	}
     	else if(position == 2) {
-    		board[4][3].changeOccupiedState(player);
+    		board[4][3].enterRoom(player);
     	}
     	else if(position == 3) {
-    		board[4][1].changeOccupiedState(player);
+    		board[4][1].enterRoom(player);
     	}
     	else if(position == 4) {
-    		board[3][0].changeOccupiedState(player);
+    		board[3][0].enterRoom(player);
     	}
     	else if(position == 5) {
-    		board[1][0].changeOccupiedState(player);
+    		board[1][0].enterRoom(player);
     	}
+    }
+    
+    public static String listToString(ArrayList list) {
+		String occupants = "";
+
+    	Player[] playersInRoom = new Player[list.size()];
+    	list.toArray(playersInRoom);
+    	for(int i = 0; i< playersInRoom.length; i++) {
+    		occupants = occupants + playersInRoom[i].suspectName + " ";
+    	}    	
+    	return occupants;
+    	
     }
     
     public static void main (String[] args) {
@@ -122,7 +136,7 @@ public class Gameboard{
     			if(gameboard[j][k] != null) {
     				if(gameboard[j][k].isOccupied()) {
     					String room = gameboard[j][k].getName();
-    					String player = gameboard[j][k].occupiedBy();
+    					String player = listToString(gameboard[j][k].occupiedBy);
     					System.out.println("The "+room+" is occupied by "+player);
     				}
     			}

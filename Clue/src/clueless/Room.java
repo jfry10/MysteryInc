@@ -1,9 +1,12 @@
 package clueless;
 
+import java.util.ArrayList;
+
 public class Room extends Location{
 	
     boolean passage = false;
     String roomName;
+    ArrayList<Player> playerSpace;
 
     public Room(int number){
         determineRoom(number);
