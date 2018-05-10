@@ -246,6 +246,7 @@ public class GameExecutive
 	        	}
 			}
 
+			
 			public void disconnected (Connection c) {
 				CluelessConnection connection = (CluelessConnection)c;
 				if (connection.playerName != null) {
