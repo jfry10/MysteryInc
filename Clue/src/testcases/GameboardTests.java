@@ -17,8 +17,8 @@ public class GameboardTests {
 		
 		// first test, create a gameboard and display it with text
 		{
-			Location[][] gameBoard = Gameboard.createNewBoard();
-			Gameboard.printBoard(gameBoard);
+			//Location[][] gameBoard = Gameboard.createNewBoard();
+			//Gameboard.printBoard(gameBoard);
 			
 			assertEquals(true, print);
 		}

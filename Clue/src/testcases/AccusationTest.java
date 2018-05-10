@@ -67,7 +67,7 @@ public class AccusationTest
 			SuspectCard sDummy = new SuspectCard();
 			WeaponCard wDummy = new WeaponCard();
 			
-			CaseFile cf = new CaseFile(r, s, w);
+			CaseFile cf = new CaseFile(r, w, s);
 
 			// check if Room is wrong
 			boolean result = cf.isAccusationValid(rDummy, w, s);
@@ -86,5 +86,4 @@ public class AccusationTest
 			assertEquals(true, result);
 		}
 	}
-
 }

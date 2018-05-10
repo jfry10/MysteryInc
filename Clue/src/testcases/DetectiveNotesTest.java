@@ -102,7 +102,6 @@ public class DetectiveNotesTest
 			assertEquals(0, count);	
 		}
 		// third test, need to add something for setting all values in DetectiveNotes
-		
 	}
 
 }

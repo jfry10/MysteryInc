@@ -96,4 +96,5 @@ public class PlayerTests
 			assertEquals(null, disproveCard);
 		}
 	}
+
 }

@@ -28,4 +28,5 @@ public class Suggestion
 		accusationSB.append(weapon.getName());
 		return accusationSB.toString();
 	}
+
 }

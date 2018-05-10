@@ -148,7 +148,6 @@ public class CardTests {
 			}
 			assertEquals(count, 21); // there are 21 cards
 		}
-
 	}
 
 }
