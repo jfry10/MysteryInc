@@ -9,10 +9,8 @@ public class Accusation
 
 	// Sending an empty accusation back to the server means
 	// player does not want to make an accusation
-	public Accusation() {
-		
-	}
-	
+	public Accusation() {}
+
 	public Accusation(RoomCard r, WeaponCard w, SuspectCard s)
 	{
 		room = r;

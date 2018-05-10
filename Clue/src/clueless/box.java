@@ -161,7 +161,7 @@ public class box extends JPanel implements ActionListener {
         submit.setVerticalTextPosition(AbstractButton.CENTER);
         submit.setHorizontalTextPosition(AbstractButton.LEADING);
         submit.setMnemonic(KeyEvent.VK_D);
-       submit.addActionListener(this);
+        submit.addActionListener(this);
 
         this.setLayout(new BorderLayout());
         this.add(buttonPannel, BorderLayout.NORTH);
