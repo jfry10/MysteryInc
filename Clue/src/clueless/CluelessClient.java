@@ -3,7 +3,10 @@ package clueless;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -25,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -232,13 +236,17 @@ public class CluelessClient
 		client.sendTCP(location);
 	}
 
-	static private class GameFrame extends JFrame
+	static private class GameFrame extends JFrame implements ActionListener
 	{
 		CardLayout cardLayout;
+		Dimension d;
 		JProgressBar progressBar;
 		JList messageList;
 		JTextField sendText;
 		JButton sendButton;
+		JButton suggestButton;
+		JButton accusButton;
+		JButton restartButton;
 		JList nameList;
 
 		public GameFrame (String host)
@@ -264,8 +272,9 @@ public class CluelessClient
 				JPanel panel = new JPanel(new BorderLayout());
 				contentPane.add(panel, "chat");
 				{
-					JPanel topPanel = new JPanel(new GridLayout(1, 2));
-					panel.add(topPanel);
+					JPanel topPanel = new JPanel(new GridLayout(1, 1));
+					panel.add(topPanel, BorderLayout.EAST);
+			
 					{
 						topPanel.add(new JScrollPane(messageList = new JList()));
 						messageList.setModel(new DefaultListModel());
@@ -273,14 +282,29 @@ public class CluelessClient
 					{
 						topPanel.add(new JScrollPane(nameList = new JList()));
 						nameList.setModel(new DefaultListModel());
+						
 					}
+					
+					
 					DefaultListSelectionModel disableSelections = new DefaultListSelectionModel() {
 						public void setSelectionInterval (int index0, int index1) {
 						}
 					};
+					
 					messageList.setSelectionModel(disableSelections);
 					nameList.setSelectionModel(disableSelections);
+					
 				}
+				
+				//////Game Board Screen//////
+				{
+					JPanel leftPanel = new JPanel(new GridLayout(1,1));
+					JLabel label = new JLabel("Game Borad");
+					label.setFont(new Font("TimesRoman", Font.CENTER_BASELINE, 15));
+					panel.add(leftPanel, BorderLayout.WEST);
+					leftPanel.add(label);
+				}
+
 				{
 					JPanel bottomPanel = new JPanel(new GridBagLayout());
 					panel.add(bottomPanel, BorderLayout.SOUTH);
@@ -289,6 +313,27 @@ public class CluelessClient
 					bottomPanel.add(sendButton = new JButton("Send"), new GridBagConstraints(1, 0, 1, 1, 0, 0,
 						GridBagConstraints.CENTER, 0, new Insets(0, 0, 0, 0), 0, 0));
 				}
+				
+				//////Game options/Menu ///////
+				{
+					JPanel optionPanel = new JPanel (new GridLayout(3,1));
+					panel.add(optionPanel, BorderLayout.NORTH);
+					
+					suggestButton = new JButton("Make Suggestion");
+					suggestButton.setActionCommand("Make Suggestion Please");
+					optionPanel.add(suggestButton);
+					suggestButton.addActionListener(this);
+					
+					accusButton = new JButton("Make Accusation");
+					accusButton.setActionCommand("Make Accusation Please");
+					optionPanel.add(accusButton);
+					
+					restartButton = new JButton("Restart Game");
+					restartButton.setActionCommand("Restart Game");
+					optionPanel.add(restartButton);
+				}
+				
+				
 			}
 
 			sendText.addActionListener(new ActionListener() {
@@ -347,6 +392,12 @@ public class CluelessClient
 					messageList.ensureIndexIsVisible(model.size() - 1);
 				}
 			});
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
