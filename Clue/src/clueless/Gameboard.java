@@ -3,11 +3,14 @@ package clueless;
 import java.util.ArrayList;
 
 public class Gameboard{
+	
+	static Player[] playerlist;
 
 	//Creates a new gameboard
-    public static Location[][] createNewBoard(){
+    public static Location[][] createNewBoard(Player[] listOfPlayers){
         int roomNum = 0;
         int hallNum = 0;
+        playerlist = listOfPlayers;
         Location[][] gameBoard = new Location[5][5];
 
         for(int i = 0; i < 5; i++){
@@ -185,7 +188,6 @@ public class Gameboard{
     }
     
     public static void main (String[] args) {
-    	Location[][] gameboard = createNewBoard();
     	Player player1 = new Player("Scarlet");
     	Player player2 = new Player("Mustard");
     	Player player3 = new Player("White");
@@ -193,8 +195,11 @@ public class Gameboard{
     	Player player5 = new Player("Peacock");
     	Player player6 = new Player("Plum");
     	Player[] players = {player1, player2, player3,player4,player5,player6};
-    	for(int i=0;i<players.length;i++) {
-    		startPositions(gameboard,players[i],i);
+    	Location[][] gameboard = createNewBoard(players);
+
+
+    	for(int i=0;i<playerlist.length;i++) {
+    		startPositions(gameboard,playerlist[i],i);
     	}
     	
     	for(int j=0;j<5;j++) {
