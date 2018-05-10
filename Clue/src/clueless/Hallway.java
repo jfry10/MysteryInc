@@ -7,7 +7,7 @@ public class Hallway extends Location{
 
     public Hallway(int number, int row, int col){
         determineHall(number);
-        setName("Hallway: " + hallName);
+        setName(hallName);
         this.row = row;
         this.col = col;
     }
