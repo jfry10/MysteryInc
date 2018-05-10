@@ -175,6 +175,7 @@ public class GameExecutiveTests {
 	}
 	
 	public void testDistributeCards() {
+		
 		server.distributeCards();
 
 		System.out.println(client0.player.myHand.toString());
