@@ -19,7 +19,7 @@ public class PlayerTests
 	
 	public void testPlayer()
 	{
-		boolean print = true; // enable/disable printing
+		boolean print = false; // enable/disable printing
 		
 		// first test, general Player set/get function
 		{
@@ -32,9 +32,10 @@ public class PlayerTests
            	p.updateDetectiveNotes(3, "no note");
            	DetectiveNotes dn = p.getDetectiveNotes();
            	
+           	String text = dn.toString();
            	if (print == true)
            	{
-           		System.out.println(dn.toString());
+           		System.out.println(text);
            	}
 		}
 		
@@ -49,9 +50,10 @@ public class PlayerTests
 			p.addCardToHand(cd.drawCard());
 			DetectiveNotes dn = p.getDetectiveNotes();
 			
+			String text = dn.toString();
 			if (print == true)
 			{
-				System.out.println(dn.toString());
+				System.out.println(text);
 			}
 		}
 		
@@ -94,4 +96,5 @@ public class PlayerTests
 			assertEquals(null, disproveCard);
 		}
 	}
+
 }

@@ -8,6 +8,13 @@ public class CaseFile {
 	public CaseFile() {
 		
 	}
+	
+	public CaseFile (RoomCard room, WeaponCard weapon, SuspectCard suspect)
+	{
+		this.room = room;
+		this.weapon = weapon;
+		this.suspect = suspect;
+	}
 
 	public void addCard(Card card) {
 		if(card instanceof RoomCard) {

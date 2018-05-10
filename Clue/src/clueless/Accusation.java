@@ -12,7 +12,7 @@ public class Accusation
 	public Accusation() {
 		
 	}
-	
+
 	public Accusation(RoomCard r, WeaponCard w, SuspectCard s)
 	{
 		room = r;
