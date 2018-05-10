@@ -41,6 +41,8 @@ public class GameExecutive
 	LinkedHashMap<String, Integer> suspectConnectionMap;
 	LinkedHashMap<Integer, PlayerInfo> playerInfoMap;
 	
+	ArrayList<Player> players;
+	
 	CardDeck cardDeck;
 	CaseFile caseFile;
 	
@@ -283,9 +285,11 @@ public class GameExecutive
 	}
 
 	void startGame() {
-		gameBoard = Gameboard.createNewBoard();
+		
 		
 		initializePlayerInfoObjects();
+		
+		gameBoard = Gameboard.createNewBoard(players.toArray(new Player[players.size()]));
 		
 		forfeitPlayerList = new ArrayList<Integer>();
 		
@@ -299,6 +303,7 @@ public class GameExecutive
 	// through the players in order for dealing and working through suggestions
 	void initializePlayerInfoObjects() {
 		playerInfoMap = new LinkedHashMap<Integer, PlayerInfo>();
+		players = new ArrayList<Player>();
 		
 		PlayerInfo first = null;
 		PlayerInfo previous = null;
@@ -309,6 +314,7 @@ public class GameExecutive
 				current = new PlayerInfo();
 				current.playerId = playerId;
 				current.suspectName = Constants.SUSPECTS[i];
+				players.add(new Player(Constants.SUSPECTS[i]));
 				if(previous != null) {
 					previous.playerToLeft = current;
 				}
