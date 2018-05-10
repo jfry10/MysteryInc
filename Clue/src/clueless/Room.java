@@ -8,12 +8,14 @@ public class Room extends Location{
     String roomName;
     ArrayList<Player> playerSpace;
 
-    public Room(int number){
-        determineRoom(number);
-    	setName(roomName);
+    public Room(int number) 
+    {
+    		determineRoom(number);
+    		setName(roomName);
     }
 
-    public void createPassage(){
+    public void createPassage()
+    {
         this.passage = true;
     }
     

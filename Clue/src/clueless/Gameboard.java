@@ -2,7 +2,8 @@ package clueless;
 
 import java.util.ArrayList;
 
-public class Gameboard{
+public class Gameboard
+{
 
 	//Creates a new gameboard
     public static Location[][] createNewBoard(){
@@ -37,13 +38,13 @@ public class Gameboard{
       for(int i = 0; i < 5; i++){
             for(int j = 0; j < 5; j++){
               if(currentBoard[i][j] != null){
-                  System.out.print(currentBoard[i][j].getName() + "   ");
+                  System.out.print(currentBoard[i][j].getName() + "\t\t\t");
               }
               else{
-                  System.out.print("      ");
+                  System.out.print("\t\t\t");
               }
             }
-            System.out.println();	          
+            System.out.println("\n\n");	          
       }        
     }
     
@@ -85,63 +86,65 @@ public class Gameboard{
     }
     
     //creates and sets the starting locations for each player up to 6.
-    public static void startPositions(Location[][] board,Player player, int position) {
-    	if(position == 0) {
-    		board[0][3].enterRoom(player);
-    	}
-    	else if(position == 1) {
-    		board[1][4].enterRoom(player);
-    	}
-    	else if(position == 2) {
-    		board[4][3].enterRoom(player);
-    	}
-    	else if(position == 3) {
-    		board[4][1].enterRoom(player);
-    	}
-    	else if(position == 4) {
-    		board[3][0].enterRoom(player);
-    	}
-    	else if(position == 5) {
-    		board[1][0].enterRoom(player);
-    	}
+    public static void startPositions(Location[][] board,Player player, int position)
+    {
+	    	if(position == 0) {
+	    		board[0][3].enterRoom(player);
+	    	}
+	    	else if(position == 1) {
+	    		board[1][4].enterRoom(player);
+	    	}
+	    	else if(position == 2) {
+	    		board[4][3].enterRoom(player);
+	    	}
+	    	else if(position == 3) {
+	    		board[4][1].enterRoom(player);
+	    	}
+	    	else if(position == 4) {
+	    		board[3][0].enterRoom(player);
+	    	}
+	    	else if(position == 5) {
+	    		board[1][0].enterRoom(player);
+	    	}
     }
     
-    public static String listToString(ArrayList list) {
+    public static String listToString(ArrayList list)
+    {
 		String occupants = "";
 
-    	Player[] playersInRoom = new Player[list.size()];
-    	list.toArray(playersInRoom);
-    	for(int i = 0; i< playersInRoom.length; i++) {
-    		occupants = occupants + playersInRoom[i].suspectName + " ";
-    	}    	
-    	return occupants;
-    	
+	    	Player[] playersInRoom = new Player[list.size()];
+	    	list.toArray(playersInRoom);
+	    	for(int i = 0; i< playersInRoom.length; i++) {
+	    		occupants = occupants + playersInRoom[i].suspectName + " ";
+	    	}    	
+	    	return occupants;
     }
     
-    public static void main (String[] args) {
-    	Location[][] gameboard = createNewBoard();
-    	Player player1 = new Player("Scarlet");
-    	Player player2 = new Player("Mustard");
-    	Player player3 = new Player("White");
-    	Player player4 = new Player("Green");
-    	Player player5 = new Player("Peacock");
-    	Player player6 = new Player("Plum");
-    	Player[] players = {player1, player2, player3,player4,player5,player6};
-    	for(int i=0;i<players.length;i++) {
-    		startPositions(gameboard,players[i],i);
-    	}
-    	
-    	for(int j=0;j<5;j++) {
-    		for(int k=0; k<5;k++) {
-    			if(gameboard[j][k] != null) {
-    				if(gameboard[j][k].isOccupied()) {
-    					String room = gameboard[j][k].getName();
-    					String player = listToString(gameboard[j][k].occupiedBy);
-    					System.out.println("The "+room+" is occupied by "+player);
-    				}
-    			}
-    		}
-    	}
+    public static void main (String[] args)
+    {
+	    	Location[][] gameboard = createNewBoard();
+	    	Player player1 = new Player("Scarlet");
+	    	Player player2 = new Player("Mustard");
+	    	Player player3 = new Player("White");
+	    	Player player4 = new Player("Green");
+	    	Player player5 = new Player("Peacock");
+	    	Player player6 = new Player("Plum");
+	    	Player[] players = {player1, player2, player3,player4,player5,player6};
+	    	for(int i=0;i<players.length;i++) {
+	    		startPositions(gameboard,players[i],i);
+	    	}
+	    	
+	    	for(int j=0;j<5;j++) {
+	    		for(int k=0; k<5;k++) {
+	    			if(gameboard[j][k] != null) {
+	    				if(gameboard[j][k].isOccupied()) {
+	    					String room = gameboard[j][k].getName();
+	    					String player = listToString(gameboard[j][k].occupiedBy);
+	    					System.out.println("The "+room+" is occupied by "+player);
+	    				}
+	    			}
+	    		}
+	    	}
     	
     }
 }

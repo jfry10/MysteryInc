@@ -127,25 +127,4 @@ public class DetectiveNotes
 		}
 		return sb.toString();
 	}
-	
-	/*public static void main(String[] args) {
-		DetectiveNotes dn = new DetectiveNotes();
-		
-		dn.setSuspect(Constants.SUSPECTS[Constants.COL_MUSTARD]);
-		dn.setSuspect(Constants.SUSPECTS[Constants.MR_GREEN]);
-		dn.setSuspect(Constants.SUSPECTS[Constants.MISS_SCARLET]);
-		
-		dn.setWeapon(Constants.WEAPONS[Constants.KNIFE]);
-		dn.setWeapon(Constants.WEAPONS[Constants.ROPE]);
-		dn.setWeapon(Constants.WEAPONS[Constants.WRENCH]);
-		dn.setWeapon(Constants.WEAPONS[Constants.CANDLESTICK]);
-		
-		dn.setRoom(Constants.ROOMS[Constants.BALL_ROOM]);
-		dn.setRoom(Constants.ROOMS[Constants.HALL]);
-		dn.setRoom(Constants.ROOMS[Constants.LIBRARY]);
-		dn.setRoom(Constants.ROOMS[Constants.STUDY]);
-		dn.setRoom(Constants.ROOMS[Constants.LOUNGE]);
-		
-		System.out.println(dn);
-	}*/
 }

@@ -16,7 +16,7 @@ public class CardTests {
 	
 	public void testCardDeck()
 	{
-		boolean print = true; // enable/disable printing
+		boolean print = false; // enable/disable printing
 
 		// first run, draw Random Cards by Type
 		{
