@@ -5,6 +5,10 @@ import java.util.ArrayList;
 public class Location{
     String name = null;
     ArrayList<Player> occupiedBy = new ArrayList<Player>();
+    int row;
+    int col;
+    int passageRow;
+    int passageCol;
     boolean occupied = false;
     boolean left = false;
     boolean right = false;
@@ -17,6 +21,14 @@ public class Location{
 
     public String getName(){
         return name;
+    }
+    
+    public int getRow() {
+    	return row;
+    }
+    
+    public int getCol() {
+    	return col;
     }
 
     public boolean isOccupied(){

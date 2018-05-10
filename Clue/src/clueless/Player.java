@@ -15,7 +15,7 @@ import java.util.Random;
 public class Player {
 
 	public String suspectName;
-	public String positionOnBoard;
+	public Location positionOnBoard;
 	public String cards;
 	PlayerHand myHand;
 	DetectiveNotes myNotes;
