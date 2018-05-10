@@ -8,15 +8,17 @@ public class Room extends Location{
     String roomName;
     ArrayList<Player> playerSpace;
 
-    public Room(int number) 
-    {
-    		determineRoom(number);
-    		setName(roomName);
+    public Room(int number, int row, int col){
+        determineRoom(number);
+    	setName(roomName);
+    	this.row = row;
+    	this.col = col;
     }
 
-    public void createPassage()
-    {
+    public void createPassage(int row, int col){
         this.passage = true;
+        passageRow = row;
+        passageCol = col;
     }
     
     public boolean hasSecretPassage(){
@@ -28,7 +30,7 @@ public class Room extends Location{
 			roomName = "Study";
 			setRight();
 			setDown();
-    		createPassage();
+    		createPassage(4,4);
     	}
     	else if(number == 1) {
 			roomName = "Hall";
@@ -40,7 +42,7 @@ public class Room extends Location{
 			roomName = "Lounge";
 			setLeft();
 			setDown();
-    		createPassage();
+    		createPassage(4, 0);
     	}
     	else if(number == 3) {
 			roomName = "Library";
@@ -65,7 +67,7 @@ public class Room extends Location{
 			roomName = "Conservatory";
 			setUp();
 			setRight();
-    		createPassage();
+    		createPassage(0,4);
     	}
     	else if(number == 7) {
 			roomName = "Ballroom";
@@ -77,7 +79,7 @@ public class Room extends Location{
 			roomName = "Kitchen";
 			setUp();
 			setLeft();
-    		createPassage();
+    		createPassage(0, 0);
     	}
     	
     	return roomName;
