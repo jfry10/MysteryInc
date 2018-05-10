@@ -27,6 +27,9 @@ public class Network {
 		kryo.register(Accusation.class);
         kryo.register(EndTurn.class);
 		kryo.register(Card.class);
+		kryo.register(RoomCard.class);
+		kryo.register(WeaponCard.class);
+		kryo.register(SuspectCard.class);
         kryo.register(String.class);
         kryo.register(EndSuggestion.class);
         kryo.register(SuggestionDisprove.class);

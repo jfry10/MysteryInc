@@ -230,7 +230,18 @@ public class GameExecutive
 				if (object instanceof MoveToken) {
 					
 	        		int direction = ((MoveToken)object).direction;
-	        		// 
+	        		switch(direction) {
+	        		case Constants.DIR_UP:
+	        			break;
+	        		case Constants.DIR_DOWN:
+	        			break;
+	        		case Constants.DIR_LEFT:
+	        			break;
+	        		case Constants.DIR_RIGHT:
+	        			break;
+	        		case Constants.DIR_PASSAGE:
+	        			break;
+	        		}
 
 	        	}
 			}

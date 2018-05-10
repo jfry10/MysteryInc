@@ -8,6 +8,8 @@ public class WeaponCard extends Card {
 	{
 		// give this card a name so we can tell the type
 		name = "null";
+		
+		cardType = Constants.WEAPON_CARD;
 	}
 	
 	public void setName(String string)

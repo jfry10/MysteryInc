@@ -34,4 +34,19 @@ public class PlayerHand {
 		}
 		return returnValue;
 	}
+		
+	@Override
+	public String toString() {
+		
+		StringBuilder sb = new StringBuilder();
+		
+		cards.sort(null);
+				
+		for(Card card : cards) {
+			sb.append(card.toString());
+			sb.append("\n");
+		}
+		
+		return sb.toString();
+	}
 }

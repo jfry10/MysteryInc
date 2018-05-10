@@ -1,3 +1,5 @@
+package clueless;
+
 import javax.swing.*;
 
 
