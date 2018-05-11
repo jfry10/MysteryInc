@@ -12,19 +12,40 @@ import javax.swing.JPanel;
 
 public class GUIDisplay extends JPanel{
 
+	private int ROW_1 = 116;
+	private int ROW_2 = 188;
+	private int ROW_3 = 260;
+	private int ROW_4 = 332;
+	private int ROW_5 = 404;
+
+	private int COL_1 = 138;
+	private int COL_2 = 210;
+	private int COL_3 = 282;
+	private int COL_4 = 354;
+	private int COL_5 = 426;
+
+	private Color scarlet = new Color(220,20,60);
+	private Color green = new Color(0,100,0);
+	private Color mustard = new Color(218,165,32);
+	private Color white = new Color(192,192,192);
+	private Color peacock = new Color(30,144,255);
+	private Color plum = new Color(75,0,130);
+
 	public void paint(Graphics g){
 
 		 Image image = new ImageIcon(this.getClass().getResource("ImageOfBoard.png")).getImage();
             g.drawImage(image, 0, 0, this);
 
+            
+            //paintStudy(suspectColor);
             g.setColor(Color.RED);
             g.fillOval(138, 116, 20, 20);   //x value for col 1 is 138
-                                            //y value for row 1 is 117
+                                            //y value for row 1 is 116
             g.setColor(Color.GREEN);
             g.fillOval(138, 260, 20, 20);   //y value for row 3 is 260
 
             g.setColor(Color.BLUE);
-            g.fillOval(138, 189, 20, 20);   //y value for row 2 is 189
+            g.fillOval(138, 188, 20, 20);   //y value for row 2 is 188
 
             g.setColor(Color.YELLOW);
             g.fillOval(138, 332, 20, 20);   //y value for row 4 is 332
