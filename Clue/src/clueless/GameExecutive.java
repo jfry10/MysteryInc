@@ -305,6 +305,7 @@ public class GameExecutive
 				server.stop();
 			}
 		});
+		
 		frame.getContentPane().add(new JLabel("Close to stop the Clueless server."));
 		frame.setSize(320, 200);
 		frame.setLocationRelativeTo(null);
