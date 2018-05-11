@@ -137,6 +137,5 @@ public class Network {
 	
 	static public class SuggestionAsk {
 		
-		
 	}
 }
