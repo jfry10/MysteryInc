@@ -35,7 +35,7 @@ public class Network {
         kryo.register(SuggestionDisprove.class);
         kryo.register(MoveToken.class);
         kryo.register(GUIDisplay.class);
-        
+        kryo.register(SuggestionAsk.class);  
 	}
 	
 	static public class RegisterRequest {
@@ -134,5 +134,9 @@ public class Network {
 		public SuggestionDisprove(Card card) {
 			this.card = card;
 		}
+	}
+	
+	static public class SuggestionAsk {
+		
 	}
 }

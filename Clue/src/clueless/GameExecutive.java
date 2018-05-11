@@ -24,9 +24,11 @@ import clueless.Network.BeginTurn;
 import clueless.Network.DealCard;
 import clueless.Network.EndTurn;
 import clueless.Network.MoveToken;
+import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterRequest;
 import clueless.Network.RegisterResponse;
 import clueless.Network.SuggestionDisprove;
+import clueless.Network.SuggestionAsk;
 import clueless.Network.SuspectRequest;
 import clueless.Network.SuspectResponse;
 import clueless.Network.EndSuggestion;
@@ -230,21 +232,53 @@ public class GameExecutive
 	        	}
 
 				if (object instanceof MoveToken) {
-					
-	        		int direction = ((MoveToken)object).direction;
+					int direction = ((MoveToken)object).direction;
+					PlayerInfo playerInfo = playerInfoMap.get(playerID);
 	        		switch(direction) {
 	        		case Constants.DIR_UP:
+	        			Gameboard.moveUp(gameBoard, playerInfo.player);
 	        			break;
 	        		case Constants.DIR_DOWN:
+	        			Gameboard.moveDown(gameBoard, playerInfo.player);
 	        			break;
 	        		case Constants.DIR_LEFT:
+	        			Gameboard.moveLeft(gameBoard, playerInfo.player);
 	        			break;
 	        		case Constants.DIR_RIGHT:
+	        			Gameboard.moveRight(gameBoard, playerInfo.player);
 	        			break;
 	        		case Constants.DIR_PASSAGE:
+	        			Gameboard.takePassage(gameBoard, playerInfo.player);
 	        			break;
 	        		}
 
+	        	    if(playerInfo.player.positionOnBoard instanceof Room) {
+	        	    	// Player has entered room, is allowed to make a suggestion
+	        	    	server.sendToTCP(playerInfo.playerId, new SuggestionAsk());
+	        	    } else {
+	        	    	server.sendToTCP(playerInfo.playerId, new EndTurn());
+	        	    	
+	        	    	PlayerInfo playerLeftInfo = playerInfoMap.get(playerInfo.playerToLeft.playerId);
+	        	    	Location playerLocation = playerLeftInfo.player.positionOnBoard;
+	        	    	PlayerTurn playerTurn = new PlayerTurn();
+	        	    	if(playerLocation.hasUp()) {
+	        	    		playerTurn.up = true;
+	        	    	}
+	        	    	if(playerLocation.hasDown()) {
+	        	    		playerTurn.down = true;
+	        	    	}
+	        	    	if(playerLocation.hasLeft()) {
+	        	    		playerTurn.left = true;
+	        	    	}
+	        	    	if(playerLocation.hasRight()) {
+	        	    		playerTurn.right = true;
+	        	    	}
+	        	    	if(playerLocation instanceof Room && ((Room) playerLocation).hasSecretPassage()) {
+	        	    		playerTurn.passage = true;
+	        	    	} 
+	        	    	
+	        	    	server.sendToTCP(playerLeftInfo.playerId, playerTurn);
+	        	    }
 	        	}
 			}
 
@@ -271,6 +305,7 @@ public class GameExecutive
 				server.stop();
 			}
 		});
+		
 		frame.getContentPane().add(new JLabel("Close to stop the Clueless server."));
 		frame.setSize(320, 200);
 		frame.setLocationRelativeTo(null);
@@ -285,8 +320,7 @@ public class GameExecutive
 	}
 
 	void startGame() {
-		
-		
+				
 		initializePlayerInfoObjects();
 		
 		gameBoard = Gameboard.createNewBoard(players.toArray(new Player[players.size()]));
@@ -295,7 +329,28 @@ public class GameExecutive
 		
 		distributeCards();
 		
-		server.sendToTCP(suspectConnectionMap.get(Constants.SUSPECTS[Constants.MISS_SCARLET]), new BeginTurn());
+		Integer[] playerInfoKeys = playerInfoMap.keySet().toArray(new Integer[playerInfoMap.size()]);
+		
+		PlayerInfo firstPlayer = playerInfoMap.get(playerInfoKeys[0]);
+		Location firstPlayerLocation = firstPlayer.player.positionOnBoard;
+    	PlayerTurn playerTurn = new PlayerTurn();
+    	if(firstPlayerLocation.hasUp()) {
+    		playerTurn.up = true;
+    	}
+    	if(firstPlayerLocation.hasDown()) {
+    		playerTurn.down = true;
+    	}
+    	if(firstPlayerLocation.hasLeft()) {
+    		playerTurn.left = true;
+    	}
+    	if(firstPlayerLocation.hasRight()) {
+    		playerTurn.right = true;
+    	}
+    	if(firstPlayerLocation instanceof Room && ((Room) firstPlayerLocation).hasSecretPassage()) {
+    		playerTurn.passage = true;
+    	}
+		
+		server.sendToTCP(playerInfoKeys[0], playerTurn);
 	}
 	
 	// Creates a singly linked list of player info objects that are linked by 
@@ -314,7 +369,9 @@ public class GameExecutive
 				current = new PlayerInfo();
 				current.playerId = playerId;
 				current.suspectName = Constants.SUSPECTS[i];
-				players.add(new Player(Constants.SUSPECTS[i]));
+				current.player = new Player(Constants.SUSPECTS[i]);
+				players.add(current.player);
+				
 				if(previous != null) {
 					previous.playerToLeft = current;
 				}
@@ -414,6 +471,7 @@ class PlayerInfo {
 	public String suspectName;
 	public Integer playerId;
 	public PlayerInfo playerToLeft;
+	public Player player;
 	
 	@Override
 	public boolean equals(Object obj) {
