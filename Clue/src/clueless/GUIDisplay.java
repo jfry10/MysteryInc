@@ -29,7 +29,7 @@ public class GUIDisplay extends JPanel{
 	private Color scarlet = new Color(220,20,60);
 	private Color green   = new Color(0,100,0);
 	private Color mustard = new Color(218,165,32);
-	private Color white   = new Color(192,192,192);
+	private Color white   = new Color(128,128,128);
 	private Color peacock = new Color(30,144,255);
 	private Color plum    = new Color(75,0,130);
 
@@ -46,6 +46,7 @@ public class GUIDisplay extends JPanel{
 	{
 		Image image = new ImageIcon(this.getClass().getResource("ImageOfBoard.png")).getImage();
 		g.drawImage(image, 0, 0, this);
+		setLocations();
     
 		if (playerlist != null)
 		{
@@ -53,72 +54,50 @@ public class GUIDisplay extends JPanel{
 			if (playerlist[0] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[0]));
-				g.fillOval(x0, y0, 20, 20);
+				//g.fillOval(x0, y0, 20, 20);
+				g.fillOval(y0, x0, 20, 20);
 			}
             
 	        // Get Player 2 color
 			if (playerlist[1] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[1]));
-				g.fillOval(x1, y1, 20, 20);
+				//g.fillOval(x1, y1, 20, 20);
+				g.fillOval(y1, x1, 20, 20);
 			}
             
 	        // Get Player 3 color
 			if (playerlist[2] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[2]));
-				g.fillOval(x2, y2, 20, 20);
+				//g.fillOval(x2, y2, 20, 20);
+				g.fillOval(y2, x2, 20, 20);
 			}
             
 	        // Get Player 4 color
 			if (playerlist[3] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[3]));
-				g.fillOval(x3, y3, 20, 20);
+				//g.fillOval(x3, y3, 20, 20);
+				g.fillOval(y3, x3, 20, 20);
 			}
             
 	        // Get Player 5 color
 			if (playerlist[4] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[4]));
-				g.fillOval(x4, y4, 20, 20);
+				//g.fillOval(x4, y4, 20, 20);
+				g.fillOval(y4, x4, 20, 20);
 			}
             
 	        // Get Player 6 color
 			if (playerlist[5] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[5]));
-				g.fillOval(x5, y5, 20, 20);
+				//g.fillOval(x5, y5, 20, 20);
+				g.fillOval(y5, x5, 20, 20);
 			}
 		}
-		else {
-            g.setColor(Color.GREEN);
-            g.fillOval(138, 116, 20, 20);}//x value for col 1 is 138
-            /*                               //y value for row 1 is 117
-             * 
-            g.setColor(Color.GREEN);
-            g.fillOval(138, 260, 20, 20);   //y value for row 3 is 260
-
-            g.setColor(Color.BLUE);
-            g.fillOval(138, 189, 20, 20);   //y value for row 2 is 189
-
-            g.setColor(Color.YELLOW);
-            g.fillOval(138, 332, 20, 20);   //y value for row 4 is 332
-
-            g.setColor(Color.PINK);
-            g.fillOval(138, 404, 20, 20);   //y value for row 5 is 404
-
-            g.setColor(Color.BLACK);        //x value for col 2 is
-            g.fillOval(210, 116, 20, 20);
-
-            g.setColor(Color.GRAY);         //x value for cole 3 is
-            g.fillOval(282, 116, 20, 20);
-            g.setColor(Color.CYAN);         //x value for cole 4 is
-            g.fillOval(354, 116, 20, 20);
-            g.setColor(Color.magenta);      //x value for cole 5 is
-            g.fillOval(426, 116, 20, 20);
-            */
-        
 	}
 	
 	private Color getPlayersColor(Player player)
@@ -161,6 +140,24 @@ public class GUIDisplay extends JPanel{
 	    	Player player6 = new Player(Constants.PROF_PLUM_STR);
 	    	Player[] players = {player1, player2, player3,player4,player5,player6};
 	    	Location[][] gameboard = Gameboard.createNewBoard(players);
+	    /*Gameboard.moveDown(gameboard, players[5]);
+	    	Gameboard.moveUp(gameboard, players[4]);
+	    	Gameboard.moveLeft(gameboard, players[3]);
+	    	Gameboard.moveUp(gameboard, players[3]);
+	    	Gameboard.moveUp(gameboard, players[3]);
+	    	Gameboard.moveLeft(gameboard, players[2]);
+	    	Gameboard.moveLeft(gameboard, players[2]);
+	    	Gameboard.moveLeft(gameboard, players[2]);
+	    	Gameboard.moveUp(gameboard, players[2]);
+	    	Gameboard.moveUp(gameboard, players[2]);
+	    	Gameboard.moveUp(gameboard, players[1]);
+	    	Gameboard.takePassage(gameboard, players[1]);
+	    	Gameboard.moveUp(gameboard, players[1]);
+	    	Gameboard.moveUp(gameboard, players[1]);
+	    	Gameboard.moveRight(gameboard, players[0]);
+	    	Gameboard.takePassage(gameboard, players[0]);
+	    	Gameboard.moveUp(gameboard, players[0]);
+	    	Gameboard.moveUp(gameboard, players[0]);*/
 
         JFrame frame= new JFrame("GameboardGUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
@@ -178,69 +175,149 @@ public class GUIDisplay extends JPanel{
 		{
 			x0 = getXforLocation(playerlist[0].positionOnBoard.getRow());
 			y0 = getYforLocation(playerlist[0].positionOnBoard.getCol());
+			if (playerlist[0].positionOnBoard instanceof Room)
+			{
+				x0 -= 25; // off-center
+				y0 -= 25; // off-center
+			}
 		}
 		if (playerlist[1] != null)
 		{
 			x1 = getXforLocation(playerlist[1].positionOnBoard.getRow());
 			y1 = getYforLocation(playerlist[1].positionOnBoard.getCol());
+			if (playerlist[1].positionOnBoard instanceof Room)
+			{
+				x1 -= 15; // off-center
+				y1 -= 15; // off-center
+			}
 		}
 		if (playerlist[2] != null)
 		{
 			x2 = getXforLocation(playerlist[2].positionOnBoard.getRow());
 			y2 = getYforLocation(playerlist[2].positionOnBoard.getCol());
+			if (playerlist[2].positionOnBoard instanceof Room)
+			{
+				x2 -= 5; // off-center
+				y2 -= 5; // off-center
+			}
 		}
 		if (playerlist[3] != null)
 		{
 			x3 = getXforLocation(playerlist[3].positionOnBoard.getRow());
 			y3 = getYforLocation(playerlist[3].positionOnBoard.getCol());
+			if (playerlist[3].positionOnBoard instanceof Room)
+			{
+				x3 += 5; // off-center
+				y3 += 5; // off-center
+			}
 		}
 		if (playerlist[4] != null)
 		{
 			x4 = getXforLocation(playerlist[4].positionOnBoard.getRow());
 			y4 = getYforLocation(playerlist[4].positionOnBoard.getCol());
+			if (playerlist[4].positionOnBoard instanceof Room)
+			{
+				x4 += 15; // off-center
+				y4 += 15; // off-center
+			}
 		}
 		if (playerlist[5] != null)
 		{
 			x5 = getXforLocation(playerlist[5].positionOnBoard.getRow());
-			y5 = getYforLocation(playerlist[5].positionOnBoard.getCol());	
+			y5 = getYforLocation(playerlist[5].positionOnBoard.getCol());
+			if (playerlist[5].positionOnBoard instanceof Room)
+			{
+				x5 += 25; // off-center
+				y5 += 25; // off-center
+			}
 		}
 	}
 
-    private static int getXforLocation(int row)
+    private static int getYforLocation(int row) //, int index)
     {
-        if(row == 0) {
-        		return 138;
+    		int y_cord = 0;
+
+        if(row == 0){
+        		y_cord = 138;
         }
-        else if(row == 1) {
-        		return 210;
+        else if(row == 1){
+        		y_cord = 210;
         }
-        else if(row == 2) {
-        		return 282;
+        else if(row == 2){
+        		y_cord = 282;
         }
-        else if(row == 3) {
-        		return 354;
+        else if(row == 3){
+        		y_cord = 354;
         }
-        else { //row==4
-        		return 426;
+        else{ //row == 4
+        		y_cord = 426;
         }
+        return y_cord;
     }
 
-    public static int getYforLocation(int col)
+    public static int getXforLocation(int col) //, int index)
     {
-    		if(col == 0) {
-    			return 116;
+    		int x_cord = 0;
+
+    		if(col == 0){
+    			x_cord = 116;
         }
-        else if(col == 1) {
-        		return 188;
+        else if(col == 1){
+        		x_cord = 188;
         }
-        else if(col == 2) {
-        		return 260;
+        else if(col == 2){
+        		x_cord = 260;
         }
-        else if(col == 3) {
-        		return 332;
+        else if(col == 3){
+        		x_cord = 332;
         }
-        else{ //col==4
-        		return 404;
+        else{ //col == 4
+        		x_cord = 404;
         }
+    		return x_cord;
     }
+
+//    private static int getXforLocation(int row) //, int index)
+//    {
+//    		int x_cord = 0;
+//
+//        if(row == 0){
+//        		x_cord = 138;
+//        }
+//        else if(row == 1){
+//        		x_cord = 210;
+//        }
+//        else if(row == 2){
+//        		x_cord = 282;
+//        }
+//        else if(row == 3){
+//        		x_cord = 354;
+//        }
+//        else{ //row == 4
+//        		x_cord = 426;
+//        }
+//        return x_cord;
+//    }
+//
+//    public static int getYforLocation(int col) //, int index)
+//    {
+//    		int y_cord = 0;
+//
+//    		if(col == 0){
+//    			y_cord = 116;
+//        }
+//        else if(col == 1){
+//        		y_cord = 188;
+//        }
+//        else if(col == 2){
+//        		y_cord = 260;
+//        }
+//        else if(col == 3){
+//        		y_cord = 332;
+//        }
+//        else{ //col == 4
+//        		y_cord = 404;
+//        }
+//    		return y_cord;
+//    }
 }
