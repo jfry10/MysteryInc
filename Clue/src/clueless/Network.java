@@ -33,8 +33,9 @@ public class Network {
         kryo.register(String.class);
         kryo.register(EndSuggestion.class);
         kryo.register(SuggestionDisprove.class);
-        kryo.register(SuggestionAsk.class);
-        
+        kryo.register(MoveToken.class);
+        kryo.register(GUIDisplay.class);
+        kryo.register(SuggestionAsk.class);  
 	}
 	
 	static public class RegisterRequest {

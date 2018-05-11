@@ -79,174 +79,205 @@ public class Gameboard{
     }
      
     //list the possible moves a specific player has, based on their location
-    public static String listMoves(Player player)
+    public static String listMoves(Location[][] board, Player player)
     {
     		String moves = "";
 
-		if(player.positionOnBoard.hasLeft()) {
-		    moves += "Left ";
+    		// The logic is the same for all directions. 
+    		// If the position is a Hallway and not occupied, or if it's a Room, then add it to the move list
+  
+		if (player.positionOnBoard.hasLeft())
+		{
+			if (((board[player.positionOnBoard.row][player.positionOnBoard.col - 1] instanceof Hallway) && 
+				!board[player.positionOnBoard.row][player.positionOnBoard.col - 1].isOccupied()) || 
+				board[player.positionOnBoard.row][player.positionOnBoard.col - 1] instanceof Room)
+			{
+				moves += "Left ";
+			}
 		}
-		if (player.positionOnBoard.hasUp()) {
-			moves += "Up ";
+		if (player.positionOnBoard.hasUp())
+		{
+			if (((board[player.positionOnBoard.row - 1][player.positionOnBoard.col] instanceof Hallway) &&
+				!board[player.positionOnBoard.row - 1][player.positionOnBoard.col].isOccupied()) || 
+				board[player.positionOnBoard.row - 1][player.positionOnBoard.col] instanceof Room)
+			{
+				moves += "Up ";
+			}
 		}
-		if (player.positionOnBoard.hasRight()) {
-			moves += "Right ";
+		if (player.positionOnBoard.hasRight())
+		{
+			if (((board[player.positionOnBoard.row][player.positionOnBoard.col + 1] instanceof Hallway) &&
+				!board[player.positionOnBoard.row][player.positionOnBoard.col + 1].isOccupied()) || 
+				board[player.positionOnBoard.row][player.positionOnBoard.col + 1] instanceof Room)
+			{
+				moves += "Right ";
+			}
 		}
-		if (player.positionOnBoard.hasDown()) {
-			moves += "Down ";
+		if (player.positionOnBoard.hasDown())
+		{
+			if (((board[player.positionOnBoard.row + 1][player.positionOnBoard.col] instanceof Hallway) && 
+				!board[player.positionOnBoard.row + 1][player.positionOnBoard.col].isOccupied()) ||
+				board[player.positionOnBoard.row + 1][player.positionOnBoard.col] instanceof Room)
+			{
+				moves += "Down ";
+			}
 		}
-		if (player.positionOnBoard instanceof Room) {
-    			if(((Room) player.positionOnBoard).hasSecretPassage()) {
+		if (player.positionOnBoard instanceof Room)
+		{
+    			if(((Room) player.positionOnBoard).hasSecretPassage())
+    			{
     				moves += "Secret_Passage ";
     			}
-    			moves += "Make_Suggestion ";
         	}
 
     		return moves;
     }
     
-    public static void moveLeft(Location [][] board, Player player) {
-    	Location newSpace;
-    	try {
-    		if(((board[player.positionOnBoard.row][player.positionOnBoard.col - 1] instanceof Hallway) && !board[player.positionOnBoard.row][player.positionOnBoard.col - 1].occupied)
-    				|| board[player.positionOnBoard.row][player.positionOnBoard.col - 1] instanceof Room) {
-	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
-	    		board[player.positionOnBoard.row][player.positionOnBoard.col - 1].enterRoom(player);
-	    		newSpace = board[player.positionOnBoard.row][player.positionOnBoard.col - 1];
-	    		player.positionOnBoard = newSpace;    
+    public static void moveLeft(Location [][] board, Player player)
+    {
+    		Location newSpace;
+    		try {
+    			if(((board[player.positionOnBoard.row][player.positionOnBoard.col - 1] instanceof Hallway) &&
+				!board[player.positionOnBoard.row][player.positionOnBoard.col - 1].isOccupied()) ||
+				board[player.positionOnBoard.row][player.positionOnBoard.col - 1] instanceof Room)
+    			{
+		    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
+		    		board[player.positionOnBoard.row][player.positionOnBoard.col - 1].enterRoom(player);
+		    		newSpace = board[player.positionOnBoard.row][player.positionOnBoard.col - 1];
+		    		player.positionOnBoard = newSpace;    
+	    		}
+    		} catch(ArrayIndexOutOfBoundsException e) {
+    			System.out.println("Unable to move left");
     		}
-    		else {
-    			//Do nothing?
-    		}
-    	}catch(ArrayIndexOutOfBoundsException e) {
-    		System.out.println("Unable to move left");
-    	}
     }
     
-    public static void moveRight(Location [][] board, Player player) {
-    	Location newSpace;
-    	try {
-    		if(((board[player.positionOnBoard.row][player.positionOnBoard.col + 1] instanceof Hallway) && !board[player.positionOnBoard.row][player.positionOnBoard.col + 1].occupied)
-    				|| board[player.positionOnBoard.row][player.positionOnBoard.col + 1] instanceof Room) {
-	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
-	    		board[player.positionOnBoard.row][player.positionOnBoard.col + 1].enterRoom(player);
-	    		newSpace = board[player.positionOnBoard.row][player.positionOnBoard.col + 1];
-	    		player.positionOnBoard = newSpace;    	
+    public static void moveRight(Location [][] board, Player player)
+    {
+    		Location newSpace;
+    		try {
+    			if(((board[player.positionOnBoard.row][player.positionOnBoard.col + 1] instanceof Hallway) &&
+				!board[player.positionOnBoard.row][player.positionOnBoard.col + 1].isOccupied()) ||
+				board[player.positionOnBoard.row][player.positionOnBoard.col + 1] instanceof Room)
+    			{
+		    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
+		    		board[player.positionOnBoard.row][player.positionOnBoard.col + 1].enterRoom(player);
+		    		newSpace = board[player.positionOnBoard.row][player.positionOnBoard.col + 1];
+		    		player.positionOnBoard = newSpace;    	
+    			}
+    		} catch(ArrayIndexOutOfBoundsException e) {
+    			System.out.println("Unable to move left");
     		}
-    		else {
-    			//Do nothing
-    		}
-    	}catch(ArrayIndexOutOfBoundsException e) {
-    		System.out.println("Unable to move left");
-    	}
     }
     
     public static void moveUp(Location [][] board, Player player) {
-    	Location newSpace;
-    	try {
-    		if(((board[player.positionOnBoard.row - 1][player.positionOnBoard.col] instanceof Hallway) && !board[player.positionOnBoard.row - 1][player.positionOnBoard.col].occupied)
-    				|| board[player.positionOnBoard.row - 1][player.positionOnBoard.col] instanceof Room) {
-	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
-	    		board[player.positionOnBoard.row - 1][player.positionOnBoard.col].enterRoom(player);
-	    		newSpace = board[player.positionOnBoard.row - 1][player.positionOnBoard.col];
-	    		player.positionOnBoard = newSpace;    	
-    		}
-    		else {
-    			//Do nothing
-    		}
-    	}catch(ArrayIndexOutOfBoundsException e) {
-    		System.out.println("Unable to move Up");
-    	}
+	    	Location newSpace;
+	    	try {
+	    		if(((board[player.positionOnBoard.row - 1][player.positionOnBoard.col] instanceof Hallway) &&
+    				!board[player.positionOnBoard.row - 1][player.positionOnBoard.col].isOccupied()) ||
+    				board[player.positionOnBoard.row - 1][player.positionOnBoard.col] instanceof Room)
+	    		{
+		    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
+		    		board[player.positionOnBoard.row - 1][player.positionOnBoard.col].enterRoom(player);
+		    		newSpace = board[player.positionOnBoard.row - 1][player.positionOnBoard.col];
+		    		player.positionOnBoard = newSpace;
+	    		}
+	    	} catch(ArrayIndexOutOfBoundsException e) {
+	    		System.out.println("Unable to move Up");
+	    	}
     }
     
-    public static void moveDown(Location [][] board, Player player) {
-    	Location newSpace;
-    	try {
-    		if(((board[player.positionOnBoard.row + 1][player.positionOnBoard.col] instanceof Hallway) && !board[player.positionOnBoard.row + 1][player.positionOnBoard.col].occupied)
-    				|| board[player.positionOnBoard.row + 1][player.positionOnBoard.col] instanceof Room) {
-	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
-	    		board[player.positionOnBoard.row + 1][player.positionOnBoard.col].enterRoom(player);
-	    		newSpace = board[player.positionOnBoard.row + 1][player.positionOnBoard.col];
-	    		player.positionOnBoard = newSpace;    
+    public static void moveDown(Location [][] board, Player player)
+    {
+    		Location newSpace;
+    		try {
+    			if(((board[player.positionOnBoard.row + 1][player.positionOnBoard.col] instanceof Hallway) && 
+				!board[player.positionOnBoard.row + 1][player.positionOnBoard.col].isOccupied()) ||
+				board[player.positionOnBoard.row + 1][player.positionOnBoard.col] instanceof Room)
+    			{
+		    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
+		    		board[player.positionOnBoard.row + 1][player.positionOnBoard.col].enterRoom(player);
+		    		newSpace = board[player.positionOnBoard.row + 1][player.positionOnBoard.col];
+		    		player.positionOnBoard = newSpace;  
+    			}
+    		} catch(ArrayIndexOutOfBoundsException e) {
+    			System.out.println("Unable to move Down");
     		}
-    		else {
-    			//Do nothing
-    		}
-    	}catch(ArrayIndexOutOfBoundsException e) {
-    		System.out.println("Unable to move Down");
-    	}
     }
     
     public static void takePassage(Location [][] board, Player player) {
 	    	Location newSpace;
 	    	try {
-	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
-	    		board[player.positionOnBoard.passageRow][player.positionOnBoard.passageCol].enterRoom(player);
-	    		newSpace = board[player.positionOnBoard.passageRow][player.positionOnBoard.passageCol];
-	    		player.positionOnBoard = newSpace;    	
+	    		if(((Room) player.positionOnBoard).hasSecretPassage())
+    			{
+		    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
+		    		board[player.positionOnBoard.passageRow][player.positionOnBoard.passageCol].enterRoom(player);
+		    		newSpace = board[player.positionOnBoard.passageRow][player.positionOnBoard.passageCol];
+		    		player.positionOnBoard = newSpace;
+    			}
 	    	} catch(ArrayIndexOutOfBoundsException e) {
 	    		System.out.println("Unable to take passage");
 	    	}
     }
     
-    public static void suspectMove(Location[][] board, SuspectCard suspectCard, RoomCard roomCard) {
-    	String suspect = suspectCard.getName();
-    	String roomName = roomCard.getName();
-    	Player playerToMove = null;
-    	int newRoomRow = 0;
-    	int newRoomCol = 0;
-    	Location newSpace;
-    	try {
-    	for(int i = 0; i < playerlist.length; i++) {
-    		if(playerlist[i].suspectName == suspect) {
-    			playerToMove = playerlist[i];
-    		}    		
-    	}
-    	if(roomName == "Hall") {
-    		newRoomRow = 0;
-    		newRoomCol = 2;
-    	}
-    	else if(roomName == "Lounge") {
-    		newRoomRow = 0;
-    		newRoomCol = 4;
-    	}
-    	else if(roomName == "Dining Room") {
-    		newRoomRow = 2;
-    		newRoomCol = 4;
-    	}
-    	else if(roomName == "Kitchen") {
-    		newRoomRow = 4;
-    		newRoomCol = 4;
-    	}
-    	else if(roomName == "Ball Room") {
-    		newRoomRow = 4;
-    		newRoomCol = 2;
-    	}
-    	else if(roomName == "Conservatory") {
-    		newRoomRow = 4;
-    		newRoomCol = 0;
-    	}
-    	else if(roomName == "Billiard Room") {
-    		newRoomRow = 2;
-    		newRoomCol = 2;
-    	}
-    	else if(roomName == "Library") {
-    		newRoomRow = 2;
-    		newRoomCol = 0;
-    	}
-    	else if(roomName == "Study") {
-			newRoomRow = 0;
-    		newRoomCol = 0;
-		}
-		newSpace = board[newRoomRow][newRoomCol];
-		board[playerToMove.positionOnBoard.row][playerToMove.positionOnBoard.col].leaveRoom(playerToMove);
-		board[newRoomRow][newRoomCol].enterRoom(playerToMove);
-		playerToMove.positionOnBoard = newSpace;
-		
-		
-    }catch(Exception e){
-    	System.out.println("Issue moving Suspect from Suggestion");
-    	}
+    public static void suspectMove(Location[][] board, SuspectCard suspectCard, RoomCard roomCard)
+    {
+	    	String suspect = suspectCard.getName();
+	    	String roomName = roomCard.getName();
+	    	Player playerToMove = null;
+	    	int newRoomRow = 0;
+	    	int newRoomCol = 0;
+	    	Location newSpace;
+
+	    	try {
+		    	for(int i = 0; i < playerlist.length; i++) {
+		    		if(playerlist[i].suspectName == suspect) {
+		    			playerToMove = playerlist[i];
+		    		}    		
+		    	}
+		    	if(roomName == "Hall") {
+		    		newRoomRow = 0;
+		    		newRoomCol = 2;
+		    	}
+		    	else if(roomName == "Lounge") {
+		    		newRoomRow = 0;
+		    		newRoomCol = 4;
+		    	}
+		    	else if(roomName == "Dining Room") {
+		    		newRoomRow = 2;
+		    		newRoomCol = 4;
+		    	}
+		    	else if(roomName == "Kitchen") {
+		    		newRoomRow = 4;
+		    		newRoomCol = 4;
+		    	}
+		    	else if(roomName == "Ball Room") {
+		    		newRoomRow = 4;
+		    		newRoomCol = 2;
+		    	}
+		    	else if(roomName == "Conservatory") {
+		    		newRoomRow = 4;
+		    		newRoomCol = 0;
+		    	}
+		    	else if(roomName == "Billiard Room") {
+		    		newRoomRow = 2;
+		    		newRoomCol = 2;
+		    	}
+		    	else if(roomName == "Library") {
+		    		newRoomRow = 2;
+		    		newRoomCol = 0;
+		    	}
+		    	else if(roomName == "Study") {
+					newRoomRow = 0;
+		    		newRoomCol = 0;
+			}
+			newSpace = board[newRoomRow][newRoomCol];
+			board[playerToMove.positionOnBoard.row][playerToMove.positionOnBoard.col].leaveRoom(playerToMove);
+			board[newRoomRow][newRoomCol].enterRoom(playerToMove);
+			playerToMove.positionOnBoard = newSpace;
+			
+	    } catch(Exception e) {
+	    		System.out.println("Issue moving Suspect from Suggestion");
+	    	}
     }
     
     //creates and sets the starting locations for each player up to 6.

@@ -163,11 +163,11 @@ public class box extends JPanel implements ActionListener {
         submit.setMnemonic(KeyEvent.VK_D);
         submit.addActionListener(this);
 
-        this.setLayout(new BorderLayout());
-        this.add(buttonPannel, BorderLayout.NORTH);
-        this.add(butPanel, BorderLayout.CENTER);
-        this.add(personPanel, BorderLayout.WEST);
-        this.add(submit, BorderLayout.AFTER_LAST_LINE);
+        this.setLayout(new GridLayout(4,1));
+        this.add(buttonPannel);
+        this.add(butPanel);
+        this.add(personPanel);
+        this.add(submit);
         }
 
 
