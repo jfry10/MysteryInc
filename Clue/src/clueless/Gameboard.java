@@ -106,51 +106,75 @@ public class Gameboard{
     }
     
     public static void moveLeft(Location [][] board, Player player) {
-	    	Location newSpace;
-	    	try {
+    	Location newSpace;
+    	try {
+    		if(((board[player.positionOnBoard.row][player.positionOnBoard.col - 1] instanceof Hallway) && !board[player.positionOnBoard.row][player.positionOnBoard.col - 1].occupied)
+    				|| board[player.positionOnBoard.row][player.positionOnBoard.col - 1] instanceof Room) {
 	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
 	    		board[player.positionOnBoard.row][player.positionOnBoard.col - 1].enterRoom(player);
 	    		newSpace = board[player.positionOnBoard.row][player.positionOnBoard.col - 1];
-	    		player.positionOnBoard = newSpace;    	
-	    	} catch(ArrayIndexOutOfBoundsException e) {
-	    		System.out.println("Unable to move left");
-	    	}
+	    		player.positionOnBoard = newSpace;    
+    		}
+    		else {
+    			//Do nothing?
+    		}
+    	}catch(ArrayIndexOutOfBoundsException e) {
+    		System.out.println("Unable to move left");
+    	}
     }
     
     public static void moveRight(Location [][] board, Player player) {
-	    	Location newSpace;
-	    	try {
+    	Location newSpace;
+    	try {
+    		if(((board[player.positionOnBoard.row][player.positionOnBoard.col + 1] instanceof Hallway) && !board[player.positionOnBoard.row][player.positionOnBoard.col + 1].occupied)
+    				|| board[player.positionOnBoard.row][player.positionOnBoard.col + 1] instanceof Room) {
 	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
 	    		board[player.positionOnBoard.row][player.positionOnBoard.col + 1].enterRoom(player);
 	    		newSpace = board[player.positionOnBoard.row][player.positionOnBoard.col + 1];
 	    		player.positionOnBoard = newSpace;    	
-	    	} catch(ArrayIndexOutOfBoundsException e) {
-	    		System.out.println("Unable to move left");
-	    	}
+    		}
+    		else {
+    			//Do nothing
+    		}
+    	}catch(ArrayIndexOutOfBoundsException e) {
+    		System.out.println("Unable to move left");
+    	}
     }
     
     public static void moveUp(Location [][] board, Player player) {
-	    	Location newSpace;
-	    	try {
+    	Location newSpace;
+    	try {
+    		if(((board[player.positionOnBoard.row - 1][player.positionOnBoard.col] instanceof Hallway) && !board[player.positionOnBoard.row - 1][player.positionOnBoard.col].occupied)
+    				|| board[player.positionOnBoard.row - 1][player.positionOnBoard.col] instanceof Room) {
 	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
 	    		board[player.positionOnBoard.row - 1][player.positionOnBoard.col].enterRoom(player);
 	    		newSpace = board[player.positionOnBoard.row - 1][player.positionOnBoard.col];
 	    		player.positionOnBoard = newSpace;    	
-	    	} catch(ArrayIndexOutOfBoundsException e) {
-	    		System.out.println("Unable to move Up");
-	    	}
+    		}
+    		else {
+    			//Do nothing
+    		}
+    	}catch(ArrayIndexOutOfBoundsException e) {
+    		System.out.println("Unable to move Up");
+    	}
     }
     
     public static void moveDown(Location [][] board, Player player) {
-	    	Location newSpace;
-	    	try {
+    	Location newSpace;
+    	try {
+    		if(((board[player.positionOnBoard.row + 1][player.positionOnBoard.col] instanceof Hallway) && !board[player.positionOnBoard.row + 1][player.positionOnBoard.col].occupied)
+    				|| board[player.positionOnBoard.row + 1][player.positionOnBoard.col] instanceof Room) {
 	    		board[player.positionOnBoard.row][player.positionOnBoard.col].leaveRoom(player);
 	    		board[player.positionOnBoard.row + 1][player.positionOnBoard.col].enterRoom(player);
 	    		newSpace = board[player.positionOnBoard.row + 1][player.positionOnBoard.col];
-	    		player.positionOnBoard = newSpace;    	
-	    	} catch(ArrayIndexOutOfBoundsException e) {
-	    		System.out.println("Unable to move Down");
-	    	}
+	    		player.positionOnBoard = newSpace;    
+    		}
+    		else {
+    			//Do nothing
+    		}
+    	}catch(ArrayIndexOutOfBoundsException e) {
+    		System.out.println("Unable to move Down");
+    	}
     }
     
     public static void takePassage(Location [][] board, Player player) {
@@ -163,6 +187,57 @@ public class Gameboard{
 	    	} catch(ArrayIndexOutOfBoundsException e) {
 	    		System.out.println("Unable to take passage");
 	    	}
+    }
+    
+    public static void suspectMove(Location[][] board, SuspectCard suspectCard, RoomCard roomCard) {
+    	String suspect = suspectCard.getName();
+    	String roomName = roomCard.getName();
+    	Player playerToMove;
+    	int newRoomRow = 0;
+    	int newRoomCol = 0;
+    	Location newSpace;
+    	for(int i = 0; i < playerlist.length; i++) {
+    		if(playerlist[i].suspectName == suspect) {
+    			playerToMove = playerlist[i];
+    		}    		
+    	}
+    	if(roomName == "Hall") {
+    		newRoomRow = 0;
+    		newRoomCol = 2;
+    	}
+    	else if(roomName == "Lounge") {
+    		newRoomRow = 0;
+    		newRoomCol = 4;
+    	}
+    	else if(roomName == "Dining Room") {
+    		newRoomRow = 2;
+    		newRoomCol = 4;
+    	}
+    	else if(roomName == "Kitchen") {
+    		newRoomRow = 4;
+    		newRoomCol = 4;
+    	}
+    	else if(roomName == "Ball Room") {
+    		newRoomRow = 4;
+    		newRoomCol = 2;
+    	}
+    	else if(roomName == "Conservatory") {
+    		newRoomRow = 4;
+    		newRoomCol = 0;
+    	}
+    	else if(roomName == "Billiard Room") {
+    		newRoomRow = 2;
+    		newRoomCol = 2;
+    	}
+    	else if(roomName == "Library") {
+    		newRoomRow = 2;
+    		newRoomCol = 0;
+    	}
+    	else if(roomName == "Study") {
+			newRoomRow = 0;
+    		newRoomCol = 0;
+		}
+		newSpace = board[newRoomRow][newRoomCol];
     }
     
     //creates and sets the starting locations for each player up to 6.
