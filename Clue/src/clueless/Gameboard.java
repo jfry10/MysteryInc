@@ -192,10 +192,11 @@ public class Gameboard{
     public static void suspectMove(Location[][] board, SuspectCard suspectCard, RoomCard roomCard) {
     	String suspect = suspectCard.getName();
     	String roomName = roomCard.getName();
-    	Player playerToMove;
+    	Player playerToMove = null;
     	int newRoomRow = 0;
     	int newRoomCol = 0;
     	Location newSpace;
+    	try {
     	for(int i = 0; i < playerlist.length; i++) {
     		if(playerlist[i].suspectName == suspect) {
     			playerToMove = playerlist[i];
@@ -238,6 +239,14 @@ public class Gameboard{
     		newRoomCol = 0;
 		}
 		newSpace = board[newRoomRow][newRoomCol];
+		board[playerToMove.positionOnBoard.row][playerToMove.positionOnBoard.col].leaveRoom(playerToMove);
+		board[newRoomRow][newRoomCol].enterRoom(playerToMove);
+		playerToMove.positionOnBoard = newSpace;
+		
+		
+    }catch(Exception e){
+    	System.out.println("Issue moving Suspect from Suggestion");
+    	}
     }
     
     //creates and sets the starting locations for each player up to 6.
