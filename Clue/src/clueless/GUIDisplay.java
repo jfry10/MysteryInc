@@ -46,15 +46,15 @@ public class GUIDisplay extends JPanel{
 	{
 		Image image = new ImageIcon(this.getClass().getResource("ImageOfBoard.png")).getImage();
 		g.drawImage(image, 0, 0, this);
-		setLocations();
     
 		if (playerlist != null)
 		{
+			setLocations();
+
 	        // Get Player 1 color
 			if (playerlist[0] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[0]));
-				//g.fillOval(x0, y0, 20, 20);
 				g.fillOval(y0, x0, 20, 20);
 			}
             
@@ -62,7 +62,6 @@ public class GUIDisplay extends JPanel{
 			if (playerlist[1] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[1]));
-				//g.fillOval(x1, y1, 20, 20);
 				g.fillOval(y1, x1, 20, 20);
 			}
             
@@ -70,7 +69,6 @@ public class GUIDisplay extends JPanel{
 			if (playerlist[2] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[2]));
-				//g.fillOval(x2, y2, 20, 20);
 				g.fillOval(y2, x2, 20, 20);
 			}
             
@@ -78,7 +76,6 @@ public class GUIDisplay extends JPanel{
 			if (playerlist[3] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[3]));
-				//g.fillOval(x3, y3, 20, 20);
 				g.fillOval(y3, x3, 20, 20);
 			}
             
@@ -86,7 +83,6 @@ public class GUIDisplay extends JPanel{
 			if (playerlist[4] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[4]));
-				//g.fillOval(x4, y4, 20, 20);
 				g.fillOval(y4, x4, 20, 20);
 			}
             
@@ -94,7 +90,6 @@ public class GUIDisplay extends JPanel{
 			if (playerlist[5] != null)
 			{
 				g.setColor(getPlayersColor(playerlist[5]));
-				//g.fillOval(x5, y5, 20, 20);
 				g.fillOval(y5, x5, 20, 20);
 			}
 		}
@@ -276,48 +271,4 @@ public class GUIDisplay extends JPanel{
         }
     		return x_cord;
     }
-
-//    private static int getXforLocation(int row) //, int index)
-//    {
-//    		int x_cord = 0;
-//
-//        if(row == 0){
-//        		x_cord = 138;
-//        }
-//        else if(row == 1){
-//        		x_cord = 210;
-//        }
-//        else if(row == 2){
-//        		x_cord = 282;
-//        }
-//        else if(row == 3){
-//        		x_cord = 354;
-//        }
-//        else{ //row == 4
-//        		x_cord = 426;
-//        }
-//        return x_cord;
-//    }
-//
-//    public static int getYforLocation(int col) //, int index)
-//    {
-//    		int y_cord = 0;
-//
-//    		if(col == 0){
-//    			y_cord = 116;
-//        }
-//        else if(col == 1){
-//        		y_cord = 188;
-//        }
-//        else if(col == 2){
-//        		y_cord = 260;
-//        }
-//        else if(col == 3){
-//        		y_cord = 332;
-//        }
-//        else{ //col == 4
-//        		y_cord = 404;
-//        }
-//    		return y_cord;
-//    }
 }
