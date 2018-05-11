@@ -15,7 +15,7 @@ public class GameboardTests {
 
 	public void testGameboard() 
 	{
-		boolean print = false; // enable/disable printing
+		boolean print = true; // enable/disable printing
 		
 		// first test, create a list of Players, then create 
 		// gameboard and display it with text

@@ -24,11 +24,11 @@ public class Location{
     }
     
     public int getRow() {
-    	return row;
+    		return row;
     }
     
     public int getCol() {
-    	return col;
+    		return col;
     }
 
     public boolean isOccupied(){
