@@ -15,7 +15,7 @@ public class GameboardTests {
 
 	public void testGameboard() 
 	{
-		boolean print = true; // enable/disable printing
+		boolean print = false; // enable/disable printing
 		
 		// first test, create a list of Players, then create 
 		// gameboard and display it with text
@@ -29,8 +29,11 @@ public class GameboardTests {
 			players[5] = new Player(Constants.PROF_PLUM_STR);
 
 			Location[][] gameBoard = Gameboard.createNewBoard(players);
-			Gameboard.printBoard(gameBoard);
-			Gameboard.printPassages(gameBoard);
+			if (print == true)
+			{
+				Gameboard.printBoard(gameBoard);
+				Gameboard.printPassages(gameBoard);
+			}
 		}
 		
 		// second test, list player movements and make moves
@@ -49,14 +52,17 @@ public class GameboardTests {
 			Location[][] gameBoard = Gameboard.createNewBoard(players);
 			for (int i = 0; i < 6; i++)
 			{
-				moves = Gameboard.listMoves(players[i]);
+				moves = Gameboard.listMoves(gameBoard, players[i]);
 				if (print == true)
 				{
 					System.out.println(players[i].suspectName + " is able to move: " + moves);
 				}
 			}
 			
-			System.out.println("\n----------------------------------------------------------\n");
+			if (print == true)
+			{
+				System.out.println("\n----------------------------------------------------------\n");
+			}
 			Gameboard.moveRight(gameBoard, players[0]); // Move to Lounge
 			Gameboard.moveUp(gameBoard, players[1]); // Move to Lounge
 			Gameboard.moveLeft(gameBoard, players[2]); // Move to Ballroom
@@ -66,7 +72,7 @@ public class GameboardTests {
 			
 			for (int i = 0; i < 6; i++)
 			{
-				moves = Gameboard.listMoves(players[i]);
+				moves = Gameboard.listMoves(gameBoard, players[i]);
 				if (print == true)
 				{
 					System.out.println(players[i].suspectName + " is able to move: " + moves);
@@ -92,7 +98,7 @@ public class GameboardTests {
 
 			for (int i = 0; i < 6; i++)
 			{
-				moves = Gameboard.listMoves(players[i]);
+				moves = Gameboard.listMoves(gameBoard, players[i]);
 				if (print == true)
 				{
 					System.out.println(players[i].suspectName + " is able to move: " + moves);
@@ -106,13 +112,13 @@ public class GameboardTests {
 			}
 
 			// Prof. Plum (should have no moves available)
-			System.out.println("Prof plum move up");
 			Gameboard.moveUp(gameBoard, players[5]);
-			System.out.println("Prof plum move up complete");
 			Gameboard.moveRight(gameBoard, players[5]);
 			Gameboard.moveDown(gameBoard, players[5]);
-			Gameboard.moveLeft(gameBoard, players[5]);
 			Gameboard.takePassage(gameBoard, players[5]);
+			
+			// This will fail as expected, use in a different test case
+			//Gameboard.moveLeft(gameBoard, players[5]);
 		
 		}
 	}

@@ -68,15 +68,15 @@ public class Location{
     }
     
     public String occupiedBy() {
-    	return occupiedBy.toString();
+    		return occupiedBy.toString();
     }
     
     public void enterRoom(Player player) {
-    	occupiedBy.add(player);
+    		occupiedBy.add(player);
     }
     
     public void leaveRoom(Player player) {
-    	occupiedBy.remove(player);
+    		occupiedBy.remove(player);
     }    
 }
 
