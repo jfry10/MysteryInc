@@ -320,8 +320,7 @@ public class GameExecutive
 	}
 
 	void startGame() {
-		
-		
+				
 		initializePlayerInfoObjects();
 		
 		gameBoard = Gameboard.createNewBoard(players.toArray(new Player[players.size()]));
@@ -330,7 +329,28 @@ public class GameExecutive
 		
 		distributeCards();
 		
-		server.sendToTCP(suspectConnectionMap.get(Constants.SUSPECTS[Constants.MISS_SCARLET]), new BeginTurn());
+		Integer[] playerInfoKeys = playerInfoMap.keySet().toArray(new Integer[playerInfoMap.size()]);
+		
+		PlayerInfo firstPlayer = playerInfoMap.get(playerInfoKeys[0]);
+		Location firstPlayerLocation = firstPlayer.player.positionOnBoard;
+    	PlayerTurn playerTurn = new PlayerTurn();
+    	if(firstPlayerLocation.hasUp()) {
+    		playerTurn.up = true;
+    	}
+    	if(firstPlayerLocation.hasDown()) {
+    		playerTurn.down = true;
+    	}
+    	if(firstPlayerLocation.hasLeft()) {
+    		playerTurn.left = true;
+    	}
+    	if(firstPlayerLocation.hasRight()) {
+    		playerTurn.right = true;
+    	}
+    	if(firstPlayerLocation instanceof Room && ((Room) firstPlayerLocation).hasSecretPassage()) {
+    		playerTurn.passage = true;
+    	}
+		
+		server.sendToTCP(playerInfoKeys[0], playerTurn);
 	}
 	
 	// Creates a singly linked list of player info objects that are linked by 
