@@ -7,7 +7,8 @@ import javax.swing.*;
 public class main extends JFrame {
     public main() {
         setTitle("Make Suggestion");
-        setSize(300, 200);
+        setSize(600, 600);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel panel = new box();

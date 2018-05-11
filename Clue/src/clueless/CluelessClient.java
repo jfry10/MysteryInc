@@ -2,6 +2,7 @@ package clueless;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -27,6 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 
@@ -37,6 +39,7 @@ import com.esotericsoftware.minlog.Log;
 
 import clueless.Network.ChatMessage;
 import clueless.Network.DetectiveInfo;
+import clueless.Network.MoveToken;
 import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterName;
 import clueless.Network.UpdateNames;
@@ -79,6 +82,12 @@ public class CluelessClient
 					UpdateNames updateNames = (UpdateNames)object;
 					GameFrame.setNames(updateNames.names);
 					return;
+				}
+				
+				if (object instanceof GUIDisplay)
+				{
+					GUIDisplay gui = (GUIDisplay)object;
+					GameFrame.updateGameboard(gui);
 				}
 				
 				if (object instanceof PlayerTurn)
@@ -176,8 +185,55 @@ public class CluelessClient
 
 		// All the ugly Swing stuff is hidden in GameFrame so it doesn't clutter the KryoNet example code.
 		GameFrame = new GameFrame(ipAddress);
+		
+		// This listener is called when the Up button is clicked.
+		GameFrame.moveUpListener(new Runnable() {
+			public void run () {
+				MoveToken token = new MoveToken();
+				token.direction = Constants.DIR_UP;
+				client.sendTCP(token);
+			}
+		});
+		
+		// This listener is called when the Right button is clicked.
+		GameFrame.moveRightListener(new Runnable() {
+			public void run () {
+				MoveToken token = new MoveToken();
+				token.direction = Constants.DIR_RIGHT;
+				client.sendTCP(token);
+			}
+		});
+		
+		// This listener is called when the Down button is clicked.
+		GameFrame.moveDownListener(new Runnable() {
+			public void run () {
+				MoveToken token = new MoveToken();
+				token.direction = Constants.DIR_DOWN;
+				client.sendTCP(token);
+			}
+		});
+		
+		// This listener is called when the Left button is clicked.
+		GameFrame.moveLeftListener(new Runnable() {
+			public void run () {
+				MoveToken token = new MoveToken();
+				token.direction = Constants.DIR_LEFT;
+				client.sendTCP(token);
+			}
+		});
+		
+		// This listener is called when the Passage button is clicked.
+		GameFrame.takePassageListener(new Runnable() {
+			public void run () {
+				MoveToken token = new MoveToken();
+				token.direction = Constants.DIR_PASSAGE;
+				client.sendTCP(token);
+			}
+		});
+		
+
 		// This listener is called when the send button is clicked.
-		GameFrame.setSendListener(new Runnable() {
+		/*GameFrame.setSendListener(new Runnable() {
 			public void run () {
 				ChatMessage chatMessage = new ChatMessage();
 				chatMessage.text = GameFrame.getSendText();
@@ -189,7 +245,7 @@ public class CluelessClient
 			public void run () {
 				client.stop();
 			}
-		});
+		});*/
 		GameFrame.setVisible(true);
 
 		// We'll do the connect on a new thread so the GameFrame can show a progress bar.
@@ -238,11 +294,19 @@ public class CluelessClient
 
 	static private class GameFrame extends JFrame implements ActionListener
 	{
-		CardLayout cardLayout;
 		Dimension d;
+		GUIDisplay guiDisplay = new GUIDisplay();
 		JProgressBar progressBar;
 		JList messageList;
+		JPanel gameboardPanel;
+		JTextArea detectiveNotes;
+		JTextField serverMessages;
 		JTextField sendText;
+		JButton moveUpButton;
+		JButton moveRightButton;
+		JButton moveDownButton;
+		JButton moveLeftButton;
+		JButton takePassageButton;
 		JButton sendButton;
 		JButton suggestButton;
 		JButton accusButton;
@@ -253,97 +317,223 @@ public class CluelessClient
 		{
 			super("Clueless");
 			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			setSize(640, 1000);
+			setSize(1000, 820);
 			setLocationRelativeTo(null);
 
 			Container contentPane = getContentPane();
-			cardLayout = new CardLayout();
-			contentPane.setLayout(cardLayout);
-			{
-				JPanel panel = new JPanel(new BorderLayout());
-				contentPane.add(panel, "progress");
-				panel.add(new JLabel("Connecting to " + host + "..."));
-				{
-					panel.add(progressBar = new JProgressBar(), BorderLayout.SOUTH);
-					progressBar.setIndeterminate(true);
-				}
-			}
-			{
-				JPanel panel = new JPanel(new BorderLayout());
-				contentPane.add(panel, "chat");
-				{
-					JPanel topPanel = new JPanel(new GridLayout(1, 1));
-					panel.add(topPanel, BorderLayout.EAST);
+			contentPane.setLayout(null); // absolute positioning
+
+			//////Game Board Screen//////
+			contentPane.add(guiDisplay);
+			// The Gameboard in the top left
+			guiDisplay.setBounds(10, 10, 590, 540);
+
+			//////Detective Notes////////
+			JPanel detectiveNotesPanel = new JPanel(new BorderLayout());
+			detectiveNotesPanel.add(new JScrollPane(detectiveNotes = new JTextArea()), BorderLayout.CENTER);
+			detectiveNotes.setText(new Player().getDetectiveNotes().toString());
+			detectiveNotes.setEditable(false);
+			contentPane.add(detectiveNotesPanel);
+			// The Detective Notes in the top right
+			detectiveNotesPanel.setBounds(610, 10, 380, 540);
+
+			//////Game options/Menu//////
+			JPanel optionsPanel = new JPanel(new GridLayout(1,3));
 			
-					{
-						topPanel.add(new JScrollPane(messageList = new JList()));
-						messageList.setModel(new DefaultListModel());
-					}
-					{
-						topPanel.add(new JScrollPane(nameList = new JList()));
-						nameList.setModel(new DefaultListModel());
-						
-					}
-					
-					
-					DefaultListSelectionModel disableSelections = new DefaultListSelectionModel() {
-						public void setSelectionInterval (int index0, int index1) {
-						}
-					};
-					
-					messageList.setSelectionModel(disableSelections);
-					nameList.setSelectionModel(disableSelections);
-					
-				}
-				
-				//////Game Board Screen//////
-				{
-					JPanel leftPanel = new JPanel(new GridLayout(1,1));
-					JLabel label = new JLabel("Game Borad");
-					label.setFont(new Font("TimesRoman", Font.CENTER_BASELINE, 15));
-					panel.add(leftPanel, BorderLayout.WEST);
-					leftPanel.add(label);
-				}
+			// first column is Movement directions
+			{
+				JPanel movementPanel = new JPanel(new BorderLayout());
+				movementPanel.add(moveUpButton = new JButton("Up"), BorderLayout.NORTH);
+				movementPanel.add(moveRightButton = new JButton("Right"), BorderLayout.EAST);
+				movementPanel.add(moveDownButton = new JButton("Down"), BorderLayout.SOUTH);
+				movementPanel.add(moveLeftButton = new JButton("Left"), BorderLayout.WEST);
+				movementPanel.add(takePassageButton = new JButton("Passage"), BorderLayout.CENTER);
+				optionsPanel.add(movementPanel);
 
-				{
-					JPanel bottomPanel = new JPanel(new GridBagLayout());
-					panel.add(bottomPanel, BorderLayout.SOUTH);
-					bottomPanel.add(sendText = new JTextField(), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER,
-						GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-					bottomPanel.add(sendButton = new JButton("Send"), new GridBagConstraints(1, 0, 1, 1, 0, 0,
-						GridBagConstraints.CENTER, 0, new Insets(0, 0, 0, 0), 0, 0));
-				}
-				
-				//////Game options/Menu ///////
-				{
-					JPanel optionPanel = new JPanel (new GridLayout(3,1));
-					panel.add(optionPanel, BorderLayout.NORTH);
-					
-					suggestButton = new JButton("Make Suggestion");
-					suggestButton.setActionCommand("Make Suggestion Please");
-					optionPanel.add(suggestButton);
-					suggestButton.addActionListener(this);
-					
-					accusButton = new JButton("Make Accusation");
-					accusButton.setActionCommand("Make Accusation Please");
-					optionPanel.add(accusButton);
-					
-					restartButton = new JButton("Restart Game");
-					restartButton.setActionCommand("Restart Game");
-					optionPanel.add(restartButton);
-				}
-				
-				
+				// Hide all buttons to start
+				/*moveUpButton.setVisible(false);
+				moveRightButton.setVisible(false);
+				moveDownButton.setVisible(false);
+				moveLeftButton.setVisible(false);
+				takePassageButton.setVisible(false);*/
 			}
 
-			sendText.addActionListener(new ActionListener() {
+			// middle column is the Start / Restart Game button
+			{
+				restartButton = new JButton("Start Game");
+				//restartButton.setActionCommand("Restart Game");
+				optionsPanel.add(restartButton);
+			}
+
+			// third column is Suggestion and Accusation buttons
+			{
+				JPanel sugAccPanel = new JPanel(new BorderLayout());
+				sugAccPanel.add(suggestButton = new JButton("Make Suggestion"), BorderLayout.NORTH);
+				sugAccPanel.add(accusButton = new JButton("Make Accusation"), BorderLayout.SOUTH);
+				optionsPanel.add(sugAccPanel);
+				
+				// Hide all buttons to start
+				/*suggestButton.setVisible(false);
+				accusButton.setVisible(false);*/
+			}
+
+			contentPane.add(optionsPanel);
+			// The Game Options box is in the bottom
+			optionsPanel.setBounds(10, 560, 980, 90);
+			
+			//suggestButton.setActionCommand("Make Suggestion Please");
+			//optionPanel.add(suggestButton);
+			//suggestButton.addActionListener(this);
+			
+			//accusButton.setActionCommand("Make Accusation Please");
+			//optionPanel.add(accusButton);
+			
+			//restartButton = new JButton("Restart Game");
+			//restartButton.setActionCommand("Restart Game");
+			//optionPanel.add(restartButton);
+			// The Buttons / Action grouping is in the center
+
+
+			//////Server Messages////////
+			JPanel serverMessagesPanel = new JPanel(new BorderLayout());
+			JLabel serverMessagesLabel = new JLabel("Game Messages"); 
+			serverMessagesPanel.add(serverMessagesLabel, BorderLayout.NORTH);
+			serverMessagesPanel.add(new JScrollPane(serverMessages = new JTextField()));
+			serverMessages.setText("Welcome to Clueless!\n\n");
+			serverMessages.setEditable(false);
+			contentPane.add(serverMessagesPanel);
+			// The Server message box is in the bottom
+			serverMessagesPanel.setBounds(10, 660, 980, 130);
+			
+			// Hide this for now
+//			{
+//				JPanel panel = new JPanel(new BorderLayout());
+//				contentPane.add(panel, "progress");
+//				panel.add(new JLabel("Connecting to " + host + "..."));
+//				{
+//					panel.add(progressBar = new JProgressBar(), BorderLayout.SOUTH);
+//					progressBar.setIndeterminate(true);
+//				}
+//			}
+//			{
+//				JPanel panel = new JPanel(new BorderLayout());
+//				contentPane.add(panel, "chat");
+//				{
+//					JPanel topPanel = new JPanel(new GridLayout(1, 1));
+//					panel.add(topPanel, BorderLayout.EAST);
+//			
+//					{
+//						topPanel.add(new JScrollPane(messageList = new JList()));
+//						messageList.setModel(new DefaultListModel());
+//					}
+//					{
+//						topPanel.add(new JScrollPane(nameList = new JList()));
+//						nameList.setModel(new DefaultListModel());
+//						
+//					}
+//					
+//					
+//					DefaultListSelectionModel disableSelections = new DefaultListSelectionModel() {
+//						public void setSelectionInterval (int index0, int index1) {
+//						}
+//					};
+//					
+//					messageList.setSelectionModel(disableSelections);
+//					nameList.setSelectionModel(disableSelections);
+//					
+//				}
+				
+//				//////Game Board Screen//////
+//				{
+//					JPanel leftPanel = new JPanel(new GridLayout(1,1));
+//					JLabel label = new JLabel("Game Board");
+//					label.setFont(new Font("TimesRoman", Font.CENTER_BASELINE, 15));
+//					panel.add(leftPanel, BorderLayout.WEST);
+//					leftPanel.add(label);
+//				}
+
+//				{
+//					JPanel bottomPanel = new JPanel(new GridBagLayout());
+//					panel.add(bottomPanel, BorderLayout.SOUTH);
+//					bottomPanel.add(sendText = new JTextField(), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER,
+//						GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+//					bottomPanel.add(sendButton = new JButton("Send"), new GridBagConstraints(1, 0, 1, 1, 0, 0,
+//						GridBagConstraints.CENTER, 0, new Insets(0, 0, 0, 0), 0, 0));
+//				}
+				
+//				//////Game options/Menu ///////
+//				{
+//					JPanel optionPanel = new JPanel (new GridLayout(3,1));
+//					panel.add(optionPanel, BorderLayout.NORTH);
+//					
+//					suggestButton = new JButton("Make Suggestion");
+//					suggestButton.setActionCommand("Make Suggestion Please");
+//					optionPanel.add(suggestButton);
+//					suggestButton.addActionListener(this);
+//					
+//					accusButton = new JButton("Make Accusation");
+//					accusButton.setActionCommand("Make Accusation Please");
+//					optionPanel.add(accusButton);
+//					
+//					restartButton = new JButton("Restart Game");
+//					restartButton.setActionCommand("Restart Game");
+//					optionPanel.add(restartButton);
+//				}
+
+
+			/*sendText.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent e) {
 					sendButton.doClick();
+				}
+			});*/
+		}
+
+		public void updateGameboard(GUIDisplay gui) {
+			gameboardPanel.removeAll();
+			gameboardPanel.add(gui);
+		}
+
+		public void moveUpListener (final Runnable listener) {
+			moveUpButton.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent evt) {
+					listener.run(); // call so we can send the move token
+				}
+			});
+		}
+		
+		public void moveRightListener (final Runnable listener) {
+			moveRightButton.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent evt) {
+					listener.run(); // call so we can send the move token
+				}
+			});
+		}
+		
+		public void moveDownListener (final Runnable listener) {
+			moveDownButton.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent evt) {
+					listener.run(); // call so we can send the move token
+				}
+			});
+		}
+		
+		public void moveLeftListener (final Runnable listener) {
+			moveLeftButton.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent evt) {
+					listener.run(); // call so we can send the move token
+				}
+			});
+		}
+		
+		public void takePassageListener (final Runnable listener) {
+			takePassageButton.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent evt) {
+					listener.run(); // call so we can send the move token
 				}
 			});
 		}
 
-		public void setSendListener (final Runnable listener) {
+		/*public void setSendListener (final Runnable listener) {
 			sendButton.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent evt) {
 					if (getSendText().length() == 0) return;
@@ -352,9 +542,9 @@ public class CluelessClient
 					sendText.requestFocus();
 				}
 			});
-		}
+		}*/
 
-		public void setCloseListener (final Runnable listener) {
+		/*public void setCloseListener (final Runnable listener) {
 			addWindowListener(new WindowAdapter() {
 				public void windowClosed (WindowEvent evt) {
 					listener.run();
@@ -364,18 +554,18 @@ public class CluelessClient
 					sendText.requestFocus();
 				}
 			});
-		}
+		}*/
 
-		public String getSendText () {
+		/*public String getSendText () {
 			return sendText.getText().trim();
-		}
+		}*/
 
 		public void setNames (final String[] names) {
 			// This listener is run on the client's update thread, which was started by client.start().
 			// We must be careful to only interact with Swing components on the Swing event thread.
 			EventQueue.invokeLater(new Runnable() {
 				public void run () {
-					cardLayout.show(getContentPane(), "chat");
+					//cardLayout.show(getContentPane(), "chat");
 					DefaultListModel model = (DefaultListModel)nameList.getModel();
 					model.removeAllElements();
 					for (String name : names)

@@ -74,19 +74,20 @@ public class DetectiveNotes
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		String separator = "-----------------";
+		String separator = "-----------------------------";
 		
 		sb.append("DETECTIVE NOTES");
 		sb.append("\n\n");
-		sb.append("Suspects");
+		sb.append("SUSPECTS");
 		sb.append("\n");
 		sb.append(separator);
 		sb.append("\n");
 		for(int i=0; i<6; i++) {
 			sb.append(Constants.SUSPECTS[i]);
-			for(int j=14-Constants.SUSPECTS[i].length(); j>0; j--) {
-				sb.append(" ");
-			}
+			//for(int j=14-Constants.SUSPECTS[i].length(); j>0; j--) {
+			//	sb.append(" ");
+			//}
+			sb.append("\t\t");
 			sb.append("|");
 			sb.append(suspects[i] ? "X" : " ");
 			sb.append("|\n");
@@ -94,15 +95,16 @@ public class DetectiveNotes
 			sb.append("\n");
 		}
 		sb.append("\n");
-		sb.append("Weapons");
+		sb.append("WEAPONS");
 		sb.append("\n");
 		sb.append(separator);
 		sb.append("\n");
 		for(int i=0; i<6; i++) {
 			sb.append(Constants.WEAPONS[i]);
-			for(int j=14-Constants.WEAPONS[i].length(); j>0; j--) {
-				sb.append(" ");
-			}
+			//for(int j=14-Constants.WEAPONS[i].length(); j>0; j--) {
+			//	sb.append(" ");
+			//}
+			sb.append("\t\t");
 			sb.append("|");
 			sb.append(weapons[i] ? "X" : " ");
 			sb.append("|\n");
@@ -110,15 +112,16 @@ public class DetectiveNotes
 			sb.append("\n");
 		}
 		sb.append("\n");
-		sb.append("Rooms");
+		sb.append("ROOMS");
 		sb.append("\n");
 		sb.append(separator);
 		sb.append("\n");
 		for(int i=0; i<9; i++) {
 			sb.append(Constants.ROOMS[i]);
-			for(int j=14-Constants.ROOMS[i].length(); j>0; j--) {
-				sb.append(" ");
-			}
+			//for(int j=14-Constants.ROOMS[i].length(); j>0; j--) {
+			//	sb.append(" ");
+			//}
+			sb.append("\t\t");
 			sb.append("|");
 			sb.append(rooms[i] ? "X" : " ");
 			sb.append("|\n");
