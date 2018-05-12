@@ -30,11 +30,7 @@ public class AccusationBox extends JPanel implements ActionListener {
         candlestickButton = new JRadioButton("Candlestick");
         leadPipeButton = new JRadioButton("Lead Pipe");
         wrenchButton = new JRadioButton("Wrench");
-        
-        String weapon;;
-        Card room = null;
-        Card person = null;
-
+       
         ButtonGroup weaponsGroup = new ButtonGroup();
         weaponsGroup.add(knifeButton);
         weaponsGroup.add(revolverButton);
@@ -212,7 +208,7 @@ public class AccusationBox extends JPanel implements ActionListener {
         			 }	 
         		 }
         		 
-        		 for(Enumeration<AbstractButton> buttons= roomsGroup.getElements(); buttons.hasMoreElements();)  
+        		 for(Enumeration<AbstractButton> buttons= personGroup.getElements(); buttons.hasMoreElements();)  
         		 {
         			 Object rbutton = buttons.nextElement();
         			 
@@ -235,11 +231,7 @@ public class AccusationBox extends JPanel implements ActionListener {
         				Accusation acc = new Accusation(rc, wc, sc);
         				client.sendTCP(acc);
         			}
-        		 
-        		 
-        		 
-        		 
-        		 
+        			
         		/*ButtonModel wbutton = weaponsGroup.getSelection();	
         		weaponsGroup.getElements().getActionCommand();
         		 System.out.println(wbutton);*/
