@@ -239,7 +239,18 @@ public class GameExecutive
 
 				if (object instanceof BeginGame)
 				{
-	        		startGame();
+					int playerCounter = 0;
+					for(String suspect : suspectConnectionMap.keySet()) {
+						if(suspectConnectionMap.get(suspect) != null) {
+							playerCounter++;
+						}
+					}
+					
+					if(playerCounter > 2) {
+						startGame();
+					} else {
+						server.sendToTCP(playerID, new ChatMessage("Not enough players to start game. You need " + (3 - playerCounter) + " more player(s)."));
+					}
 	        	}
 
 				if (object instanceof EndTurn) {
