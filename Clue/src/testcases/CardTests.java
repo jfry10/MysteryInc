@@ -16,10 +16,11 @@ public class CardTests {
 	
 	public void testCardDeck()
 	{
-		boolean print = false; // enable/disable printing
+		boolean print = true; // enable/disable printing
 
 		// first run, draw Random Cards by Type
 		{
+			Constants c = new Constants(); // initialize, but don't use. Just for code coverage
 			//System.out.println("Card Test 1:");
 			CardDeck cd = new CardDeck();
 			assertEquals(0, Constants.WEAPON_CARD);
@@ -147,6 +148,31 @@ public class CardTests {
 				count++;
 			}
 			assertEquals(count, 21); // there are 21 cards
+			cd.randomizeRemaining(); // should do nothing
+		}
+		
+		// test the Card class
+		{
+			Card c1 = new RoomCard();
+			Card c2 = new SuspectCard();
+			Card c3 = new WeaponCard();
+			Card c4 = c1;
+			c1.setName("test");
+			c2.setName("test");
+			c3.setName("test");
+			assertEquals("test", c1.toString());
+			assertEquals("test", c2.toString());
+			assertEquals("test", c3.toString());
+			int result = c1.compareTo(c2);
+			assertEquals(1, result);
+			result = c1.compareTo(c3);
+			assertEquals(1, result);
+			result = c2.compareTo(c3);
+			assertEquals(1, result);
+			result = c3.compareTo(c4);
+			assertEquals(-1, result);
+			result = c1.compareTo(c4);
+			assertEquals(0, result);
 		}
 	}
 

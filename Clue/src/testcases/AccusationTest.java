@@ -21,7 +21,7 @@ public class AccusationTest
 	
 	public void testAccusation()
 	{
-		boolean print = false; // enable/disable printing
+		boolean print = true; // enable/disable printing
 		
 		// first test, draw three random cards from CardDeck and add
 		// them to the CaseFile. Create an accusation object and draw 
