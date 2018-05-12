@@ -19,7 +19,7 @@ public class PlayerTests
 	
 	public void testPlayer()
 	{
-		boolean print = false; // enable/disable printing
+		boolean print = true; // enable/disable printing
 		
 		// first test, general Player set/get function
 		{

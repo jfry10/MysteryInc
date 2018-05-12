@@ -68,10 +68,11 @@ public class CardDeck
 	
 	public Card drawCard()
 	{
-		if(cardDeck == null || cardDeck.size() == 0) {
+		if(cardDeck.size() == 0) {
 			return null;
 		}
-		
+		randomizeRemaining(); // randomize before drawing
+
 		return cardDeck.remove(0);
 		
 	}
@@ -82,7 +83,7 @@ public class CardDeck
 	
 	private void randomizeList(ArrayList<Card> cards)
 	{
-		if(cards == null || cards.size() == 0) {
+		if(cards.size() == 0) {
 			return;
 		}
 	

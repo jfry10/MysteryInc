@@ -21,7 +21,7 @@ public class SuggestionTest {
 	
 	public void testSuggestion()
 	{
-		boolean print = false; // enable/disable printing
+		boolean print = true; // enable/disable printing
 		
 		// first test, draw three random cards from CardDeck and add
 		// them to the PlayerHand. Create a suggestion object and draw 

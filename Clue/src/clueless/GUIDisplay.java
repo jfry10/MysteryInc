@@ -136,23 +136,23 @@ public class GUIDisplay extends JPanel{
 	    	Player[] players = {player1, player2, player3,player4,player5,player6};
 	    	Location[][] gameboard = Gameboard.createNewBoard(players);
 	    /*Gameboard.moveDown(gameboard, players[5]);
-	    	Gameboard.moveUp(gameboard, players[4]);
+	    Gameboard.moveUp(gameboard, players[4]);
 	    	Gameboard.moveLeft(gameboard, players[3]);
 	    	Gameboard.moveUp(gameboard, players[3]);
-	    	Gameboard.moveUp(gameboard, players[3]);
+	    Gameboard.moveUp(gameboard, players[3]);
 	    	Gameboard.moveLeft(gameboard, players[2]);
 	    	Gameboard.moveLeft(gameboard, players[2]);
 	    	Gameboard.moveLeft(gameboard, players[2]);
-	    	Gameboard.moveUp(gameboard, players[2]);
-	    	Gameboard.moveUp(gameboard, players[2]);
+	    Gameboard.moveUp(gameboard, players[2]);
+	    Gameboard.moveUp(gameboard, players[2]);
 	    	Gameboard.moveUp(gameboard, players[1]);
 	    	Gameboard.takePassage(gameboard, players[1]);
 	    	Gameboard.moveUp(gameboard, players[1]);
-	    	Gameboard.moveUp(gameboard, players[1]);
+	    Gameboard.moveUp(gameboard, players[1]);
 	    	Gameboard.moveRight(gameboard, players[0]);
 	    	Gameboard.takePassage(gameboard, players[0]);
-	    	Gameboard.moveUp(gameboard, players[0]);
-	    	Gameboard.moveUp(gameboard, players[0]);*/
+	    Gameboard.moveUp(gameboard, players[0]);
+	    Gameboard.moveUp(gameboard, players[0]);*/
 
         JFrame frame= new JFrame("GameboardGUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
