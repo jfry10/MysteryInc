@@ -33,14 +33,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.KryoSerialization;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
 import clueless.Network.ChatMessage;
 import clueless.Network.DetectiveInfo;
+import clueless.Network.DisplayGUI;
 import clueless.Network.MoveToken;
 import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterName;
@@ -66,7 +68,11 @@ public class CluelessClient
 
 	public CluelessClient (String ipAddress)
 	{
-		client = new Client();
+		Kryo kryo = new Kryo();
+		kryo.setReferences(true);
+		KryoSerialization serialization = new KryoSerialization(kryo);
+		
+		client = new Client(16384, 2048, serialization);
 		client.start();
 
 		// For consistency, the classes to be sent over the network are
@@ -91,9 +97,10 @@ public class CluelessClient
 					return;
 				}
 				
-				if (object instanceof GUIDisplay)
+				if (object instanceof DisplayGUI)
 				{
-					GUIDisplay gui = (GUIDisplay)object;
+					Player[] players = ((DisplayGUI)object).players;
+					GUIDisplay gui = new GUIDisplay(players);
 					GameFrame.updateGameboard(gui);
 				}
 				
@@ -246,6 +253,21 @@ public class CluelessClient
 			}
 		});
 		
+		///Accusation Listener
+				GameFrame.accusationListener(new Runnable() {
+					public void run () {
+						JFrame frame = new AccusationGui(client);
+						frame.setVisible(true);
+					}
+				});
+				
+				//Suggestion Listener
+				GameFrame.suggestionListener(new Runnable() {
+					public void run () {
+						JFrame frame = new main(client);
+				        frame.setVisible(true);	
+					}
+				});
 		// This listener is called when the Start Game button is clicked
 		GameFrame.startGameListener(new Runnable() {
 			
@@ -254,7 +276,6 @@ public class CluelessClient
 				client.sendTCP(new BeginGame());
 			}
 		});
-		
 
 		// This listener is called when the send button is clicked.
 		/*GameFrame.setSendListener(new Runnable() {
@@ -277,7 +298,7 @@ public class CluelessClient
 		new Thread("Connect") {
 			public void run () {
 				try {
-					client.connect(5000, ipAddress, Network.port);
+					client.connect(10000, ipAddress, Network.port);
 					// Server communication after connection can go here, or in Listener#connected().
 				} catch (IOException ex) {
 					ex.printStackTrace();
@@ -287,7 +308,7 @@ public class CluelessClient
 		}.start();
 		
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			System.out.println("woke up!");
 			e.printStackTrace();
@@ -616,6 +637,23 @@ public class CluelessClient
 			});
 		}
 		
+		///Accusation linstener
+				public void accusationListener (final Runnable listener) {
+					accusButton.addActionListener(new ActionListener() {
+						public void actionPerformed (ActionEvent evt) {
+							listener.run(); // call so we can send the move token
+						}
+					});
+				}
+				
+				//Suggestion
+				public void suggestionListener (final Runnable listener) {
+					accusButton.addActionListener(new ActionListener() {
+						public void actionPerformed (ActionEvent evt) {
+							listener.run(); // call so we can send the move token
+						}
+					});
+				}
 		public void startGameListener (final Runnable listener) {
 			restartButton.addActionListener(new ActionListener() {
 				@Override
@@ -624,6 +662,7 @@ public class CluelessClient
 				}
 			});
 		}
+
 
 		/*public void setSendListener (final Runnable listener) {
 			sendButton.addActionListener(new ActionListener() {
