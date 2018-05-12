@@ -2,7 +2,9 @@ package clueless;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -11,7 +13,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.KryoSerialization;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
@@ -33,6 +37,7 @@ import clueless.Network.SuggestionDisprove;
 import clueless.Network.SuggestionAsk;
 import clueless.Network.SuspectResponse;
 import clueless.Network.EndSuggestion;
+import clueless.Network.DisplayGUI;
 
 public class GameExecutive
 {
@@ -58,8 +63,13 @@ public class GameExecutive
 	public GameExecutive() throws IOException {
 
 		initSuspectConnectionMap();
+		
+		Kryo kryo = new Kryo();
+		kryo.setReferences(true);
+		KryoSerialization serialization = new KryoSerialization(kryo);
 
-		server = new Server() {
+		server = new Server(13684, 2048, serialization) {
+			
 			protected Connection newConnection ()
 			{
 				// By providing our own connection implementation, we can store per
@@ -68,6 +78,7 @@ public class GameExecutive
 			}
 		};
 
+		
 		// For consistency, the classes to be sent over the network are
 		// registered by the same method for both the client and server.
 		Network.register(server);
@@ -358,7 +369,22 @@ public class GameExecutive
 		
 		gameBoard = Gameboard.createNewBoard(players.toArray(new Player[players.size()]));
 		
-		server.sendToAllTCP(generateGUIDisplayObject());
+		//server.sendToAllTCP(generateGUIDisplayObject());
+		/*
+		GUIDisplay guiDisplay = generateGUIDisplayObject();
+		
+		for(Integer connId : playerInfoMap.keySet()) {
+			try {
+				server.sendToTCP(connId, guiDisplay);
+			} catch (Exception e) {
+				
+				e.printStackTrace();
+			}
+		}
+		*/
+		
+		Player[] playerArray = getPlayerArrayForGUIDisplay();
+		server.sendToAllTCP(new DisplayGUI(playerArray));
 		
 		forfeitPlayerList = new ArrayList<Integer>();
 		
@@ -451,34 +477,64 @@ public class GameExecutive
 	}
 	
 	GUIDisplay generateGUIDisplayObject() {
-		ArrayList<Player> playerList = new ArrayList<Player>();
 		
-		Player[] players = new Player[6];
+		Player[] playerArray = new Player[6];
 		
-		for(PlayerInfo playerInfo : playerInfoMap.values()) {
-			switch(playerInfo.player.suspectName) {
+		for(Player player : players) {
+			switch(player.suspectName) {
 			case Constants.MISS_SCARLET_STR:
-				players[Constants.MISS_SCARLET] = playerInfo.player;
+				playerArray[Constants.MISS_SCARLET] = player;
 				break;
 			case Constants.COL_MUSTARD_STR:
-				players[Constants.COL_MUSTARD] = playerInfo.player;
+				playerArray[Constants.COL_MUSTARD] = player;
 				break;
 			case Constants.MRS_WHITE_STR:
-				players[Constants.MRS_WHITE] = playerInfo.player;
+				playerArray[Constants.MRS_WHITE] = player;
 				break;
 			case Constants.MR_GREEN_STR:
-				players[Constants.MR_GREEN] = playerInfo.player;
+				playerArray[Constants.MR_GREEN] = player;
 				break;
 			case Constants.MRS_PEACOCK_STR:
-				players[Constants.MRS_PEACOCK] = playerInfo.player;
+				playerArray[Constants.MRS_PEACOCK] = player;
 				break;
 			case Constants.PROF_PLUM_STR:
-				players[Constants.PROF_PLUM] = playerInfo.player;
+				playerArray[Constants.PROF_PLUM] = player;
 				break;
 			}
 		}
 		
-		return new GUIDisplay(players);
+		GUIDisplay guiDisplay = new GUIDisplay(playerArray);
+		
+		return guiDisplay;
+	}
+	
+	Player[] getPlayerArrayForGUIDisplay() {
+		Player[] playerArray = new Player[6];
+		
+		for(Player player : players) {
+			switch(player.suspectName) {
+			case Constants.MISS_SCARLET_STR:
+				playerArray[Constants.MISS_SCARLET] = player;
+				break;
+			case Constants.COL_MUSTARD_STR:
+				playerArray[Constants.COL_MUSTARD] = player;
+				break;
+			case Constants.MRS_WHITE_STR:
+				playerArray[Constants.MRS_WHITE] = player;
+				break;
+			case Constants.MR_GREEN_STR:
+				playerArray[Constants.MR_GREEN] = player;
+				break;
+			case Constants.MRS_PEACOCK_STR:
+				playerArray[Constants.MRS_PEACOCK] = player;
+				break;
+			case Constants.PROF_PLUM_STR:
+				playerArray[Constants.PROF_PLUM] = player;
+				break;
+			}
+		}
+		
+		return playerArray;
 	}
 	
 	String[] getAvailableSuspects() {

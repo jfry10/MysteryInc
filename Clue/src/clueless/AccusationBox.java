@@ -5,28 +5,35 @@ import javax.swing.border.Border;
 
 import com.esotericsoftware.kryonet.Client;
 
+import javafx.scene.control.Labeled;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleButton;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Enumeration;
 
-public class box extends JPanel implements ActionListener {
+public class AccusationBox extends JPanel implements ActionListener {
     private JRadioButton knifeButton, revolverButton, ropeButton, candlestickButton, leadPipeButton, wrenchButton;
     private JRadioButton studyButton, hallButton, diningButton, loungeButton, libraryButton, billiardButton, conservButton, kitchenButton, ballroomButton;
     private JRadioButton scarletButton, mustardButton, whiteButton, greenButton, peacockButton, plumButton;
-    Client client;
+    private Client client;
     protected JButton submit;
-
-    public box(Client c) {
-    		client = c;
+    
+    public AccusationBox(Client c) {
+    		client  = c;
         knifeButton = new JRadioButton("Knife");
         revolverButton = new JRadioButton("Revolver");
         ropeButton = new JRadioButton("Rope");
         candlestickButton = new JRadioButton("Candlestick");
         leadPipeButton = new JRadioButton("Lead Pipe");
         wrenchButton = new JRadioButton("Wrench");
-
+        
+        String weapon;;
+        Card room = null;
+        Card person = null;
 
         ButtonGroup weaponsGroup = new ButtonGroup();
         weaponsGroup.add(knifeButton);
@@ -166,7 +173,7 @@ public class box extends JPanel implements ActionListener {
         submit.setVerticalTextPosition(AbstractButton.CENTER);
         submit.setHorizontalTextPosition(AbstractButton.LEADING);
         submit.setMnemonic(KeyEvent.VK_D);
-        submit.addActionListener(this);
+        /*submit.addActionListener(this);*/
 
         this.setLayout(new GridLayout(4,1));
         this.add(buttonPannel);
@@ -174,75 +181,91 @@ public class box extends JPanel implements ActionListener {
         this.add(personPanel);
         this.add(submit);
         
-        //*GameFrame.setSendListener(new Runnable()){
-        //public void run () {
-         //   submit submitButton = new submit();
-           // submitButton.suggestion = GameFrame.getSendSuggestion();
-           // client.sendTCP(submitButton);
-
-        // GameFrame.setCloseListener(new Runnable (){
-        //  public void run(){
-            //  client.stop();
-/////submit listener////////
-    submit.addActionListener (new ActionListener() {
-    	public void actionPerformed(ActionEvent e) {
-    		String r;
-    		String w;
-    		String s;
-    		WeaponCard wc = new WeaponCard();
-    		RoomCard rc = new RoomCard();
-    		 SuspectCard sc = new SuspectCard();
-    		
-    		 for(Enumeration<AbstractButton> buttons= weaponsGroup.getElements(); buttons.hasMoreElements();)  
-    		 {
-    			 Object wbutton = buttons.nextElement();
-    			 
-    			 if(((AbstractButton) wbutton).isSelected())
-    			 {
-    				 w = ((AbstractButton) wbutton).getText();
-    				 wc.setName(w);	 
-    			 }	 
-    		 }
-    		 
-    		 for(Enumeration<AbstractButton> buttons= roomsGroup.getElements(); buttons.hasMoreElements();)  
-    		 {
-    			 Object rbutton = buttons.nextElement();
-    			 
-    			 if(((AbstractButton) rbutton).isSelected())
-    			 {
-    				 r = ((AbstractButton) rbutton).getText();
-    				 rc.setName(r);	 
-    			 }	 
-    		 }
-    		 
-    		 for(Enumeration<AbstractButton> buttons= roomsGroup.getElements(); buttons.hasMoreElements();)  
-    		 {
-    			 Object rbutton = buttons.nextElement();
-    			 
-    			 if(((AbstractButton) rbutton).isSelected())
-    			 {
-    				 s = ((AbstractButton) rbutton).getText();
-    				 sc.setName(s);	 
-    			 }	 
-    		 }
-    		
-    		 /////calling suggestion method
-    		 Suggestion sug = new Suggestion(rc, wc, sc);
-    			client.sendTCP(sug);
-    		/*ButtonModel wbutton = weaponsGroup.getSelection();	
-    		weaponsGroup.getElements().getActionCommand();
-    		 System.out.println(wbutton);*/
-    	}
-    	
-    	
-    });
+        submit.addActionListener (new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		String r;
+        		String w;
+        		String s;
+        		WeaponCard wc = new WeaponCard();
+        		RoomCard rc = new RoomCard();
+        		 SuspectCard sc = new SuspectCard();
+        		
+        		 for(Enumeration<AbstractButton> buttons= weaponsGroup.getElements(); buttons.hasMoreElements();)  
+        		 {
+        			 Object wbutton = buttons.nextElement();
+        			 
+        			 if(((AbstractButton) wbutton).isSelected())
+        			 {
+        				 w = ((AbstractButton) wbutton).getText();
+        				 wc.setName(w);	 
+        			 }	 
+        		 }
+        		 
+        		 for(Enumeration<AbstractButton> buttons= roomsGroup.getElements(); buttons.hasMoreElements();)  
+        		 {
+        			 Object rbutton = buttons.nextElement();
+        			 
+        			 if(((AbstractButton) rbutton).isSelected())
+        			 {
+        				 r = ((AbstractButton) rbutton).getText();
+        				 rc.setName(r);	 
+        			 }	 
+        		 }
+        		 
+        		 for(Enumeration<AbstractButton> buttons= roomsGroup.getElements(); buttons.hasMoreElements();)  
+        		 {
+        			 Object rbutton = buttons.nextElement();
+        			 
+        			 if(((AbstractButton) rbutton).isSelected())
+        			 {
+        				 s = ((AbstractButton) rbutton).getText();
+        				 sc.setName(s);	 
+        			 }	 
+        		 }
+        		
+        		 /////
+        		 int dialogButton = JOptionPane.YES_NO_OPTION;
+        			int dialogResult = JOptionPane.showConfirmDialog(
+        					null, 
+        					"You only get one accusation! If you are incorrect, you forfeit the rest of your turns. Are you sure you want to submit?", 
+        					"Making Accusation", 
+        					dialogButton);
+        			if(dialogResult == JOptionPane.YES_OPTION)
+        			{ 
+        				Accusation acc = new Accusation(rc, wc, sc);
+        				client.sendTCP(acc);
+        			}
+        		 
+        		 
+        		 
+        		 
+        		 
+        		/*ButtonModel wbutton = weaponsGroup.getSelection();	
+        		weaponsGroup.getElements().getActionCommand();
+        		 System.out.println(wbutton);*/
+        	}
+        	
+        	
+        });
+        
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		 System.out.println(e);
+		
+	}
+	
+	public void getWeapon()
+	{
+		boolean isWeapon = false;
+		int i = 0;
+		while (isWeapon == false)
+		{
+			
+		}
+		
+	}
 
-    }
 }
-
-
-
