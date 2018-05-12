@@ -189,7 +189,7 @@ public class GameExecutive
 						
 						// you get added to THE LIST
 						forfeitPlayerList.add(playerID);
-						
+
 						// next player is up
 						prodNextPlayer(currentPlayer);
 					}

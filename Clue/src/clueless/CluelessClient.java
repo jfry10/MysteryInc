@@ -104,7 +104,7 @@ public class CluelessClient
 					GUIDisplay gui = new GUIDisplay(players);
 					GameFrame.updateGameboard(gui);
 				}
-				
+
 				if (object instanceof PlayerTurn)
 				{
 					PlayerTurn pt = (PlayerTurn)object;
