@@ -23,13 +23,14 @@ import clueless.Network.BeginGame;
 import clueless.Network.BeginTurn;
 import clueless.Network.DealCard;
 import clueless.Network.EndTurn;
+import clueless.Network.GetSuspects;
+import clueless.Network.SetSuspect;
 import clueless.Network.MoveToken;
 import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterRequest;
 import clueless.Network.RegisterResponse;
 import clueless.Network.SuggestionDisprove;
 import clueless.Network.SuggestionAsk;
-import clueless.Network.SuspectRequest;
 import clueless.Network.SuspectResponse;
 import clueless.Network.EndSuggestion;
 
@@ -206,7 +207,20 @@ public class GameExecutive
 	        		regResponse.suspectNames = getAvailableSuspects();
 	        		server.sendToTCP(conn.getID(), regResponse);
 	        	}
+                
+                if(object instanceof GetSuspects) {
+                	SuspectResponse response = new SuspectResponse();
+                	response.suspectNames = getAvailableSuspects();
+                	server.sendToTCP(conn.getID(), response);
+                }
+                
+                if(object instanceof SetSuspect) {
+                	String suspectName = ((SetSuspect) object).selectedSuspect;
+                	suspectConnectionMap.put(suspectName, playerID);
+                	server.sendToTCP(playerID, new ChatMessage("You are now " + suspectName + "!"));
+                }
 
+                /*
 				if (object instanceof SuspectRequest)
 				{
 	        		String requestedSuspect = ((SuspectRequest)object).requestedSuspect;
@@ -221,10 +235,22 @@ public class GameExecutive
 	        		}
 	        		server.sendToTCP(conn.getID(), response);
 	        	}
+	        	*/
 
 				if (object instanceof BeginGame)
 				{
-	        		startGame();
+					int playerCounter = 0;
+					for(String suspect : suspectConnectionMap.keySet()) {
+						if(suspectConnectionMap.get(suspect) != null) {
+							playerCounter++;
+						}
+					}
+					
+					if(playerCounter > 2) {
+						startGame();
+					} else {
+						server.sendToTCP(playerID, new ChatMessage("Not enough players to start game. You need " + (3 - playerCounter) + " more player(s)."));
+					}
 	        	}
 
 				if (object instanceof EndTurn) {
@@ -325,6 +351,8 @@ public class GameExecutive
 		
 		gameBoard = Gameboard.createNewBoard(players.toArray(new Player[players.size()]));
 		
+		server.sendToAllTCP(generateGUIDisplayObject());
+		
 		forfeitPlayerList = new ArrayList<Integer>();
 		
 		distributeCards();
@@ -413,6 +441,37 @@ public class GameExecutive
 			currentPlayer = currentPlayer.playerToLeft;
 		}
 	
+	}
+	
+	GUIDisplay generateGUIDisplayObject() {
+		ArrayList<Player> playerList = new ArrayList<Player>();
+		
+		Player[] players = new Player[6];
+		
+		for(PlayerInfo playerInfo : playerInfoMap.values()) {
+			switch(playerInfo.player.suspectName) {
+			case Constants.MISS_SCARLET_STR:
+				players[Constants.MISS_SCARLET] = playerInfo.player;
+				break;
+			case Constants.COL_MUSTARD_STR:
+				players[Constants.COL_MUSTARD] = playerInfo.player;
+				break;
+			case Constants.MRS_WHITE_STR:
+				players[Constants.MRS_WHITE] = playerInfo.player;
+				break;
+			case Constants.MR_GREEN_STR:
+				players[Constants.MR_GREEN] = playerInfo.player;
+				break;
+			case Constants.MRS_PEACOCK_STR:
+				players[Constants.MRS_PEACOCK] = playerInfo.player;
+				break;
+			case Constants.PROF_PLUM_STR:
+				players[Constants.PROF_PLUM] = playerInfo.player;
+				break;
+			}
+		}
+		
+		return new GUIDisplay(players);
 	}
 	
 	String[] getAvailableSuspects() {

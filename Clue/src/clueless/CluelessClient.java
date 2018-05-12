@@ -18,6 +18,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -27,6 +28,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -42,8 +44,13 @@ import clueless.Network.DetectiveInfo;
 import clueless.Network.MoveToken;
 import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterName;
+import clueless.Network.SuspectResponse;
 import clueless.Network.UpdateNames;
 import clueless.Network.ValidMove;
+import clueless.Network.BeginGame;
+import clueless.Network.GetSuspects;
+import clueless.Network.SetSuspect;
+
 
 public class CluelessClient
 {
@@ -165,6 +172,11 @@ public class CluelessClient
                 		}
                 		return;
                 }
+                
+                if(object instanceof SuspectResponse) {
+                		String[] availableSuspectNames = ((SuspectResponse)object).suspectNames;
+                		selectSuspectName(availableSuspectNames);
+                }
 			}
 
 			public void disconnected (Connection connection) {
@@ -182,6 +194,9 @@ public class CluelessClient
 			null, "Player1");
 		if (input == null || input.trim().length() == 0) System.exit(1);
 		name = input.trim();
+		
+		
+		
 
 		// All the ugly Swing stuff is hidden in GameFrame so it doesn't clutter the KryoNet example code.
 		GameFrame = new GameFrame(ipAddress);
@@ -246,6 +261,14 @@ public class CluelessClient
 				        frame.setVisible(true);	
 					}
 				});
+		// This listener is called when the Start Game button is clicked
+		GameFrame.startGameListener(new Runnable() {
+			
+			@Override
+			public void run() {
+				client.sendTCP(new BeginGame());
+			}
+		});
 
 		// This listener is called when the send button is clicked.
 		/*GameFrame.setSendListener(new Runnable() {
@@ -276,6 +299,65 @@ public class CluelessClient
 				}
 			}
 		}.start();
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			System.out.println("woke up!");
+			e.printStackTrace();
+		}
+		
+		client.sendTCP(new GetSuspects());
+	}
+	
+	void selectSuspectName(String[] suspectNames) {
+
+		JFrame suspectJFrame = new JFrame();
+		
+		JRadioButton[] suspectButton = new JRadioButton[suspectNames.length];
+		for(int i=0; i<suspectNames.length; i++) {
+			suspectButton[i] = new JRadioButton(suspectNames[i]);
+		}
+		
+		ButtonGroup suspectButtonGroup = new ButtonGroup();
+		for(JRadioButton button : suspectButton) {
+			suspectButtonGroup.add(button);
+		}
+		
+		suspectJFrame.setSize(200,400);
+		Container cont = suspectJFrame.getContentPane();
+		
+		cont.setLayout(new GridLayout(0, 1));
+		cont.add(new JLabel("Select your suspect name:"));
+		
+		for(JRadioButton button : suspectButton) {
+			cont.add(button);
+		}
+		
+		JButton submitButton = new JButton("Submit");
+		submitButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				for(JRadioButton button : suspectButton) {
+					if(button.isSelected()) {
+						player = new Player(button.getText());
+                		client.sendTCP(new SetSuspect(player.suspectName));
+						break;
+					}
+				}
+				
+				if(player.suspectName != null) {
+					suspectJFrame.dispose();
+				} else {
+					JOptionPane.showMessageDialog(null, "You must select a suspect name", "Select a suspect name", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		});
+		
+		cont.add(submitButton);
+		suspectJFrame.setVisible(true);
 	}
 
 	// Handle the Suggestion button, pressed by the JFrame
@@ -565,6 +647,15 @@ public class CluelessClient
 						}
 					});
 				}
+		public void startGameListener (final Runnable listener) {
+			restartButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					listener.run();
+				}
+			});
+		}
+
 
 		/*public void setSendListener (final Runnable listener) {
 			sendButton.addActionListener(new ActionListener() {
@@ -626,9 +717,9 @@ public class CluelessClient
 
 	public static void main (String[] args)
 	{
-		//String ipAddress = args[0];
+		String ipAddress = args[0];
 		Log.set(Log.LEVEL_DEBUG);
-		//new CluelessClient(ipAddress);
-		new CluelessClient("localhost");
+		new CluelessClient(ipAddress);
+		//new CluelessClient("localhost");
 	}
 }

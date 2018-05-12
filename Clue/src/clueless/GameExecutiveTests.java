@@ -11,7 +11,6 @@ import clueless.Network.DealCard;
 import clueless.Network.RegisterName;
 import clueless.Network.RegisterRequest;
 import clueless.Network.RegisterResponse;
-import clueless.Network.SuspectRequest;
 import clueless.Network.SuspectResponse;
 import clueless.Network.UpdateNames;
 
@@ -178,9 +177,13 @@ public class GameExecutiveTests {
 		
 		server.distributeCards();
 
+		System.out.println(client0.player.suspectName + ":");
 		System.out.println(client0.player.myHand.toString());
+		System.out.println(client1.player.suspectName + ":");
 		System.out.println(client1.player.myHand.toString());
+		System.out.println(client2.player.suspectName + ":");
 		System.out.println(client2.player.myHand.toString());
+		System.out.println(client3.player.suspectName + ":");
 		System.out.println(client3.player.myHand.toString());
 	}
 	
@@ -251,6 +254,7 @@ class TestClient {
 					}
 				}
 				
+				/*
 				if(object instanceof SuspectResponse) {
 					SuspectResponse response = (SuspectResponse) object;
 					
@@ -265,10 +269,11 @@ class TestClient {
 						}
 					}
 				}
+				*/
 				
 				if(object instanceof DealCard) {
 					Card theCard = ((DealCard)object).card;
-					System.out.println(name + " received card " + theCard.toString());
+					//System.out.println(name + " received card " + theCard.toString());
 					player.addCardToHand(theCard);
 				}
 			}
@@ -296,7 +301,9 @@ class TestClient {
 		client.sendTCP(new RegisterRequest());
 	}
 	
+	
 	public void sendSuspectRequest(String suspect) {
+		/*
 		client.sendTCP(new SuspectRequest(suspect));
 		
 		try {
@@ -305,6 +312,7 @@ class TestClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 	}
 	
 }
