@@ -21,6 +21,7 @@ public class Network {
         kryo.register(BeginGame.class);
 		kryo.register(DealCard.class);
 		kryo.register(BeginTurn.class);
+		kryo.register(PlayerTurn.class);
 		kryo.register(UpdateNames.class);
 		kryo.register(ChatMessage.class);
 		kryo.register(Location.class);
