@@ -247,16 +247,6 @@ public class AccusationBox extends JPanel implements ActionListener {
 		// TODO Auto-generated method stub
 		 System.out.println(e);
 		
-	}
-	
-	public void getWeapon()
-	{
-		boolean isWeapon = false;
-		int i = 0;
-		while (isWeapon == false)
-		{
-			
-		}
 		
 	}
 
