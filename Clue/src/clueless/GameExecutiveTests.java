@@ -11,7 +11,6 @@ import clueless.Network.DealCard;
 import clueless.Network.RegisterName;
 import clueless.Network.RegisterRequest;
 import clueless.Network.RegisterResponse;
-import clueless.Network.SuspectRequest;
 import clueless.Network.SuspectResponse;
 import clueless.Network.UpdateNames;
 
@@ -255,6 +254,7 @@ class TestClient {
 					}
 				}
 				
+				/*
 				if(object instanceof SuspectResponse) {
 					SuspectResponse response = (SuspectResponse) object;
 					
@@ -269,6 +269,7 @@ class TestClient {
 						}
 					}
 				}
+				*/
 				
 				if(object instanceof DealCard) {
 					Card theCard = ((DealCard)object).card;
@@ -300,7 +301,9 @@ class TestClient {
 		client.sendTCP(new RegisterRequest());
 	}
 	
+	
 	public void sendSuspectRequest(String suspect) {
+		/*
 		client.sendTCP(new SuspectRequest(suspect));
 		
 		try {
@@ -309,6 +312,7 @@ class TestClient {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 	}
 	
 }

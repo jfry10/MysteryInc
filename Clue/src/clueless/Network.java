@@ -15,7 +15,8 @@ public class Network {
 		kryo.register(RegisterResponse.class);
 		kryo.register(RegisterName.class);
 		kryo.register(String[].class);
-		kryo.register(SuspectRequest.class);
+		kryo.register(GetSuspects.class);
+		kryo.register(SetSuspect.class);
 		kryo.register(SuspectResponse.class);
         kryo.register(BeginGame.class);
 		kryo.register(DealCard.class);
@@ -55,22 +56,24 @@ public class Network {
 		public String[] names;
 	}
 
-	static public class SuspectRequest {
-		public String requestedSuspect;
+	static public class GetSuspects {
 		
-		public SuspectRequest() {
-			
-		}
-		
-		public SuspectRequest(String requestedSuspect) {
-			this.requestedSuspect = requestedSuspect;
-		}
 	}
 	
 	static public class SuspectResponse {
-		public boolean success;
 		public String[] suspectNames;
-		public String selectedSuspectName;
+	}
+	
+	static public class SetSuspect {
+		public String selectedSuspect;
+		
+		public SetSuspect() {
+			
+		}
+		
+		public SetSuspect(String selectedSuspect) {
+			this.selectedSuspect = selectedSuspect;
+		}
 	}
 	
 	static public class BeginGame {

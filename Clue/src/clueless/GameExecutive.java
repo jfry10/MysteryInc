@@ -23,13 +23,13 @@ import clueless.Network.BeginGame;
 import clueless.Network.BeginTurn;
 import clueless.Network.DealCard;
 import clueless.Network.EndTurn;
+import clueless.Network.GetSuspects;
 import clueless.Network.MoveToken;
 import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterRequest;
 import clueless.Network.RegisterResponse;
 import clueless.Network.SuggestionDisprove;
 import clueless.Network.SuggestionAsk;
-import clueless.Network.SuspectRequest;
 import clueless.Network.SuspectResponse;
 import clueless.Network.EndSuggestion;
 
@@ -206,7 +206,14 @@ public class GameExecutive
 	        		regResponse.suspectNames = getAvailableSuspects();
 	        		server.sendToTCP(conn.getID(), regResponse);
 	        	}
+                
+                if(object instanceof GetSuspects) {
+                	SuspectResponse response = new SuspectResponse();
+                	response.suspectNames = getAvailableSuspects();
+                	server.sendToTCP(conn.getID(), response);
+                }
 
+                /*
 				if (object instanceof SuspectRequest)
 				{
 	        		String requestedSuspect = ((SuspectRequest)object).requestedSuspect;
@@ -221,6 +228,7 @@ public class GameExecutive
 	        		}
 	        		server.sendToTCP(conn.getID(), response);
 	        	}
+	        	*/
 
 				if (object instanceof BeginGame)
 				{
