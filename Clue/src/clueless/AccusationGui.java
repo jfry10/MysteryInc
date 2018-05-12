@@ -4,24 +4,17 @@ import javax.swing.*;
 
 import com.esotericsoftware.kryonet.Client;
 
-
-
-public class main extends JFrame {
-    public main(Client c) {
-        setTitle("Make Suggestion");
+public class AccusationGui extends JFrame {
+	
+	public AccusationGui(Client c) {
+		setTitle("Make Accusation");
         setSize(600, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panel = new box(c);
+        JPanel panel = new AccusationBox(c);
 
         this.add(panel);
-
-    }
+	}
 
 }
-
-
-
-
-
