@@ -24,6 +24,7 @@ import clueless.Network.BeginTurn;
 import clueless.Network.DealCard;
 import clueless.Network.EndTurn;
 import clueless.Network.GetSuspects;
+import clueless.Network.SetSuspect;
 import clueless.Network.MoveToken;
 import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterRequest;
@@ -211,6 +212,12 @@ public class GameExecutive
                 	SuspectResponse response = new SuspectResponse();
                 	response.suspectNames = getAvailableSuspects();
                 	server.sendToTCP(conn.getID(), response);
+                }
+                
+                if(object instanceof SetSuspect) {
+                	String suspectName = ((SetSuspect) object).selectedSuspect;
+                	suspectConnectionMap.put(suspectName, playerID);
+                	server.sendToTCP(playerID, new ChatMessage("You are now " + suspectName + "!"));
                 }
 
                 /*

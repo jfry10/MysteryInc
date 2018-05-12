@@ -286,6 +286,13 @@ public class CluelessClient
 			}
 		}.start();
 		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			System.out.println("woke up!");
+			e.printStackTrace();
+		}
+		
 		client.sendTCP(new GetSuspects());
 	}
 	
