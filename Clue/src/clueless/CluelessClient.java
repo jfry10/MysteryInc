@@ -231,6 +231,21 @@ public class CluelessClient
 			}
 		});
 		
+		///Accusation Listener
+				GameFrame.accusationListener(new Runnable() {
+					public void run () {
+						JFrame frame = new AccusationGui(client);
+						frame.setVisible(true);
+					}
+				});
+				
+				//Suggestion Listener
+				GameFrame.suggestionListener(new Runnable() {
+					public void run () {
+						JFrame frame = new main(client);
+				        frame.setVisible(true);	
+					}
+				});
 
 		// This listener is called when the send button is clicked.
 		/*GameFrame.setSendListener(new Runnable() {
@@ -532,6 +547,24 @@ public class CluelessClient
 				}
 			});
 		}
+		
+		///Accusation linstener
+				public void accusationListener (final Runnable listener) {
+					accusButton.addActionListener(new ActionListener() {
+						public void actionPerformed (ActionEvent evt) {
+							listener.run(); // call so we can send the move token
+						}
+					});
+				}
+				
+				//Suggestion
+				public void suggestionListener (final Runnable listener) {
+					accusButton.addActionListener(new ActionListener() {
+						public void actionPerformed (ActionEvent evt) {
+							listener.run(); // call so we can send the move token
+						}
+					});
+				}
 
 		/*public void setSendListener (final Runnable listener) {
 			sendButton.addActionListener(new ActionListener() {
