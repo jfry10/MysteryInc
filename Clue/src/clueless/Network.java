@@ -48,8 +48,11 @@ public class Network {
         kryo.register(EndSuggestion.class);
         kryo.register(SuggestionDisprove.class);
         kryo.register(MoveToken.class);
+        kryo.register(DisplayGUI.class);
         kryo.register(GUIDisplay.class);
         kryo.register(SuggestionAsk.class); 
+        kryo.register(Player[].class);
+        /*
         kryo.register(ColorUIResource.class);
         kryo.register(ArrayList.class);
         kryo.register(FontUIResource.class);
@@ -65,6 +68,7 @@ public class Network {
         kryo.register(boolean[].class);
         kryo.register(Hallway.class);
         kryo.register(Room.class);
+        */
 	}
 	
 	static public class RegisterRequest {
@@ -169,5 +173,17 @@ public class Network {
 	
 	static public class SuggestionAsk {
 		
+	}
+	
+	static public class DisplayGUI {
+		public Player[] players;
+		
+		public DisplayGUI() {
+			
+		}
+		
+		public DisplayGUI(Player[] players) {
+			this.players = players;
+		}
 	}
 }

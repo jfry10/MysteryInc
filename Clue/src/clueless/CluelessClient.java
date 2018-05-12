@@ -33,9 +33,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-
+import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.KryoSerialization;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
@@ -52,7 +53,7 @@ import clueless.Network.BeginGame;
 import clueless.Network.GetSuspects;
 import clueless.Network.SetSuspect;
 import clueless.Network.SuggestionAsk;
-
+import clueless.Network.DisplayGUI;
 
 public class CluelessClient
 {
@@ -67,7 +68,11 @@ public class CluelessClient
 
 	public CluelessClient (String ipAddress)
 	{
-		client = new Client();
+		Kryo kryo = new Kryo();
+		kryo.setReferences(true);
+		KryoSerialization serialization = new KryoSerialization(kryo);
+		
+		client = new Client(16384, 2048, serialization);
 		client.start();
 
 		// For consistency, the classes to be sent over the network are
@@ -93,9 +98,9 @@ public class CluelessClient
 					return;
 				}
 				
-				if (object instanceof Player[])
+				if (object instanceof DisplayGUI)
 				{
-					Player[] players = (Player[])object;
+					Player[] players = ((DisplayGUI)object).players;
 					GUIDisplay gui = new GUIDisplay(players);
 					GameFrame.updateGameboard(gui);
 				}
@@ -328,7 +333,7 @@ public class CluelessClient
 		new Thread("Connect") {
 			public void run () {
 				try {
-					client.connect(5000, ipAddress, Network.port);
+					client.connect(10000, ipAddress, Network.port);
 					// Server communication after connection can go here, or in Listener#connected().
 				} catch (IOException ex) {
 					ex.printStackTrace();
@@ -338,7 +343,7 @@ public class CluelessClient
 		}.start();
 		
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			System.out.println("woke up!");
 			e.printStackTrace();
