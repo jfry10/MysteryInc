@@ -99,21 +99,21 @@ public class GameExecutive
 					return;
 				}
 
-				if (object instanceof ChatMessage)
-				{
-					// Ignore the object if a client tries to chat before registering a name.
-					if (conn.playerName == null) return;
-					ChatMessage chatMessage = (ChatMessage)object;
-					// Ignore the object if the chat message is invalid.
-					String message = chatMessage.text;
-					if (message == null) return;
-					message = message.trim();
-					if (message.length() == 0) return;
-					// Prepend the connection's name and send to everyone.
-					chatMessage.text = conn.playerName + ": " + message;
-					server.sendToAllTCP(chatMessage);
-					return;
-				}
+//				if (object instanceof ChatMessage)
+//				{
+//					// Ignore the object if a client tries to chat before registering a name.
+//					if (conn.playerName == null) return;
+//					ChatMessage chatMessage = (ChatMessage)object;
+//					// Ignore the object if the chat message is invalid.
+//					String message = chatMessage.text;
+//					if (message == null) return;
+//					message = message.trim();
+//					if (message.length() == 0) return;
+//					// Prepend the connection's name and send to everyone.
+//					chatMessage.text = conn.playerName + ": " + message;
+//					server.sendToAllTCP(chatMessage);
+//					return;
+//				}
 				
 				// The Client sends us a Suggestion, pass on to other clients
 				if (object instanceof Suggestion)
@@ -257,56 +257,63 @@ public class GameExecutive
 	        		
 	        	}
 
-				if (object instanceof MoveToken) {
+				if (object instanceof MoveToken) 
+				{
 					int direction = ((MoveToken)object).direction;
 					PlayerInfo playerInfo = playerInfoMap.get(playerID);
-	        		switch(direction) {
-	        		case Constants.DIR_UP:
-	        			Gameboard.moveUp(gameBoard, playerInfo.player);
-	        			break;
-	        		case Constants.DIR_DOWN:
-	        			Gameboard.moveDown(gameBoard, playerInfo.player);
-	        			break;
-	        		case Constants.DIR_LEFT:
-	        			Gameboard.moveLeft(gameBoard, playerInfo.player);
-	        			break;
-	        		case Constants.DIR_RIGHT:
-	        			Gameboard.moveRight(gameBoard, playerInfo.player);
-	        			break;
-	        		case Constants.DIR_PASSAGE:
-	        			Gameboard.takePassage(gameBoard, playerInfo.player);
-	        			break;
-	        		}
+		        		switch(direction)
+		        		{
+			        		case Constants.DIR_UP:
+			        			Gameboard.moveUp(gameBoard, playerInfo.player);
+			        			break;
+			        		case Constants.DIR_DOWN:
+			        			Gameboard.moveDown(gameBoard, playerInfo.player);
+			        			break;
+			        		case Constants.DIR_LEFT:
+			        			Gameboard.moveLeft(gameBoard, playerInfo.player);
+			        			break;
+			        		case Constants.DIR_RIGHT:
+			        			Gameboard.moveRight(gameBoard, playerInfo.player);
+			        			break;
+			        		case Constants.DIR_PASSAGE:
+			        			Gameboard.takePassage(gameBoard, playerInfo.player);
+			        			break;
+		        		}
 
-	        	    if(playerInfo.player.positionOnBoard instanceof Room) {
-	        	    	// Player has entered room, is allowed to make a suggestion
-	        	    	server.sendToTCP(playerInfo.playerId, new SuggestionAsk());
-	        	    } else {
-	        	    	server.sendToTCP(playerInfo.playerId, new EndTurn());
+		        	    if(playerInfo.player.positionOnBoard instanceof Room)
+		        	    {
+			        	    	// Player has entered room, is allowed to make a suggestion
+			        	    	server.sendToTCP(playerInfo.playerId, new SuggestionAsk());
+		        	    }
+		        	    else
+		        	    {
+		        	    		// end current player's turn
+		        	    		server.sendToTCP(playerInfo.playerId, new EndTurn());
 	        	    	
-	        	    	PlayerInfo playerLeftInfo = playerInfoMap.get(playerInfo.playerToLeft.playerId);
-	        	    	Location playerLocation = playerLeftInfo.player.positionOnBoard;
-	        	    	PlayerTurn playerTurn = new PlayerTurn();
-	        	    	if(playerLocation.hasUp()) {
-	        	    		playerTurn.up = true;
-	        	    	}
-	        	    	if(playerLocation.hasDown()) {
-	        	    		playerTurn.down = true;
-	        	    	}
-	        	    	if(playerLocation.hasLeft()) {
-	        	    		playerTurn.left = true;
-	        	    	}
-	        	    	if(playerLocation.hasRight()) {
-	        	    		playerTurn.right = true;
-	        	    	}
-	        	    	if(playerLocation instanceof Room && ((Room) playerLocation).hasSecretPassage()) {
-	        	    		playerTurn.passage = true;
-	        	    	} 
-	        	    	
-	        	    	server.sendToTCP(playerLeftInfo.playerId, playerTurn);
-	        	    }
-	        	}
-			}
+		        	    		// and start the next player's turn
+			        	    	PlayerInfo playerLeftInfo = playerInfoMap.get(playerInfo.playerToLeft.playerId);
+			        	    	Location playerLocation = playerLeftInfo.player.positionOnBoard;
+			        	    	PlayerTurn playerTurn = new PlayerTurn();
+			        	    	if(playerLocation.hasUp()) {
+			        	    		playerTurn.up = true;
+			        	    	}
+			        	    	if(playerLocation.hasDown()) {
+			        	    		playerTurn.down = true;
+			        	    	}
+			        	    	if(playerLocation.hasLeft()) {
+			        	    		playerTurn.left = true;
+			        	    	}
+			        	    	if(playerLocation.hasRight()) {
+			        	    		playerTurn.right = true;
+			        	    	}
+			        	    	if(playerLocation instanceof Room && ((Room) playerLocation).hasSecretPassage()) {
+			        	    		playerTurn.passage = true;
+			        	    	} 
+			        	    	
+			        	    	server.sendToTCP(playerLeftInfo.playerId, playerTurn);
+			        	    }
+			        	}
+				}
 
 			
 			public void disconnected (Connection c) {
