@@ -44,6 +44,8 @@ import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterName;
 import clueless.Network.UpdateNames;
 import clueless.Network.ValidMove;
+import clueless.Network.BeginGame;
+
 
 public class CluelessClient
 {
@@ -228,6 +230,15 @@ public class CluelessClient
 				MoveToken token = new MoveToken();
 				token.direction = Constants.DIR_PASSAGE;
 				client.sendTCP(token);
+			}
+		});
+		
+		// This listener is called when the Start Game button is clicked
+		GameFrame.startGameListener(new Runnable() {
+			
+			@Override
+			public void run() {
+				client.sendTCP(new BeginGame());
 			}
 		});
 		
@@ -529,6 +540,15 @@ public class CluelessClient
 			takePassageButton.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent evt) {
 					listener.run(); // call so we can send the move token
+				}
+			});
+		}
+		
+		public void startGameListener (final Runnable listener) {
+			restartButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					listener.run();
 				}
 			});
 		}

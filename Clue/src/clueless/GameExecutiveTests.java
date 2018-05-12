@@ -178,9 +178,13 @@ public class GameExecutiveTests {
 		
 		server.distributeCards();
 
+		System.out.println(client0.player.suspectName + ":");
 		System.out.println(client0.player.myHand.toString());
+		System.out.println(client1.player.suspectName + ":");
 		System.out.println(client1.player.myHand.toString());
+		System.out.println(client2.player.suspectName + ":");
 		System.out.println(client2.player.myHand.toString());
+		System.out.println(client3.player.suspectName + ":");
 		System.out.println(client3.player.myHand.toString());
 	}
 	
@@ -268,7 +272,7 @@ class TestClient {
 				
 				if(object instanceof DealCard) {
 					Card theCard = ((DealCard)object).card;
-					System.out.println(name + " received card " + theCard.toString());
+					//System.out.println(name + " received card " + theCard.toString());
 					player.addCardToHand(theCard);
 				}
 			}

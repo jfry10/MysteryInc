@@ -175,7 +175,6 @@ public class box extends JPanel implements ActionListener {
            // submitButton.suggestion = GameFrame.getSendSuggestion();
            // client.sendTCP(submitButton);
 
-        }
         // GameFrame.setCloseListener(new Runnable (){
         //  public void run(){
             //  client.stop();
