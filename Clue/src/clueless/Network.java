@@ -1,8 +1,19 @@
 
 package clueless;
 
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.Locale;
+
+import javax.swing.event.EventListenerList;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
+
+import sun.swing.PrintColorUIResource;
 
 // This class is a convenient place to keep things common to both the client and server.
 public class Network {
@@ -15,6 +26,7 @@ public class Network {
 		kryo.register(RegisterResponse.class);
 		kryo.register(RegisterName.class);
 		kryo.register(String[].class);
+		kryo.register(float[].class);
 		kryo.register(GetSuspects.class);
 		kryo.register(SetSuspect.class);
 		kryo.register(SuspectResponse.class);
@@ -37,7 +49,22 @@ public class Network {
         kryo.register(SuggestionDisprove.class);
         kryo.register(MoveToken.class);
         kryo.register(GUIDisplay.class);
-        kryo.register(SuggestionAsk.class);  
+        kryo.register(SuggestionAsk.class); 
+        kryo.register(ColorUIResource.class);
+        kryo.register(ArrayList.class);
+        kryo.register(FontUIResource.class);
+        kryo.register(PrintColorUIResource.class);
+        kryo.register(Color.class);
+        kryo.register(FlowLayout.class);
+        kryo.register(EventListenerList.class);
+        kryo.register(Locale.class);
+        kryo.register(Player.class);
+        kryo.register(Player[].class);
+        kryo.register(PlayerHand.class);
+        kryo.register(DetectiveNotes.class);
+        kryo.register(boolean[].class);
+        kryo.register(Hallway.class);
+        kryo.register(Room.class);
 	}
 	
 	static public class RegisterRequest {

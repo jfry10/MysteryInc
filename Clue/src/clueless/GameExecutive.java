@@ -351,6 +351,8 @@ public class GameExecutive
 		
 		gameBoard = Gameboard.createNewBoard(players.toArray(new Player[players.size()]));
 		
+		server.sendToAllTCP(generateGUIDisplayObject());
+		
 		forfeitPlayerList = new ArrayList<Integer>();
 		
 		distributeCards();
@@ -439,6 +441,37 @@ public class GameExecutive
 			currentPlayer = currentPlayer.playerToLeft;
 		}
 	
+	}
+	
+	GUIDisplay generateGUIDisplayObject() {
+		ArrayList<Player> playerList = new ArrayList<Player>();
+		
+		Player[] players = new Player[6];
+		
+		for(PlayerInfo playerInfo : playerInfoMap.values()) {
+			switch(playerInfo.player.suspectName) {
+			case Constants.MISS_SCARLET_STR:
+				players[Constants.MISS_SCARLET] = playerInfo.player;
+				break;
+			case Constants.COL_MUSTARD_STR:
+				players[Constants.COL_MUSTARD] = playerInfo.player;
+				break;
+			case Constants.MRS_WHITE_STR:
+				players[Constants.MRS_WHITE] = playerInfo.player;
+				break;
+			case Constants.MR_GREEN_STR:
+				players[Constants.MR_GREEN] = playerInfo.player;
+				break;
+			case Constants.MRS_PEACOCK_STR:
+				players[Constants.MRS_PEACOCK] = playerInfo.player;
+				break;
+			case Constants.PROF_PLUM_STR:
+				players[Constants.PROF_PLUM] = playerInfo.player;
+				break;
+			}
+		}
+		
+		return new GUIDisplay(players);
 	}
 	
 	String[] getAvailableSuspects() {
