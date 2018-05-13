@@ -120,10 +120,10 @@ public class CluelessClient
 
         					// Show only the move buttons that are valid
         					GameFrame.moveUpButton.setVisible(pt.up);
-        					GameFrame.moveUpButton.setVisible(pt.right);
-        					GameFrame.moveUpButton.setVisible(pt.down);
-        					GameFrame.moveUpButton.setVisible(pt.left);
-        					GameFrame.moveUpButton.setVisible(pt.passage);
+        					GameFrame.moveRightButton.setVisible(pt.right);
+        					GameFrame.moveDownButton.setVisible(pt.down);
+        					GameFrame.moveLeftButton.setVisible(pt.left);
+        					GameFrame.takePassageButton.setVisible(pt.passage);
 					}
 					return;
 				}

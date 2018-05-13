@@ -265,7 +265,7 @@ public class GameExecutive
 	        	}
 
 				if (object instanceof EndTurn) {
-	        		
+	        		prodNextPlayer(playerInfoMap.get(playerID));
 	        	}
 
 				if (object instanceof MoveToken) 
@@ -395,6 +395,7 @@ public class GameExecutive
 		PlayerInfo firstPlayer = playerInfoMap.get(playerInfoKeys[0]);
 		Location firstPlayerLocation = firstPlayer.player.positionOnBoard;
     	PlayerTurn playerTurn = new PlayerTurn();
+    	playerTurn.turn = true;
     	if(firstPlayerLocation.hasUp()) {
     		playerTurn.up = true;
     	}
@@ -564,14 +565,34 @@ public class GameExecutive
 	}
 	
 	void prodNextPlayer(PlayerInfo currentPlayer) {
-		Integer nextPlayerId = currentPlayer.playerToLeft.playerId;
-		while(forfeitPlayerList.contains(nextPlayerId)) {
-			PlayerInfo nextPlayer = playerInfoMap.get(nextPlayerId);
+		PlayerInfo nextPlayer = currentPlayer.playerToLeft;
+		while(forfeitPlayerList.contains(nextPlayer.playerId)) {
 			String message = nextPlayer.suspectName + " forfeits their turn.";
 			server.sendToAllTCP(new ChatMessage(message));
-			nextPlayerId = nextPlayer.playerToLeft.playerId;
+			nextPlayer = nextPlayer.playerToLeft;
 		}
-		server.sendToTCP(nextPlayerId, new BeginTurn());
+		
+		Location nextPlayerLocation = nextPlayer.player.positionOnBoard;
+		
+		PlayerTurn playerTurn = new PlayerTurn();
+    	playerTurn.turn = true;
+    	if(nextPlayerLocation.hasUp()) {
+    		playerTurn.up = true;
+    	}
+    	if(nextPlayerLocation.hasDown()) {
+    		playerTurn.down = true;
+    	}
+    	if(nextPlayerLocation.hasLeft()) {
+    		playerTurn.left = true;
+    	}
+    	if(nextPlayerLocation.hasRight()) {
+    		playerTurn.right = true;
+    	}
+    	if(nextPlayerLocation instanceof Room && ((Room) nextPlayerLocation).hasSecretPassage()) {
+    		playerTurn.passage = true;
+    	}
+		
+		server.sendToTCP(nextPlayer.playerId, playerTurn);		
 	}
 	
 	void endGame() {
