@@ -7,7 +7,8 @@ package clueless;
  * @author joshfry
  *
  */
-abstract public class Card implements Comparable<Card> {
+abstract public class Card implements Comparable<Card>
+{
 	public int cardType;
 
 	abstract public void setName(String string);

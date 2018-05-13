@@ -3,9 +3,9 @@ package clueless;
 public class Suggestion
 {
 
-	public RoomCard room;
-	public WeaponCard weapon;
-	public SuspectCard suspect;
+	public RoomCard room = new RoomCard();
+	public WeaponCard weapon = new WeaponCard();
+	public SuspectCard suspect = new SuspectCard();
 
 	// Sending an empty Suggestion back to the server means
 	// player cannot disprove the Suggestion

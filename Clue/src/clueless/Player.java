@@ -79,7 +79,7 @@ public class Player {
 	public Card getDisproveCard(RoomCard room, WeaponCard weapon, SuspectCard suspect)
 	{
 		Iterator tempCards;
-		Card returnCard;
+		Card returnCard = new RoomCard(); // just initialize for null pointer error
 		
 		// For simplicity, we will auto-select the return card
 		// 
@@ -101,21 +101,20 @@ public class Player {
 		{
 			if ((((num + index) % 3) == 0) && myHand.contains(room))
 			{
-				return room;
+				returnCard = room;
 			}
 			if ((((num + index) % 3) == 1) && myHand.contains(weapon))
 			{
-				return weapon;
+				returnCard = weapon;
 			}
 			if ((((num + index) % 3) == 2) && myHand.contains(suspect))
 			{
-				return suspect;
+				returnCard = suspect;
 			}
 			index++;
 		}
 
-		// Must return something, ideally we don't want 4 return statements but oh well
-		return null;
+		return returnCard;
 	}
 
 }

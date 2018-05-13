@@ -89,6 +89,99 @@ public class GameExecutive
 				CluelessConnection conn = (CluelessConnection)c;
 				
 				Integer playerID = conn.getID();
+
+                // New Client has connected, provide them with a list of available suspects
+                if(object instanceof GetSuspects)
+                {
+	                	SuspectResponse response = new SuspectResponse();
+	                	response.suspectNames = getAvailableSuspects();
+	                	server.sendToTCP(conn.getID(), response);
+	                	return;
+                }
+
+                // Client has chosen a Suspect to play with, let them know who they selected
+                if(object instanceof SetSuspect)
+                {
+	                	String suspectName = ((SetSuspect) object).selectedSuspect;
+					// Store the name on the connection.
+					conn.playerName = suspectName;
+	                	suspectConnectionMap.put(suspectName, playerID);
+	                	server.sendToTCP(playerID, new ChatMessage("You are now " + suspectName + "!"));
+	                	return;
+                }
+
+                // Client has chosen to BeginGame. Only start the game once 3 players have joined
+				if (object instanceof BeginGame)
+				{
+					int playerCounter = 0;
+					for(String suspect : suspectConnectionMap.keySet())
+					{
+						if(suspectConnectionMap.get(suspect) != null)
+						{
+							playerCounter++;
+						}
+					}
+
+					if(playerCounter > 2) // at least 3 players
+					{
+						server.sendToAllTCP(new BeginGame());
+						startGame();
+						// Dream System: Do we really want a counter and 1 player's BeginGame to start a new game?
+						// What if someone clicked BeginGame before additional players have a chance to join?
+						// Not sure how we would handle this otherwise, so we'll leave as is for the presentation
+					}
+					else 
+					{
+						server.sendToTCP(playerID, new ChatMessage("Not enough players to start game. You need " + (3 - playerCounter) + " more player(s)."));
+					}
+					return;
+				}
+
+				// The Player has requested a move
+				// Note: They should only request moves to valid locations
+				// so there is no need to error check here
+				if (object instanceof MoveToken) 
+				{
+					int direction = ((MoveToken)object).direction;
+					PlayerInfo currentPlayer = playerInfoMap.get(playerID);
+		        		switch(direction)
+		        		{
+			        		case Constants.DIR_UP:
+			        			gameBoard.moveUp(currentPlayer.player);
+			        			break;
+			        		case Constants.DIR_DOWN:
+			        			gameBoard.moveDown(currentPlayer.player);
+			        			break;
+			        		case Constants.DIR_LEFT:
+			        			gameBoard.moveLeft(currentPlayer.player);
+			        			break;
+			        		case Constants.DIR_RIGHT:
+			        			gameBoard.moveRight(currentPlayer.player);
+			        			break;
+			        		case Constants.DIR_PASSAGE:
+			        			gameBoard.takePassage(currentPlayer.player);
+			        			break;
+		        		}
+
+		        		// Player can make a Suggestion if they recently moved to a room
+		        	    if(currentPlayer.player.positionOnBoard instanceof Room)
+		        	    {
+			        	    	// Player has entered room, is allowed to make a suggestion
+			        	    	server.sendToTCP(currentPlayer.playerId, new SuggestionAsk());
+		        	    }
+		        	    else
+		        	    {
+		        	    		// end current player's turn
+		        	    		server.sendToTCP(currentPlayer.playerId, new EndTurn());
+	        	    	
+		        	    		// and start the next player's turn
+		        	    		prodNextPlayer(currentPlayer);
+		        	    }
+
+		        	    // Update the GameBoard after every move
+		        	    server.sendToAllTCP(new DisplayGUI(gameBoard));
+		        	    return;
+		        	}
 				
 				// The Client sends us a Suggestion, pass on to the first client
 				if (object instanceof Suggestion)
@@ -111,13 +204,14 @@ public class GameExecutive
 				if (object instanceof SuggestionDisprove)
 				{
 					// Sent by client, means that the player could not disprove
-					if(((SuggestionDisprove)object).card == null)
+					if(((SuggestionDisprove)object).card.getName().equals("null"))
 					{
 						// cannot disprove -- see if next player can disprove
 						if(playerInfoMap.get(playerID).playerToLeft.equals(playerMakingSuggestion))
 						{
-							// no one disproved, player can make an accusation
+							// no one disproved, inform the player to make an accusation next turn
 							server.sendToTCP(playerMakingSuggestion.playerId, new Accusation());
+							server.sendToTCP(playerMakingSuggestion.playerId, new EndTurn());
 							playerMakingSuggestion = null;
 							currentSuggestion = null;
 						}
@@ -184,56 +278,7 @@ public class GameExecutive
 					return;
 				}
 
-                if(object instanceof RegisterRequest)
-				{
-		        		RegisterResponse regResponse = new RegisterResponse();
-		        		regResponse.clientId = conn.getID();
-		        		regResponse.suspectNames = getAvailableSuspects();
-		        		server.sendToTCP(conn.getID(), regResponse);
-		        		return;
-		        	}
-                
-                if(object instanceof GetSuspects)
-                {
-	                	SuspectResponse response = new SuspectResponse();
-	                	response.suspectNames = getAvailableSuspects();
-	                	server.sendToTCP(conn.getID(), response);
-	                	return;
-                }
-                
-                if(object instanceof SetSuspect)
-                {
-	                	String suspectName = ((SetSuspect) object).selectedSuspect;
-					// Store the name on the connection.
-					conn.playerName = suspectName;
-	                	suspectConnectionMap.put(suspectName, playerID);
-	                	server.sendToTCP(playerID, new ChatMessage("You are now " + suspectName + "!"));
-	                	return;
-                }
-
-				if (object instanceof BeginGame)
-				{
-					int playerCounter = 0;
-					for(String suspect : suspectConnectionMap.keySet())
-					{
-						if(suspectConnectionMap.get(suspect) != null)
-						{
-							playerCounter++;
-						}
-					}
-
-					if(playerCounter > 2) // at least 3 players
-					{
-						server.sendToAllTCP(new BeginGame());
-						startGame();
-					}
-					else 
-					{
-						server.sendToTCP(playerID, new ChatMessage("Not enough players to start game. You need " + (3 - playerCounter) + " more player(s)."));
-					}
-					return;
-				}
-
+				// Player has told us that they have ended the turn (directly or indirectly)
 				if (object instanceof EndTurn)
 				{
 					PlayerInfo currentPlayer = playerInfoMap.get(playerID);
@@ -242,52 +287,8 @@ public class GameExecutive
 
 		    	    		// and start the next player's turn
 					prodNextPlayer(currentPlayer);
-
 		        	    	return;
 				}
-
-				if (object instanceof MoveToken) 
-				{
-					int direction = ((MoveToken)object).direction;
-					PlayerInfo currentPlayer = playerInfoMap.get(playerID);
-		        		switch(direction)
-		        		{
-			        		case Constants.DIR_UP:
-			        			gameBoard.moveUp(currentPlayer.player);
-			        			break;
-			        		case Constants.DIR_DOWN:
-			        			gameBoard.moveDown(currentPlayer.player);
-			        			break;
-			        		case Constants.DIR_LEFT:
-			        			gameBoard.moveLeft(currentPlayer.player);
-			        			break;
-			        		case Constants.DIR_RIGHT:
-			        			gameBoard.moveRight(currentPlayer.player);
-			        			break;
-			        		case Constants.DIR_PASSAGE:
-			        			gameBoard.takePassage(currentPlayer.player);
-			        			break;
-		        		}
-
-		        		// Player can make a Suggestion if they recently moved to a room
-		        	    if(currentPlayer.player.positionOnBoard instanceof Room)
-		        	    {
-			        	    	// Player has entered room, is allowed to make a suggestion
-			        	    	server.sendToTCP(currentPlayer.playerId, new SuggestionAsk());
-		        	    }
-		        	    else
-		        	    {
-		        	    		// end current player's turn
-		        	    		server.sendToTCP(currentPlayer.playerId, new EndTurn());
-	        	    	
-		        	    		// and start the next player's turn
-		        	    		prodNextPlayer(currentPlayer);
-		        	    }
-
-		        	    // Update the GameBoard after every move
-		        	    server.sendToAllTCP(new DisplayGUI(gameBoard));
-		        	    return;
-		        	}
 			}
 
 			public void disconnected (Connection c)
@@ -321,6 +322,7 @@ public class GameExecutive
 		frame.setVisible(true);
 	}
 
+	// Created at the beginning of GameExecutive. We can only have 6 suspects in our mapping
 	void initSuspectConnectionMap()
 	{
 		suspectConnectionMap = new LinkedHashMap<String, Integer>(Constants.SUSPECTS.length);
@@ -330,6 +332,8 @@ public class GameExecutive
 		}
 	}
 
+	// Creates the Player mapping, creates the Gameboard, sets up the CaseFile,
+	// distributes all remaining cards, then starts the game with the first player
 	void startGame()
 	{
 		// set up the game with PlayerInfo objects, used for directionality/turns
@@ -413,7 +417,8 @@ public class GameExecutive
 		previous.playerToLeft = first; // ... then assign to the left of the last player
 	}
 
-	
+    // First, we will create the CaseFile
+	// Next, we will distribute remaining cards evenly to the players
 	void distributeCards()
 	{
 		cardDeck = new CardDeck();
@@ -452,7 +457,7 @@ public class GameExecutive
 		{
 			if(suspectConnectionMap.get(suspect) == null)
 			{
-				suspectList.add(suspect);
+				suspectList.add(suspect); // suspect has not been chosen
 			}
 		}
 		
@@ -492,6 +497,10 @@ public class GameExecutive
 		server.sendToAllExceptTCP(nextPlayerId, playerTurn);
 	}
 	
+	// Dream system, allow the users to start a new game. 
+	// I imagine this would be similar to calling StartGame, however, we need the
+	// clients to delete all their data and stuff could get messy.
+	// We might not want to worry about that for this presentation
 	void endGame()
 	{
 		// do something crazy
@@ -502,12 +511,14 @@ public class GameExecutive
 		public String playerName;
 	}
 
+	// Nothing special, just starts the GameExecutive
 	public static void main (String[] args) throws IOException {
-		Log.set(Log.LEVEL_ERROR);
+		Log.set(Log.LEVEL_DEBUG);
 		new GameExecutive();
 	}
 }
 
+// This PlayerInfo class is used for the Player mapping used in gameplay
 class PlayerInfo {
 	public String suspectName;
 	public Integer playerId;

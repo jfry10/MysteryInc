@@ -90,22 +90,60 @@ public class CluelessClient
 
 			public void received (Connection connection, Object object)
 			{
+                // Received a notification to select a suspect
+                if(object instanceof SuspectResponse)
+                {
+                		String[] availableSuspectNames = ((SuspectResponse)object).suspectNames;
+                		selectSuspectName(availableSuspectNames);
+                		return;
+                }
 
+                // Left in here so we can receive server messages
+				if (object instanceof ChatMessage)
+				{
+					ChatMessage chatMessage = (ChatMessage)object;
+					GameFrame.addMessage(chatMessage.text);
+					return;
+				}
+
+				// The Server deals us a new Card, add it to the playerHand
+				if (object instanceof DealCard)
+				{
+					DealCard newCard = (DealCard)object;
+					player.addCardToHand(newCard.card);
+					// update GameFrame's detectiveNotes
+					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
+					return;
+				}
+
+				// Server has sent us the latest gameboard, use it to update
+				// our GameFrame display
 				if (object instanceof DisplayGUI)
 				{
 					DisplayGUI dg = (DisplayGUI)object;
 					GUIDisplay gui = new GUIDisplay(dg.gameboard);
-					//gui.repaint();
 					GameFrame.updateGameboard(gui);
+					// Update the player location, used for suggestions
+					for (int i = 0; i < Constants.SUSPECTS.length; i++)
+					{
+						if (player.suspectName.equals(dg.gameboard.playerlist[i].suspectName))
+						{
+							player.positionOnBoard = dg.gameboard.playerlist[i].positionOnBoard;
+						}
+					}
 					return;
 				}
 
+				// Received a BeginGame object, so hide the current "Start Game" button
 				if (object instanceof BeginGame)
 				{
 					GameFrame.actionButton.setVisible(false);
 					return;
 				}
 
+				// Received a PlayerTurn object. Two possible outcomes:
+				// 1) Clients turn to play. Only display the valid move buttons
+				// 2) Not our turn. Hide all buttons
 				if (object instanceof PlayerTurn)
 				{
 					PlayerTurn pt = (PlayerTurn)object;
@@ -152,30 +190,17 @@ public class CluelessClient
 					return;
 				}
 
-                // Previously included, left in here so we can receive global messages
-				if (object instanceof ChatMessage)
-				{
-					ChatMessage chatMessage = (ChatMessage)object;
-					GameFrame.addMessage(chatMessage.text);
-					return;
-				}
-				
-				// We receive an EndTurn object, disable and hide unusable buttons
-				if (object instanceof EndTurn)
-				{
-					HideButtons();
-					return;
-				}
-
-				// The Server sends us a new Card
-				if (object instanceof DealCard)
-				{
-					DealCard newCard = (DealCard)object;
-					player.addCardToHand(newCard.card);
-					// update GameFrame's detectiveNotes
-					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
-					return;
-				}
+                // The Server sends us a card indicating that our suggestion was incorrect
+                if (object instanceof SuggestionDisprove)
+                {
+                		SuggestionDisprove sd = (SuggestionDisprove)object;
+                		player.updateDetectiveNotes(sd.card);
+    					// update GameFrame's detectiveNotes
+    					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
+    					// now print a message so the player knows why they were disproved
+    					GameFrame.addMessage("Your suggestion was incorrect!\n" + sd.card.getName() + " is not in the Case File!");
+                		return;
+                }
 
 				// The Server sends us a Suggestion to disprove
                 if (object instanceof Suggestion)
@@ -187,7 +212,8 @@ public class CluelessClient
 					// if we can't disprove, then send a message back
 					if (disprove == false)
 					{
-						connection.sendTCP(new SuggestionDisprove(null));
+						// send any random new card. It will initialize to "null"
+						connection.sendTCP(new SuggestionDisprove(new RoomCard()));
 					}
 					else
 					{
@@ -196,25 +222,22 @@ public class CluelessClient
 					}
 					return;
                 }
-
-                // The Server sends us a Note / private message
-                if (object instanceof SuggestionDisprove)
-                {
-                		SuggestionDisprove sd = (SuggestionDisprove)object;
-                		player.updateDetectiveNotes(sd.card);
-    					// update GameFrame's detectiveNotes
-    					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
-    					// now print a message so the player knows why they were disproved
-    					GameFrame.addMessage("Your suggestion was incorrect!\n" + sd.card.getName() + " is not in the Case File!");
-                		return;
-                }
                 
-                if(object instanceof SuspectResponse)
+                // We received an Accusation object! Dang.. Remember your suggestion so you can 
+                // make an Accusation during your next turn!
+                if (object instanceof Accusation)
                 {
-                		String[] availableSuspectNames = ((SuspectResponse)object).suspectNames;
-                		selectSuspectName(availableSuspectNames);
+                		GameFrame.addMessage("Congratulations! Your suggestion was correct!");
+                		GameFrame.addMessage("Remember it so you can make an accusation next turn");
                 		return;
                 }
+				
+				// We receive an EndTurn object, disable and hide unusable buttons
+				if (object instanceof EndTurn)
+				{
+					HideButtons();
+					return;
+				}
 			}
 
 			public void disconnected (Connection connection) {
@@ -293,7 +316,7 @@ public class CluelessClient
 		//Suggestion Listener
 		GameFrame.suggestionListener(new Runnable() {
 			public void run () {
-				JFrame frame = new SuggestionGUI(client);
+				JFrame frame = new SuggestionGUI(client, player.positionOnBoard);
 				frame.setVisible(true);	
 				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
@@ -352,7 +375,8 @@ public class CluelessClient
 			System.out.println("woke up!");
 			e.printStackTrace();
 		}
-		
+
+		// Once a client has connected, send a request to get available suspects
 		client.sendTCP(new GetSuspects());
 	}
 	
@@ -421,6 +445,7 @@ public class CluelessClient
 		GameFrame.moveLeftButton.setVisible(false);
 		GameFrame.takePassageButton.setVisible(false);
 		GameFrame.suggestButton.setVisible(false);
+		GameFrame.actionButton.setVisible(false);
 	}
 
 	static private class GameFrame extends JFrame implements ActionListener
@@ -618,7 +643,7 @@ public class CluelessClient
 			EventQueue.invokeLater(new Runnable() {
 				public void run () {
 					String current = serverMessages.getText();
-					current += "\n" + message;
+					current += "\n\n" + message;
 					serverMessages.setText(current);
 				}
 			});
@@ -633,7 +658,7 @@ public class CluelessClient
 	public static void main (String[] args)
 	{
 		//String ipAddress = args[0];
-		Log.set(Log.LEVEL_ERROR);
+		Log.set(Log.LEVEL_DEBUG);
 		//new CluelessClient(ipAddress);
 		new CluelessClient("localhost");
 	}

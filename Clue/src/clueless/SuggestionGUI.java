@@ -24,7 +24,7 @@ public class SuggestionGUI extends JFrame implements ActionListener
 
     JFrame jFrame;
 
-	public SuggestionGUI(Client client)
+	public SuggestionGUI(Client client, Location positionOnBoard)
 	{
 		jFrame = this;
 		setTitle("Make Suggestion");
@@ -50,13 +50,13 @@ public class SuggestionGUI extends JFrame implements ActionListener
         Card room = null;
         Card person = null;
 
-        ButtonGroup weaponsGroup = new ButtonGroup();
-        weaponsGroup.add(knifeButton);
-        weaponsGroup.add(revolverButton);
-        weaponsGroup.add(ropeButton);
-        weaponsGroup.add(candlestickButton);
-        weaponsGroup.add(leadPipeButton);
-        weaponsGroup.add(wrenchButton);
+        ButtonGroup weaponGroup = new ButtonGroup();
+        weaponGroup.add(knifeButton);
+        weaponGroup.add(revolverButton);
+        weaponGroup.add(ropeButton);
+        weaponGroup.add(candlestickButton);
+        weaponGroup.add(leadPipeButton);
+        weaponGroup.add(wrenchButton);
 
         Border buttonBorder = BorderFactory.createEtchedBorder();
         buttonBorder = BorderFactory.createTitledBorder(buttonBorder, "Weapon");
@@ -95,16 +95,16 @@ public class SuggestionGUI extends JFrame implements ActionListener
         kitchenButton = new JRadioButton("Kitchen");
         ballroomButton = new JRadioButton("Ballroom");
 
-        ButtonGroup roomsGroup = new ButtonGroup();
-        roomsGroup.add(studyButton);
-        roomsGroup.add(hallButton);
-        roomsGroup.add(diningButton);
-        roomsGroup.add(loungeButton);
-        roomsGroup.add(libraryButton);
-        roomsGroup.add(billiardButton);
-        roomsGroup.add(conservButton);
-        roomsGroup.add(kitchenButton);
-        roomsGroup.add(ballroomButton);
+        ButtonGroup roomGroup = new ButtonGroup();
+        roomGroup.add(studyButton);
+        roomGroup.add(hallButton);
+        roomGroup.add(diningButton);
+        roomGroup.add(loungeButton);
+        roomGroup.add(libraryButton);
+        roomGroup.add(billiardButton);
+        roomGroup.add(conservButton);
+        roomGroup.add(kitchenButton);
+        roomGroup.add(ballroomButton);
 
         Border butBorder = BorderFactory.createEtchedBorder();
         butBorder = BorderFactory.createTitledBorder(butBorder, "Room");
@@ -149,13 +149,13 @@ public class SuggestionGUI extends JFrame implements ActionListener
         peacockButton = new JRadioButton("Mrs. Peacock");
         plumButton = new JRadioButton("Professor Plum");
 
-        ButtonGroup personGroup = new ButtonGroup();
-        personGroup.add(scarletButton);
-        personGroup.add(mustardButton);
-        personGroup.add(whiteButton);
-        personGroup.add(greenButton);
-        personGroup.add(peacockButton);
-        personGroup.add(plumButton);
+        ButtonGroup suspectGroup = new ButtonGroup();
+        suspectGroup.add(scarletButton);
+        suspectGroup.add(mustardButton);
+        suspectGroup.add(whiteButton);
+        suspectGroup.add(greenButton);
+        suspectGroup.add(peacockButton);
+        suspectGroup.add(plumButton);
 
         Border personBorder = BorderFactory.createEtchedBorder();
         personBorder = BorderFactory.createTitledBorder(personBorder, "Suspect");
@@ -190,10 +190,11 @@ public class SuggestionGUI extends JFrame implements ActionListener
         submit.setMnemonic(KeyEvent.VK_D);
 
         // Display in the same order as detectiveNotes
-        this.setLayout(new GridLayout(4,1));
+        //this.setLayout(new GridLayout(4,1)); // Don't remove this. However, Suggestions can only be made within the current room
+        this.setLayout(new GridLayout(3,1));
         this.add(suspectPanel);
         this.add(weaponPanel);
-        this.add(roomPanel);
+        //this.add(roomPanel); // Don't remove this. However, Suggestions can only be made within the current room
         this.add(submit);
         
         submit.addActionListener (new ActionListener() {
@@ -205,7 +206,7 @@ public class SuggestionGUI extends JFrame implements ActionListener
 				RoomCard rc = new RoomCard();
 				SuspectCard sc = new SuspectCard();
 	        		
-				for(Enumeration<AbstractButton> buttons= weaponsGroup.getElements(); buttons.hasMoreElements();)  
+				for(Enumeration<AbstractButton> buttons= weaponGroup.getElements(); buttons.hasMoreElements();)  
 				{
 					Object wbutton = buttons.nextElement();
 	        			 
@@ -216,18 +217,18 @@ public class SuggestionGUI extends JFrame implements ActionListener
 	        			}	 
 				}
 	        		 
-				for(Enumeration<AbstractButton> buttons= roomsGroup.getElements(); buttons.hasMoreElements();)  
-	        		{
-					Object rbutton = buttons.nextElement();
-	        			 
-	        			if(((AbstractButton) rbutton).isSelected())
-	        			{
-	        				r = ((AbstractButton) rbutton).getText();
-	        				rc.setName(r);	 
-	        			}	 
-	        		}
+//				for(Enumeration<AbstractButton> buttons= roomGroup.getElements(); buttons.hasMoreElements();)  
+//	        		{
+//					Object rbutton = buttons.nextElement();
+//	        			 
+//	        			if(((AbstractButton) rbutton).isSelected())
+//	        			{
+//	        				r = ((AbstractButton) rbutton).getText();
+//	        				rc.setName(r);	 
+//	        			}	 
+//	        		}
 	        		 
-				for(Enumeration<AbstractButton> buttons= personGroup.getElements(); buttons.hasMoreElements();)  
+				for(Enumeration<AbstractButton> buttons= suspectGroup.getElements(); buttons.hasMoreElements();)  
 	        		{
 					Object rbutton = buttons.nextElement();
 	        			 
@@ -237,9 +238,12 @@ public class SuggestionGUI extends JFrame implements ActionListener
 	        				sc.setName(s);	 
 	        			}	 
 	        		}
-	        		
+
+				// Suggestions can only be made in player's current room
+				rc.setName(positionOnBoard.getName());
+
 	        		// Player can submit a suggestion if available
-        			Suggestion sug = new Suggestion(rc, wc, sc);
+        			Suggestion sug = new Suggestion(rc, wc, sc); // Don't remove this. However, Suggestions can only be made within the current room
         			client.sendTCP(sug);
 				// now endTurn
 				client.sendTCP(new EndTurn());
