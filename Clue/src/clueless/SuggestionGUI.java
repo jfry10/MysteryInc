@@ -18,7 +18,6 @@ public class SuggestionGUI extends JFrame implements ActionListener
 {
     
     private JRadioButton knifeButton, pistolButton, ropeButton, candlestickButton, leadPipeButton, wrenchButton;
-    private JRadioButton studyButton, hallButton, diningButton, loungeButton, libraryButton, billiardButton, conservButton, kitchenButton, ballroomButton;
     private JRadioButton scarletButton, mustardButton, whiteButton, greenButton, peacockButton, plumButton;
     protected JButton submit;
 
@@ -74,63 +73,6 @@ public class SuggestionGUI extends JFrame implements ActionListener
         weaponPanel.add(wrenchButton);
 
 
-        studyButton = new JRadioButton(Constants.ROOMS[Constants.STUDY]);
-        hallButton = new JRadioButton(Constants.ROOMS[Constants.HALL]);
-        diningButton = new JRadioButton(Constants.ROOMS[Constants.DINING_ROOM]);
-        loungeButton = new JRadioButton(Constants.ROOMS[Constants.LOUNGE]);
-        libraryButton = new JRadioButton(Constants.ROOMS[Constants.LIBRARY]);
-        billiardButton = new JRadioButton(Constants.ROOMS[Constants.BILLIARD_ROOM]);
-        conservButton = new JRadioButton(Constants.ROOMS[Constants.CONSERVATORY]);
-        kitchenButton = new JRadioButton(Constants.ROOMS[Constants.KITCHEN]);
-        ballroomButton = new JRadioButton(Constants.ROOMS[Constants.BALL_ROOM]);
-
-        ButtonGroup roomGroup = new ButtonGroup();
-        roomGroup.add(studyButton);
-        roomGroup.add(hallButton);
-        roomGroup.add(diningButton);
-        roomGroup.add(loungeButton);
-        roomGroup.add(libraryButton);
-        roomGroup.add(billiardButton);
-        roomGroup.add(conservButton);
-        roomGroup.add(kitchenButton);
-        roomGroup.add(ballroomButton);
-
-        Border roomBorder = BorderFactory.createEtchedBorder();
-        roomBorder = BorderFactory.createTitledBorder(roomBorder, "Room");
-
-        JPanel roomPanel = new JPanel();
-        roomPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        roomPanel.add(studyButton);
-        roomPanel.add(hallButton);
-        roomPanel.add(diningButton);
-        roomPanel.add(loungeButton);
-        roomPanel.add(libraryButton);
-        roomPanel.add(billiardButton);
-        roomPanel.add(conservButton);
-        roomPanel.add(kitchenButton);
-        roomPanel.add(ballroomButton);
-        roomPanel.setBorder(roomBorder);
-
-        studyButton.addActionListener(this);
-        roomPanel.add(studyButton);
-        hallButton.addActionListener(this);
-        roomPanel.add(hallButton);
-        diningButton.addActionListener(this);
-        roomPanel.add(diningButton);
-        loungeButton.addActionListener(this);
-        roomPanel.add(loungeButton);
-        libraryButton.addActionListener(this);
-        roomPanel.add(libraryButton);
-        billiardButton.addActionListener(this);
-        roomPanel.add(billiardButton);
-        conservButton.addActionListener(this);
-        roomPanel.add(conservButton);
-        kitchenButton.addActionListener(this);
-        roomPanel.add(kitchenButton);
-        ballroomButton.addActionListener(this);
-        roomPanel.add(ballroomButton);
-
-
         scarletButton = new JRadioButton(Constants.SUSPECTS[Constants.MISS_SCARLET]);
         mustardButton = new JRadioButton(Constants.SUSPECTS[Constants.COL_MUSTARD]);
         whiteButton = new JRadioButton(Constants.SUSPECTS[Constants.MRS_WHITE]);
@@ -179,11 +121,9 @@ public class SuggestionGUI extends JFrame implements ActionListener
         submit.setMnemonic(KeyEvent.VK_D);
 
         // Display in the same order as detectiveNotes
-        //this.setLayout(new GridLayout(4,1)); // Don't remove this. However, Suggestions can only be made within the current room
         this.setLayout(new GridLayout(3,1));
         this.add(suspectPanel);
         this.add(weaponPanel);
-        //this.add(roomPanel); // Don't remove this. However, Suggestions can only be made within the current room
         this.add(submit);
         
         submit.addActionListener (new ActionListener() {
@@ -206,17 +146,6 @@ public class SuggestionGUI extends JFrame implements ActionListener
 	        			}	 
 				}
 	        		 
-//				for(Enumeration<AbstractButton> buttons= roomGroup.getElements(); buttons.hasMoreElements();)  
-//	        		{
-//					Object rbutton = buttons.nextElement();
-//	        			 
-//	        			if(((AbstractButton) rbutton).isSelected())
-//	        			{
-//	        				r = ((AbstractButton) rbutton).getText();
-//	        				rc.setName(r);	 
-//	        			}	 
-//	        		}
-	        		 
 				for(Enumeration<AbstractButton> buttons= suspectGroup.getElements(); buttons.hasMoreElements();)  
 	        		{
 					Object rbutton = buttons.nextElement();
@@ -233,7 +162,7 @@ public class SuggestionGUI extends JFrame implements ActionListener
 				System.out.println("suggestion made in " + rc.getName());
 
 	        		// Player can submit a suggestion if available
-        			Suggestion sug = new Suggestion(rc, wc, sc); // Don't remove this. However, Suggestions can only be made within the current room
+        			Suggestion sug = new Suggestion(rc, wc, sc);
         			client.sendTCP(sug);
 				// now endTurn
 				client.sendTCP(new EndTurn());

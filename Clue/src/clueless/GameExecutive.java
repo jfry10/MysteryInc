@@ -204,7 +204,7 @@ public class GameExecutive
 				if (object instanceof SuggestionDisprove)
 				{
 					// Sent by client, means that the player could not disprove
-					if(((SuggestionDisprove)object).card.getName().equals("null"))
+					if(((SuggestionDisprove)object).card.getName().equals(new RoomCard().getName()))
 					{
 						// cannot disprove -- see if next player can disprove
 						if(playerInfoMap.get(playerID).playerToLeft.equals(playerMakingSuggestion))
@@ -520,10 +520,10 @@ public class GameExecutive
 
 // This PlayerInfo class is used for the Player mapping used in gameplay
 class PlayerInfo {
-	public String suspectName;
-	public Integer playerId;
-	public PlayerInfo playerToLeft;
-	public Player player;
+	public String suspectName = "null";
+	public Integer playerId = -1;
+	public PlayerInfo playerToLeft = null; // don't create an endless loop
+	public Player player = new Player();
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -535,7 +535,10 @@ class PlayerInfo {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Suspect Name = " + suspectName + "\n");
 		sb.append("playerId = " + playerId + "\n");
-		sb.append("Player to left = " + playerToLeft.suspectName + "\n");
+		if (playerToLeft != null)
+		{
+			sb.append("Player to left = " + playerToLeft.suspectName + "\n");
+		}
 		return sb.toString();
 	}
 }

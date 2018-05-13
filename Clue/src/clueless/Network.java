@@ -87,9 +87,7 @@ public class Network {
 	static public class SetSuspect {
 		public String selectedSuspect;
 		
-		public SetSuspect() {
-			
-		}
+		public SetSuspect() {}
 		
 		public SetSuspect(String selectedSuspect) {
 			this.selectedSuspect = selectedSuspect;
