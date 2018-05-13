@@ -41,6 +41,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
 import clueless.Network.ChatMessage;
+import clueless.Network.DealCard;
 import clueless.Network.DetectiveInfo;
 import clueless.Network.EndTurn;
 import clueless.Network.DisplayGUI;
@@ -167,10 +168,12 @@ public class CluelessClient
 				}
 
 				// The Server sends us a new Card
-				if (object instanceof Card)
+				if (object instanceof DealCard)
 				{
-					Card newCard = (Card)object;
-					player.addCardToHand(newCard);
+					DealCard newCard = (DealCard)object;
+					player.addCardToHand(newCard.card);
+					// update GameFrame's detectiveNotes
+					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
 					return;
 				}
 
@@ -199,6 +202,10 @@ public class CluelessClient
                 {
                 		SuggestionDisprove sd = (SuggestionDisprove)object;
                 		player.updateDetectiveNotes(sd.card);
+    					// update GameFrame's detectiveNotes
+    					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
+    					// now print a message so the player knows why they were disproved
+    					GameFrame.addMessage("Your suggestion was incorrect!\n" + sd.card.getName() + " is not in the Case File!");
                 		return;
                 }
                 
@@ -277,16 +284,18 @@ public class CluelessClient
 		///Accusation Listener
 		GameFrame.accusationListener(new Runnable() {
 			public void run () {
-				JFrame frame = new AccusationGui(client);
+				JFrame frame = new AccusationGUI(client);
 				frame.setVisible(true);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
-				
+
 		//Suggestion Listener
 		GameFrame.suggestionListener(new Runnable() {
 			public void run () {
-				JFrame frame = new main(client);
+				JFrame frame = new SuggestionGUI(client);
 				frame.setVisible(true);	
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			}
 		});
 
@@ -414,29 +423,6 @@ public class CluelessClient
 		GameFrame.suggestButton.setVisible(false);
 	}
 
-	// Handle the Suggestion button, pressed by the JFrame
-	void MakeSuggestion(RoomCard room, WeaponCard weapon, SuspectCard suspect)
-	{
-		Suggestion sug = new Suggestion(room, weapon, suspect);
-		client.sendTCP(sug);
-	}
-
-	// Handle the Accusation button, pressed by the JFrame
-	void MakeAccusation(RoomCard room, WeaponCard weapon, SuspectCard suspect)
-	{
-		int dialogButton = JOptionPane.YES_NO_OPTION;
-		int dialogResult = JOptionPane.showConfirmDialog(
-				null, 
-				"You only get one accusation! If you are incorrect, you forfeit the rest of your turns. Are you sure you want to submit?", 
-				"Making Accusation", 
-				dialogButton);
-		if(dialogResult == JOptionPane.YES_OPTION)
-		{ 
-			Accusation acc = new Accusation(room, weapon, suspect);
-			client.sendTCP(acc);
-		}
-	}
-
 	static private class GameFrame extends JFrame implements ActionListener
 	{
 		GUIDisplay guiDisplay = new GUIDisplay();
@@ -471,7 +457,7 @@ public class CluelessClient
 			//////Detective Notes////////
 			JPanel detectiveNotesPanel = new JPanel(new BorderLayout());
 			detectiveNotesPanel.add(new JScrollPane(detectiveNotes = new JTextArea()), BorderLayout.CENTER);
-			detectiveNotes.setText(new Player().getDetectiveNotes().toString());
+			detectiveNotes.setText(new Player().getDetectiveNotes().toString()); // just a plain notepad for now
 			detectiveNotes.setEditable(false);
 			contentPane.add(detectiveNotesPanel);
 			// The Detective Notes in the top right
@@ -588,7 +574,7 @@ public class CluelessClient
 			});
 		}
 		
-		///Accusation linstener
+		///Accusation listener
 		public void accusationListener (final Runnable listener) {
 			accusButton.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent evt) {
@@ -599,7 +585,7 @@ public class CluelessClient
 				
 		//Suggestion
 		public void suggestionListener (final Runnable listener) {
-			accusButton.addActionListener(new ActionListener() {
+			suggestButton.addActionListener(new ActionListener() {
 				public void actionPerformed (ActionEvent evt) {
 					listener.run(); // call so we can send the move token
 				}

@@ -111,9 +111,7 @@ public class Network {
 	static public class ChatMessage {
 		public String text;
 		
-		public ChatMessage() {
-			
-		}
+		public ChatMessage() { }
 		
 		public ChatMessage(String text) {
 			this.text = text;
@@ -154,6 +152,8 @@ public class Network {
 		// Null card means can't disprove
 		public Card card = null;
 		
+		public SuggestionDisprove() { }
+		
 		public SuggestionDisprove(Card card) {
 			this.card = card;
 		}
@@ -167,10 +167,7 @@ public class Network {
 		
 		public Gameboard gameboard = null;
 		
-		public DisplayGUI()
-		{
-			
-		}
+		public DisplayGUI() { }
 
 		public DisplayGUI(Gameboard g)
 		{
