@@ -677,7 +677,8 @@ public class CluelessClient
 		//String ipAddress = args[0];
 		Log.set(Log.LEVEL_DEBUG);
 		//new CluelessClient(ipAddress);
-		//new CluelessClient("72.205.5.54");
-		new CluelessClient("localhost");
+		new CluelessClient("72.205.5.54");
+		//new CluelessClient("68.98.230.119");
+		//new CluelessClient("localhost");
 	}
 }
