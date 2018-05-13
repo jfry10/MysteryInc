@@ -43,6 +43,7 @@ import com.esotericsoftware.minlog.Log;
 import clueless.Network.ChatMessage;
 import clueless.Network.DetectiveInfo;
 import clueless.Network.EndTurn;
+import clueless.Network.DisplayGUI;
 import clueless.Network.MoveToken;
 import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterName;
@@ -53,7 +54,6 @@ import clueless.Network.BeginGame;
 import clueless.Network.GetSuspects;
 import clueless.Network.SetSuspect;
 import clueless.Network.SuggestionAsk;
-import clueless.Network.DisplayGUI;
 import clueless.Network.SuggestionDisprove;;
 
 public class CluelessClient
@@ -608,7 +608,8 @@ public class CluelessClient
 			});
 		}
 
-		public void setCloseListener (final Runnable listener) {
+		public void setCloseListener (final Runnable listener)
+		{
 			addWindowListener(new WindowAdapter() {
 				public void windowClosed (WindowEvent evt) {
 					listener.run();
