@@ -212,7 +212,7 @@ public class AccusationBox extends JPanel implements ActionListener {
         			 }	 
         		 }
         		 
-        		 for(Enumeration<AbstractButton> buttons= roomsGroup.getElements(); buttons.hasMoreElements();)  
+        		 for(Enumeration<AbstractButton> buttons= personGroup.getElements(); buttons.hasMoreElements();)  
         		 {
         			 Object rbutton = buttons.nextElement();
         			 
@@ -255,16 +255,6 @@ public class AccusationBox extends JPanel implements ActionListener {
 		// TODO Auto-generated method stub
 		 System.out.println(e);
 		
-	}
-	
-	public void getWeapon()
-	{
-		boolean isWeapon = false;
-		int i = 0;
-		while (isWeapon == false)
-		{
-			
-		}
 		
 	}
 

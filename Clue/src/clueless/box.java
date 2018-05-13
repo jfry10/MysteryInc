@@ -215,7 +215,7 @@ public class box extends JPanel implements ActionListener {
     			 }	 
     		 }
     		 
-    		 for(Enumeration<AbstractButton> buttons= roomsGroup.getElements(); buttons.hasMoreElements();)  
+    		 for(Enumeration<AbstractButton> buttons= personGroup.getElements(); buttons.hasMoreElements();)  
     		 {
     			 Object rbutton = buttons.nextElement();
     			 
