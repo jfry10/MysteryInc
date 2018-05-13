@@ -89,39 +89,28 @@ public class GameExecutive
 				CluelessConnection conn = (CluelessConnection)c;
 				
 				Integer playerID = conn.getID();
-
-				if (object instanceof RegisterName) {
-					// Ignore the object if a client has already registered a name. This is
-					// impossible with our client, but a hacker could send messages at any time.
-					if (conn.playerName != null) return;
-					// Ignore the object if the name is invalid.
-					String name = ((RegisterName)object).name;
-					if (name == null) return;
-					name = name.trim();
-					if (name.length() == 0) return;
-					// Store the name on the connection.
-					conn.playerName = name;
-					// Send a "connected" message to everyone except the new client.
-					ChatMessage chatMessage = new ChatMessage();
-					chatMessage.text = name + " connected.";
-					server.sendToAllExceptTCP(conn.getID(), chatMessage);
-					// Send everyone a new list of connection names.
-					//updateNames();
-					return;
-				}
-
 				
-				// The Client sends us a Suggestion, pass on to other clients
+				// The Client sends us a Suggestion, pass on to the first client
 				if (object instanceof Suggestion)
 				{
 					currentSuggestion = (Suggestion)object;
 					playerMakingSuggestion = playerInfoMap.get(conn.getID());
+					
+					// First, move the Suggestion player to the room
+					Gameboard.suspectMove(currentSuggestion.suspect, currentSuggestion.room);
+					
+					// Now, send out the updated board
+	        	    		server.sendToAllTCP(new DisplayGUI());
+
+	        	    		// The player on the left gets the first guess
 					server.sendToTCP(playerMakingSuggestion.playerToLeft.playerId, currentSuggestion);
+					return;
 				}
 
 				// We receive the (next) suggestionDisprove
 				if (object instanceof SuggestionDisprove)
 				{
+					// Sent by client, means that the player could not disprove
 					if(((SuggestionDisprove)object).card == null)
 					{
 						// cannot disprove -- see if next player can disprove
@@ -145,6 +134,7 @@ public class GameExecutive
 						playerMakingSuggestion = null;
 						currentSuggestion = null;
 					}
+					return;
 				}
 				
 				// The Client sends us an Accusation, pass on to other clients
@@ -172,10 +162,10 @@ public class GameExecutive
 						server.sendToAllTCP(new ChatMessage(messageSB.toString()));
 						endGame();
 					}
-					// accusation is wrong. Ban the player
 					else
 					{
 						// bzzzzzzt. nope.
+						// accusation is wrong. Ban the player
 						StringBuilder messageSB = new StringBuilder();
 						messageSB.append(currentPlayer.suspectName);
 						messageSB.append("'s accusation of ");
@@ -191,21 +181,8 @@ public class GameExecutive
 						// next player is up
 						prodNextPlayer(currentPlayer);
 					}
+					return;
 				}
-
-				// The Client sends us a Card, determine what to do with it
-				if (object instanceof Card)
-				{
-					Card card = (Card)object;
-					if (card.getName() == "null");
-				}
-				
-//				// The Client sends us a String, determine what to do with it
-//				if (object instanceof String)
-//				{
-//					String s = (String)object;
-//					return;
-//				}
 
                 if(object instanceof RegisterRequest)
 				{
@@ -213,6 +190,7 @@ public class GameExecutive
 		        		regResponse.clientId = conn.getID();
 		        		regResponse.suspectNames = getAvailableSuspects();
 		        		server.sendToTCP(conn.getID(), regResponse);
+		        		return;
 		        	}
                 
                 if(object instanceof GetSuspects)
@@ -220,32 +198,19 @@ public class GameExecutive
 	                	SuspectResponse response = new SuspectResponse();
 	                	response.suspectNames = getAvailableSuspects();
 	                	server.sendToTCP(conn.getID(), response);
+	                	return;
                 }
                 
                 if(object instanceof SetSuspect)
                 {
 	                	String suspectName = ((SetSuspect) object).selectedSuspect;
 	                	System.out.println("Selected Suspect: " + suspectName);
+					// Store the name on the connection.
+					conn.playerName = suspectName;
 	                	suspectConnectionMap.put(suspectName, playerID);
 	                	server.sendToTCP(playerID, new ChatMessage("You are now " + suspectName + "!"));
+	                	return;
                 }
-
-                /*
-				if (object instanceof SuspectRequest)
-				{
-	        		String requestedSuspect = ((SuspectRequest)object).requestedSuspect;
-	        		SuspectResponse response = new SuspectResponse();
-	        		if(suspectConnectionMap.get(requestedSuspect) == null) {
-	        			suspectConnectionMap.put(requestedSuspect, conn.getID());
-	        			response.success = true;
-	        			response.selectedSuspectName = requestedSuspect;
-	        		} else {
-	        			response.success = false;
-	        			response.suspectNames = getAvailableSuspects();
-	        		}
-	        		server.sendToTCP(conn.getID(), response);
-	        	}
-	        	*/
 
 				if (object instanceof BeginGame)
 				{
@@ -258,7 +223,7 @@ public class GameExecutive
 						}
 					}
 
-					if(playerCounter > 2)
+					if(playerCounter > 2) // at least 3 players
 					{
 						server.sendToAllTCP(new BeginGame());
 						startGame();
@@ -267,105 +232,76 @@ public class GameExecutive
 					{
 						server.sendToTCP(playerID, new ChatMessage("Not enough players to start game. You need " + (3 - playerCounter) + " more player(s)."));
 					}
+					return;
 				}
 
 				if (object instanceof EndTurn)
 				{
-					PlayerInfo playerInfo = playerInfoMap.get(playerID);
+					PlayerInfo currentPlayer = playerInfoMap.get(playerID);
 		    	    		// end current player's turn
-		    	    		server.sendToTCP(playerInfo.playerId, new EndTurn());
-			    	
+		    	    		server.sendToTCP(currentPlayer.playerId, new EndTurn());
+
 		    	    		// and start the next player's turn
-		        	    	PlayerInfo playerLeftInfo = playerInfoMap.get(playerInfo.playerToLeft.playerId);
-		        	    	Location playerLocation = playerLeftInfo.player.positionOnBoard;
-		        	    	PlayerTurn playerTurn = new PlayerTurn();
-		        	    	if(playerLocation.hasUp()) {
-		        	    		playerTurn.up = true;
-		        	    	}
-		        	    	if(playerLocation.hasDown()) {
-		        	    		playerTurn.down = true;
-		        	    	}
-		        	    	if(playerLocation.hasLeft()) {
-		        	    		playerTurn.left = true;
-		        	    	}
-		        	    	if(playerLocation.hasRight()) {
-		        	    		playerTurn.right = true;
-		        	    	}
-		        	    	if(playerLocation instanceof Room && ((Room) playerLocation).hasSecretPassage()) {
-		        	    		playerTurn.passage = true;
-		        	    	} 
-		        	    	
-		        	    	server.sendToTCP(playerLeftInfo.playerId, playerTurn);
+					prodNextPlayer(currentPlayer);
+
+		        	    	return;
 				}
 
 				if (object instanceof MoveToken) 
 				{
 					int direction = ((MoveToken)object).direction;
-					PlayerInfo playerInfo = playerInfoMap.get(playerID);
+					PlayerInfo currentPlayer = playerInfoMap.get(playerID);
 		        		switch(direction)
 		        		{
 			        		case Constants.DIR_UP:
-			        			Gameboard.moveUp(gameBoard, playerInfo.player);
+			        			Gameboard.moveUp(currentPlayer.player);
 			        			break;
 			        		case Constants.DIR_DOWN:
-			        			Gameboard.moveDown(gameBoard, playerInfo.player);
+			        			Gameboard.moveDown(currentPlayer.player);
 			        			break;
 			        		case Constants.DIR_LEFT:
-			        			Gameboard.moveLeft(gameBoard, playerInfo.player);
+			        			Gameboard.moveLeft(currentPlayer.player);
 			        			break;
 			        		case Constants.DIR_RIGHT:
-			        			Gameboard.moveRight(gameBoard, playerInfo.player);
+			        			Gameboard.moveRight(currentPlayer.player);
 			        			break;
 			        		case Constants.DIR_PASSAGE:
-			        			Gameboard.takePassage(gameBoard, playerInfo.player);
+			        			Gameboard.takePassage(currentPlayer.player);
 			        			break;
 		        		}
 
-		        	    if(playerInfo.player.positionOnBoard instanceof Room)
+		        		// Player can make a Suggestion if they recently moved to a room
+		        	    if(currentPlayer.player.positionOnBoard instanceof Room)
 		        	    {
 			        	    	// Player has entered room, is allowed to make a suggestion
-			        	    	server.sendToTCP(playerInfo.playerId, new SuggestionAsk());
+			        	    	server.sendToTCP(currentPlayer.playerId, new SuggestionAsk());
 		        	    }
 		        	    else
 		        	    {
 		        	    		// end current player's turn
-		        	    		server.sendToTCP(playerInfo.playerId, new EndTurn());
+		        	    		server.sendToTCP(currentPlayer.playerId, new EndTurn());
 	        	    	
 		        	    		// and start the next player's turn
-			        	    	PlayerInfo playerLeftInfo = playerInfoMap.get(playerInfo.playerToLeft.playerId);
-			        	    	Location playerLocation = playerLeftInfo.player.positionOnBoard;
-			        	    	PlayerTurn playerTurn = new PlayerTurn();
-			        	    	if(playerLocation.hasUp()) {
-			        	    		playerTurn.up = true;
-			        	    	}
-			        	    	if(playerLocation.hasDown()) {
-			        	    		playerTurn.down = true;
-			        	    	}
-			        	    	if(playerLocation.hasLeft()) {
-			        	    		playerTurn.left = true;
-			        	    	}
-			        	    	if(playerLocation.hasRight()) {
-			        	    		playerTurn.right = true;
-			        	    	}
-			        	    	if(playerLocation instanceof Room && ((Room) playerLocation).hasSecretPassage()) {
-			        	    		playerTurn.passage = true;
-			        	    	} 
-			        	    	
-			        	    	server.sendToTCP(playerLeftInfo.playerId, playerTurn);
+		        	    		prodNextPlayer(currentPlayer);
 		        	    }
+
+		        	    // Update the GameBoard after every move
+		        	    server.sendToAllTCP(new DisplayGUI());
+		        	    return;
 		        	}
 			}
 
-			
-			public void disconnected (Connection c) {
+			public void disconnected (Connection c)
+			{
 				CluelessConnection connection = (CluelessConnection)c;
-				if (connection.playerName != null) {
+				if (connection.playerName != null)
+				{
 					// Announce to everyone that someone (with a registered name) has left.
 					ChatMessage chatMessage = new ChatMessage();
 					chatMessage.text = connection.playerName + " disconnected.";
 					server.sendToAllTCP(chatMessage);
-					//updateNames();
 				}
+				return;
 			}
 		});
 		server.bind(Network.port);
@@ -397,61 +333,39 @@ public class GameExecutive
 
 	void startGame()
 	{
-				
+		// set up the game with PlayerInfo objects, used for directionality/turns
 		initializePlayerInfoObjects();
 		
-		gameBoard = Gameboard.createNewBoard(players);
-		
-		//server.sendToAllTCP(generateGUIDisplayObject());
-		/*
-		GUIDisplay guiDisplay = generateGUIDisplayObject();
-		
-		for(Integer connId : playerInfoMap.keySet()) {
-			try {
-				server.sendToTCP(connId, guiDisplay);
-			} catch (Exception e) {
-				
-				e.printStackTrace();
-			}
-		}
-		*/
-		
-		//Player[] playerArray = getPlayerArrayForGUIDisplay();
-		server.sendToAllTCP(new DisplayGUI(players));
+		// create a new GameBoard for the game
+		Gameboard.createNewBoard(players);
+
+        // send the players to the clients so they can update the GUIDiplay / gameboard
+		server.sendToAllTCP(new DisplayGUI());
 		
 		forfeitPlayerList = new ArrayList<Integer>();
 		
-		distributeCards();
+		distributeCards(); // Create the caseFile and distribute all remaining cards
 		
 		Integer[] playerInfoKeys = playerInfoMap.keySet().toArray(new Integer[playerInfoMap.size()]);
 		
 		PlayerInfo firstPlayer = playerInfoMap.get(playerInfoKeys[0]);
 		Location firstPlayerLocation = firstPlayer.player.positionOnBoard;
-		
+		System.out.println(firstPlayer.suspectName + " has the first move");
+
 		// assign moves for playerTurn
 	    	PlayerTurn playerTurn = new PlayerTurn();
-	    	if(firstPlayerLocation.hasUp())
-	    	{
-	    		playerTurn.up = true;
-	    	}
-	    	if(firstPlayerLocation.hasDown())
-	    	{
-	    		playerTurn.down = true;
-	    	}
-	    	if(firstPlayerLocation.hasLeft())
-	    	{
-	    		playerTurn.left = true;
-	    	}
-	    	if(firstPlayerLocation.hasRight())
-	    	{
-	    		playerTurn.right = true;
-	    	}
-	    	if(firstPlayerLocation instanceof Room && ((Room) firstPlayerLocation).hasSecretPassage())
-	    	{
-	    		playerTurn.passage = true;
-	    	}
+	    	playerTurn.turn = true;
+	    	playerTurn.up = 	firstPlayerLocation.hasUp();
+	    	playerTurn.down = firstPlayerLocation.hasDown();
+	    	playerTurn.left = firstPlayerLocation.hasLeft();
+	    	playerTurn.right = firstPlayerLocation.hasRight();
+	    	playerTurn.passage = (firstPlayerLocation instanceof Room && ((Room) firstPlayerLocation).hasSecretPassage());
 			
 		server.sendToTCP(playerInfoKeys[0], playerTurn);
+		
+		// send turn = false to other players
+		playerTurn.turn = false;
+		server.sendToAllExceptTCP(playerInfoKeys[0], playerTurn);
 	}
 	
 	// Creates a singly linked list of player info objects that are linked by 
@@ -528,74 +442,8 @@ public class GameExecutive
 		}
 	
 	}
-	
-//	GUIDisplay generateGUIDisplayObject()
-//	{
-//		
-//		Player[] playerArray = new Player[6];
-//		
-//		for(Player player : players) {
-//			switch(player.suspectName) {
-//			case Constants.MISS_SCARLET_STR:
-//				playerArray[Constants.MISS_SCARLET] = player;
-//				break;
-//			case Constants.COL_MUSTARD_STR:
-//				playerArray[Constants.COL_MUSTARD] = player;
-//				break;
-//			case Constants.MRS_WHITE_STR:
-//				playerArray[Constants.MRS_WHITE] = player;
-//				break;
-//			case Constants.MR_GREEN_STR:
-//				playerArray[Constants.MR_GREEN] = player;
-//				break;
-//			case Constants.MRS_PEACOCK_STR:
-//				playerArray[Constants.MRS_PEACOCK] = player;
-//				break;
-//			case Constants.PROF_PLUM_STR:
-//				playerArray[Constants.PROF_PLUM] = player;
-//				break;
-//			}
-//		}
-//		
-//		GUIDisplay guiDisplay = new GUIDisplay(playerArray);
-//		
-//		return guiDisplay;
-//	}
-	
-//	Player[] getPlayerArrayForGUIDisplay()
-//	{
-//		Player[] playerArray = new Player[6];
-//		
-//		for(Player player : players) {
-//			switch(player.suspectName) {
-//				case Constants.MISS_SCARLET_STR:
-//					playerArray[Constants.MISS_SCARLET] = player;
-//					break;
-//				case Constants.COL_MUSTARD_STR:
-//					playerArray[Constants.COL_MUSTARD] = player;
-//					break;
-//				case Constants.MRS_WHITE_STR:
-//					playerArray[Constants.MRS_WHITE] = player;
-//					break;
-//				case Constants.MR_GREEN_STR:
-//					playerArray[Constants.MR_GREEN] = player;
-//					break;
-//				case Constants.MRS_PEACOCK_STR:
-//					playerArray[Constants.MRS_PEACOCK] = player;
-//					break;
-//				case Constants.PROF_PLUM_STR:
-//					playerArray[Constants.PROF_PLUM] = player;
-//					break;
-//			}
-//		}
-//		for(Player player : playerArray)
-//		{
-//			System.out.println(player.suspectName);
-//		}
-//		
-//		return playerArray;
-//	}
-	
+
+	// Return a list of the remaining suspects that are available for the user to select
 	String[] getAvailableSuspects()
 	{
 		ArrayList<String> suspectList = new ArrayList<String>();
@@ -611,22 +459,7 @@ public class GameExecutive
 		return suspectList.toArray(new String[suspectList.size()]);
 	}
 
-//	void updateNames ()
-//	{
-//		// Collect the names for each connection.
-//		Connection[] connections = server.getConnections();
-//		ArrayList names = new ArrayList(connections.length);
-//		for (int i = connections.length - 1; i >= 0; i--)
-//		{
-//			CluelessConnection connection = (CluelessConnection)connections[i];
-//			names.add(connection.playerName);
-//		}
-//		// Send the names to everyone.
-//		UpdateNames updateNames = new UpdateNames();
-//		updateNames.names = (String[])names.toArray(new String[names.size()]);
-//		server.sendToAllTCP(updateNames);
-//	}
-	
+	// Move to the next player
 	void prodNextPlayer(PlayerInfo currentPlayer)
 	{
 		Integer nextPlayerId = currentPlayer.playerToLeft.playerId;
@@ -637,7 +470,26 @@ public class GameExecutive
 			server.sendToAllTCP(new ChatMessage(message));
 			nextPlayerId = nextPlayer.playerToLeft.playerId;
 		}
-		server.sendToTCP(nextPlayerId, new BeginTurn());
+
+		// grab the next PlayerInfo
+		PlayerInfo nextPlayer = playerInfoMap.get(nextPlayerId);
+		Location playerLocation = nextPlayer.player.positionOnBoard;
+		System.out.println(nextPlayer.suspectName + " has the next move");
+		
+		// assign moves for playerTurn
+	    	PlayerTurn playerTurn = new PlayerTurn();
+	    	playerTurn.turn = true;
+	    	playerTurn.up = 	playerLocation.hasUp();
+	    	playerTurn.down = playerLocation.hasDown();
+	    	playerTurn.left = playerLocation.hasLeft();
+	    	playerTurn.right = playerLocation.hasRight();
+	    	playerTurn.passage = (playerLocation instanceof Room && ((Room) playerLocation).hasSecretPassage());
+		
+		server.sendToTCP(nextPlayerId, playerTurn);
+		
+		// send turn = false to other players
+		playerTurn.turn = false;
+		server.sendToAllExceptTCP(nextPlayerId, playerTurn);
 	}
 	
 	void endGame()

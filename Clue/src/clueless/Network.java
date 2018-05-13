@@ -52,23 +52,7 @@ public class Network {
         kryo.register(GUIDisplay.class);
         kryo.register(SuggestionAsk.class); 
         kryo.register(Player[].class);
-        /*
-        kryo.register(ColorUIResource.class);
-        kryo.register(ArrayList.class);
-        kryo.register(FontUIResource.class);
-        kryo.register(PrintColorUIResource.class);
-        kryo.register(Color.class);
-        kryo.register(FlowLayout.class);
-        kryo.register(EventListenerList.class);
-        kryo.register(Locale.class);
-        kryo.register(Player.class);
-        kryo.register(Player[].class);
-        kryo.register(PlayerHand.class);
-        kryo.register(DetectiveNotes.class);
-        kryo.register(boolean[].class);
-        kryo.register(Hallway.class);
-        kryo.register(Room.class);
-        */
+
 	}
 	
 	static public class RegisterRequest {
@@ -164,7 +148,7 @@ public class Network {
 	
 	static public class SuggestionDisprove {
 		// Null card means can't disprove
-		public Card card;
+		public Card card = null;
 		
 		public SuggestionDisprove(Card card) {
 			this.card = card;
@@ -176,14 +160,6 @@ public class Network {
 	}
 	
 	static public class DisplayGUI {
-		public Player[] players;
-		
-		public DisplayGUI() {
-			
-		}
-		
-		public DisplayGUI(Player[] players) {
-			this.players = players;
-		}
+
 	}
 }
