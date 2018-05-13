@@ -412,15 +412,18 @@ public class CluelessClient
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
+				boolean selected = false;
 				for(JRadioButton button : suspectButton) {
-					if(button.isSelected()) {
+					if(button.isSelected())
+					{
+						selected = true;
 						player = new Player(button.getText());
                 			client.sendTCP(new SetSuspect(player.suspectName));
 						break;
 					}
 				}
 				
-				if(player.suspectName != null)
+				if(selected)
 				{
 					suspectJFrame.dispose();
 				}

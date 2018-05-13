@@ -34,56 +34,56 @@ public class Room extends Location
     private String determineRoom(int number)
     {
     		if(number == 0) {
-			roomName = "Study";
+			roomName = Constants.ROOMS[Constants.STUDY];
 			setRight();
 			setDown();
     			createPassage(4,4);
     		}
     		else if(number == 1) {
-			roomName = "Hall";
+			roomName = Constants.ROOMS[Constants.HALL];
 			setLeft();
 			setRight();
 			setDown();
     		}
     		else if(number == 2) {
-			roomName = "Lounge";
+			roomName = Constants.ROOMS[Constants.LOUNGE];
 			setLeft();
 			setDown();
     			createPassage(4, 0);
     		}
     		else if(number == 3) {
-			roomName = "Library";
+			roomName = Constants.ROOMS[Constants.LIBRARY];
 			setUp();
 			setDown();
 			setRight();
     		}
     		else if(number == 4) {
-			roomName = "Billiard_Room";
+			roomName = Constants.ROOMS[Constants.BILLIARD_ROOM];
 			setUp();
 			setDown();
 			setLeft();
 			setRight();
     		}
     		else if(number == 5) {
-			roomName = "Dining_Room";
+			roomName = Constants.ROOMS[Constants.DINING_ROOM];
 			setLeft();
 			setUp();
 			setDown();
     		}
     		else if(number == 6) {
-			roomName = "Conservatory";
+			roomName = Constants.ROOMS[Constants.CONSERVATORY];
 			setUp();
 			setRight();
     			createPassage(0,4);
     		}
     		else if(number == 7) {
-			roomName = "Ballroom";
+			roomName = Constants.ROOMS[Constants.BALL_ROOM];
 			setLeft();
 			setRight();
 			setUp();
     		}
     		else if(number == 8) {
-			roomName = "Kitchen";
+			roomName = Constants.ROOMS[Constants.KITCHEN];
 			setUp();
 			setLeft();
     			createPassage(0, 0);

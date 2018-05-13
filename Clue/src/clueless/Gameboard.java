@@ -376,40 +376,40 @@ public class Gameboard
 		    			break;
 		    		}    		
 		    	}
-		    	if(roomName.equals("Hall")) {
+		    	if(roomName.equals(Constants.ROOMS[Constants.HALL])) {
 		    		newRoomRow = 0;
 		    		newRoomCol = 2;
 		    	}
-		    	else if(roomName.equals("Lounge")) {
+		    	else if(roomName.equals(Constants.ROOMS[Constants.LOUNGE])) {
 		    		newRoomRow = 0;
 		    		newRoomCol = 4;
 		    	}
-		    	else if(roomName.equals("Dining Room")) {
+		    	else if(roomName.equals(Constants.ROOMS[Constants.DINING_ROOM])) {
 		    		newRoomRow = 2;
 		    		newRoomCol = 4;
 		    	}
-		    	else if(roomName.equals("Kitchen")) {
+		    	else if(roomName.equals(Constants.ROOMS[Constants.KITCHEN])) {
 		    		newRoomRow = 4;
 		    		newRoomCol = 4;
 		    	}
-		    	else if(roomName.equals("Ball Room")) {
+		    	else if(roomName.equals(Constants.ROOMS[Constants.BALL_ROOM])) {
 		    		newRoomRow = 4;
 		    		newRoomCol = 2;
 		    	}
-		    	else if(roomName.equals("Conservatory")) {
+		    	else if(roomName.equals(Constants.ROOMS[Constants.CONSERVATORY])) {
 		    		newRoomRow = 4;
 		    		newRoomCol = 0;
 		    	}
-		    	else if(roomName.equals("Billiard Room")) {
+		    	else if(roomName.equals(Constants.ROOMS[Constants.BILLIARD_ROOM])) {
 		    		newRoomRow = 2;
 		    		newRoomCol = 2;
 		    	}
-		    	else if(roomName.equals("Library")) {
+		    	else if(roomName.equals(Constants.ROOMS[Constants.LIBRARY])) {
 		    		newRoomRow = 2;
 		    		newRoomCol = 0;
 		    	}
-		    	else if(roomName.equals("Study")) {
-					newRoomRow = 0;
+		    	else if(roomName.equals(Constants.ROOMS[Constants.STUDY])) {
+				newRoomRow = 0;
 		    		newRoomCol = 0;
 			}
 			newSpace = gameBoard[newRoomRow][newRoomCol];
@@ -481,62 +481,5 @@ public class Gameboard
     {
     		return gameBoard;
     }
-    
-//    public static void main (String[] args) {
-//	    	Player player1 = new Player("Scarlet");
-//	    	Player player2 = new Player("Mustard");
-//	    	Player player3 = new Player("White");
-//	    	Player player4 = new Player("Green");
-//	    	Player player5 = new Player("Peacock");
-//	    	Player player6 = new Player("Plum");
-//	    	Player[] players = {player1, player2, player3,player4,player5,player6};
-//	    	createNewBoard(players);
-//	    	
-//	    	for(int j=0;j<5;j++) {
-//	    		for(int k=0; k<5;k++) {
-//	    			if(gameBoard[j][k] != null) {
-//	    				if(gameBoard[j][k].isOccupied()) {
-//	    					String room = gameBoard[j][k].getName();
-//	    					String player = listToString(gameBoard[j][k].occupiedBy);
-//	    					System.out.println("The "+room+" is occupied by "+player);
-//	    				}
-//	    			}
-//	    		}
-//	    	}
-//	    	
-//	    	moveLeft(player1);
-//	    	System.out.println("The " + player1.positionOnBoard.getName() + " is occupied by: " + listToString(player1.positionOnBoard.occupiedBy));
-//	    	
-//	    	moveDown(player1);
-//	    	System.out.println("The " + player1.positionOnBoard.getName() + " is occupied by: " + listToString(player1.positionOnBoard.occupiedBy));
-//	    	moveDown(player1);
-//	    	System.out.println("The " + player1.positionOnBoard.getName() + " is occupied by: " + listToString(player1.positionOnBoard.occupiedBy));
-//	    	
-//	    	moveRight(player1);
-//	    	System.out.println("The " + player1.positionOnBoard.getName() + " is occupied by: " + listToString(player1.positionOnBoard.occupiedBy));
-//	    	moveRight(player1);
-//	    	System.out.println("The " + player1.positionOnBoard.getName() + " is occupied by: " + listToString(player1.positionOnBoard.occupiedBy));
-//	    	
-//	    	moveUp(player1);
-//	    	System.out.println("The " + player1.positionOnBoard.getName() + " is occupied by: " + listToString(player1.positionOnBoard.occupiedBy));
-//	    	
-//	    	moveLeft(player4);
-//	    	System.out.println("The " + player4.positionOnBoard.getName() + " is occupied by: " + listToString(player4.positionOnBoard.occupiedBy));
-//	    	
-//	    	takePassage(player4);
-//	    	System.out.println("The " + player4.positionOnBoard.getName() + " is occupied by: " + listToString(player4.positionOnBoard.occupiedBy));
-//	    	takePassage(player4);
-//	    	System.out.println("The " + player4.positionOnBoard.getName() + " is occupied by: " + listToString(player4.positionOnBoard.occupiedBy));
-//	    	
-//	    	moveUp(player4);
-//	    	moveUp(player4);
-//	    	moveUp(player4);
-//	    	moveUp(player4);
-//	    	System.out.println("The " + player4.positionOnBoard.getName() + " is occupied by: " + listToString(player4.positionOnBoard.occupiedBy));
-//	    	takePassage(player4);
-//	    	System.out.println("The " + player4.positionOnBoard.getName() + " is occupied by: " + listToString(player4.positionOnBoard.occupiedBy));
-//	    	takePassage(player4);
-//	    	System.out.println("The " + player4.positionOnBoard.getName() + " is occupied by: " + listToString(player4.positionOnBoard.occupiedBy));
-//    	
-//    }
+
 }
