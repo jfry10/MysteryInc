@@ -124,6 +124,15 @@ public class CluelessClient
         					GameFrame.moveLeftButton.setVisible(pt.left);
         					GameFrame.takePassageButton.setVisible(pt.passage);
         					GameFrame.suggestButton.setVisible(false); // wait until server enables this
+        					
+        					// unique case, player cannot make any movements. Give them
+        					// the option to end turn (or make accusation, should be true)
+        					if (!pt.up && !pt.right && !pt.down && !pt.left && !pt.passage)
+        					{					
+        						// Make this button an EndTurn button
+        						GameFrame.actionButton.setText("End Turn");
+        						GameFrame.actionButton.setVisible(true);
+        					}
 					}
 					else // not your turn
 					{
@@ -186,10 +195,10 @@ public class CluelessClient
                 }
 
                 // The Server sends us a Note / private message
-                if (object instanceof DetectiveInfo)
+                if (object instanceof SuggestionDisprove)
                 {
-                		DetectiveInfo pm = (DetectiveInfo)object;
-                		player.updateDetectiveNotes(pm.type, pm.name);
+                		SuggestionDisprove sd = (SuggestionDisprove)object;
+                		player.updateDetectiveNotes(sd.card);
                 		return;
                 }
                 
@@ -289,15 +298,15 @@ public class CluelessClient
 				
 				String buttonText = GameFrame.actionButton.getText();
 				// Send an object based on the button pressed
-				if ("Start Game" == buttonText)
+				if (buttonText.equals("Start Game"))
 				{
 					client.sendTCP(new BeginGame());
 				}
-				else if ("End Turn" == buttonText)
+				else if (buttonText.equals("End Turn"))
 				{
 					client.sendTCP(new EndTurn());
 				}
-				else if ("Restart Game" == buttonText)
+				else if (buttonText.equals("Restart Game"))
 				{
 					client.sendTCP(new BeginGame()); // ? Restart Game object?
 				}

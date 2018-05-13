@@ -27,7 +27,7 @@ public class PlayerHand {
 		while (tempHand.hasNext())
 		{
 			Card tempCard = (Card) tempHand.next();
-			if (tempCard.getName() == card.getName())
+			if (tempCard.getName().equals(card.getName()))
 			{
 				returnValue = true;
 			}

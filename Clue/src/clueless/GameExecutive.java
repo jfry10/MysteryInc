@@ -204,7 +204,6 @@ public class GameExecutive
                 if(object instanceof SetSuspect)
                 {
 	                	String suspectName = ((SetSuspect) object).selectedSuspect;
-	                	System.out.println("Selected Suspect: " + suspectName);
 					// Store the name on the connection.
 					conn.playerName = suspectName;
 	                	suspectConnectionMap.put(suspectName, playerID);
@@ -351,15 +350,15 @@ public class GameExecutive
 		
 		PlayerInfo firstPlayer = playerInfoMap.get(playerInfoKeys[0]);
 		Location firstPlayerLocation = firstPlayer.player.positionOnBoard;
-		System.out.println(firstPlayer.suspectName + " has the first move");
+		server.sendToAllTCP(new ChatMessage(firstPlayer.suspectName + " has the first move"));
 
 		// assign moves for playerTurn
 	    	PlayerTurn playerTurn = new PlayerTurn();
 	    	playerTurn.turn = true;
-	    	playerTurn.up = 	firstPlayerLocation.hasUp();
-	    	playerTurn.down = firstPlayerLocation.hasDown();
-	    	playerTurn.left = firstPlayerLocation.hasLeft();
-	    	playerTurn.right = firstPlayerLocation.hasRight();
+	    	playerTurn.up = 	firstPlayerLocation.hasUp() && gameBoard.moveValidUp(firstPlayer.player);
+	    	playerTurn.down = firstPlayerLocation.hasDown() && gameBoard.moveValidDown(firstPlayer.player);
+	    	playerTurn.left = firstPlayerLocation.hasLeft() && gameBoard.moveValidLeft(firstPlayer.player);
+	    	playerTurn.right = firstPlayerLocation.hasRight() && gameBoard.moveValidRight(firstPlayer.player);
 	    	playerTurn.passage = (firstPlayerLocation instanceof Room && ((Room) firstPlayerLocation).hasSecretPassage());
 			
 		server.sendToTCP(playerInfoKeys[0], playerTurn);
@@ -475,15 +474,15 @@ public class GameExecutive
 		// grab the next PlayerInfo
 		PlayerInfo nextPlayer = playerInfoMap.get(nextPlayerId);
 		Location playerLocation = nextPlayer.player.positionOnBoard;
-		System.out.println(nextPlayer.suspectName + " has the next move");
+		server.sendToAllTCP(new ChatMessage(nextPlayer.suspectName + " has the next move"));
 		
 		// assign moves for playerTurn
 	    	PlayerTurn playerTurn = new PlayerTurn();
 	    	playerTurn.turn = true;
-	    	playerTurn.up = 	playerLocation.hasUp();
-	    	playerTurn.down = playerLocation.hasDown();
-	    	playerTurn.left = playerLocation.hasLeft();
-	    	playerTurn.right = playerLocation.hasRight();
+	    	playerTurn.up = 	playerLocation.hasUp() && gameBoard.moveValidUp(nextPlayer.player);
+	    	playerTurn.down = playerLocation.hasDown() && gameBoard.moveValidDown(nextPlayer.player);
+	    	playerTurn.left = playerLocation.hasLeft() && gameBoard.moveValidLeft(nextPlayer.player);
+	    	playerTurn.right = playerLocation.hasRight() && gameBoard.moveValidRight(nextPlayer.player);
 	    	playerTurn.passage = (playerLocation instanceof Room && ((Room) playerLocation).hasSecretPassage());
 		
 		server.sendToTCP(nextPlayerId, playerTurn);

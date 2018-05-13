@@ -27,7 +27,7 @@ public class Gameboard
 					gameBoard[i][j] = new Room(roomNum,i,j);
 					roomNum++;
                 	}
-                	else if((i%2 != 0) && (j%2 ==0)) {
+                	else if((i%2 != 0) && (j%2 == 0)) {
 					gameBoard[i][j] = new Hallway(hallNum,i,j);
 					hallNum++;
                 	}
@@ -94,7 +94,7 @@ public class Gameboard
     		// get player in the list
     		for (index = 0; index < Constants.SUSPECTS.length; index++)
     		{
-    			if (p.suspectName == playerlist[index].suspectName)
+    			if (p.suspectName.equals(playerlist[index].suspectName))
     			{
     				break;
     			}
@@ -105,36 +105,28 @@ public class Gameboard
   
 		if (playerlist[index].positionOnBoard.hasLeft())
 		{
-			if (((gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1] instanceof Hallway) && 
-				!gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1].isOccupied()) || 
-					gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1] instanceof Room)
+			if (moveValidLeft(p))
 			{
 				moves += "Left ";
 			}
 		}
 		if (playerlist[index].positionOnBoard.hasUp())
 		{
-			if (((gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col] instanceof Hallway) &&
-				!gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col].isOccupied()) || 
-				gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col] instanceof Room)
+			if (moveValidUp(p))
 			{
 				moves += "Up ";
 			}
 		}
 		if (playerlist[index].positionOnBoard.hasRight())
 		{
-			if (((gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1] instanceof Hallway) &&
-				!gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1].isOccupied()) || 
-				gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1] instanceof Room)
+			if (moveValidRight(p))
 			{
 				moves += "Right ";
 			}
 		}
 		if (playerlist[index].positionOnBoard.hasDown())
 		{
-			if (((gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col] instanceof Hallway) && 
-				!gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col].isOccupied()) ||
-				gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col] instanceof Room)
+			if (moveValidDown(p))
 			{
 				moves += "Down ";
 			}
@@ -157,15 +149,13 @@ public class Gameboard
     		// get player in the list
     		for (index = 0; index < Constants.SUSPECTS.length; index++)
     		{
-    			if (p.suspectName == playerlist[index].suspectName)
+    			if (p.suspectName.equals(playerlist[index].suspectName))
     			{
     				break;
     			}
     		}
     		try {
-    			if(((gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1] instanceof Hallway) &&
-				!gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1].isOccupied()) ||
-    				gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1] instanceof Room)
+    			if(moveValidLeft(p))
     			{
     				gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col].leaveRoom(playerlist[index]);
     				gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1].enterRoom(playerlist[index]);
@@ -184,15 +174,13 @@ public class Gameboard
 		// get player in the list
 		for (index = 0; index < Constants.SUSPECTS.length; index++)
 		{
-			if (p.suspectName == playerlist[index].suspectName)
+			if (p.suspectName.equals(playerlist[index].suspectName))
 			{
 				break;
 			}
 		}
     		try {
-    			if(((gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1] instanceof Hallway) &&
-				!gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1].isOccupied()) ||
-    				gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1] instanceof Room)
+    			if(moveValidRight(p))
     			{
     				gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col].leaveRoom(playerlist[index]);
     				gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1].enterRoom(playerlist[index]);
@@ -211,15 +199,13 @@ public class Gameboard
 		// get player in the list
 		for (index = 0; index < Constants.SUSPECTS.length; index++)
 		{
-			if (p.suspectName == playerlist[index].suspectName)
+			if (p.suspectName.equals(playerlist[index].suspectName))
 			{
 				break;
 			}
 		}
 	    	try {
-	    		if(((gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col] instanceof Hallway) &&
-    				!gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col].isOccupied()) ||
-	    			gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col] instanceof Room)
+	    		if(moveValidUp(p))
 	    		{
 	    			gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col].leaveRoom(playerlist[index]);
 	    			gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col].enterRoom(playerlist[index]);
@@ -238,15 +224,13 @@ public class Gameboard
 		// get player in the list
 		for (index = 0; index < Constants.SUSPECTS.length; index++)
 		{
-			if (p.suspectName == playerlist[index].suspectName)
+			if (p.suspectName.equals(playerlist[index].suspectName))
 			{
 				break;
 			}
 		}
     		try {
-    			if(((gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col] instanceof Hallway) && 
-				!gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col].isOccupied()) ||
-    				gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col] instanceof Room)
+    			if(moveValidDown(p))
     			{
     				gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col].leaveRoom(playerlist[index]);
     				gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col].enterRoom(playerlist[index]);
@@ -265,7 +249,7 @@ public class Gameboard
 		// get player in the list
 		for (index = 0; index < Constants.SUSPECTS.length; index++)
 		{
-			if (p.suspectName == playerlist[index].suspectName)
+			if (p.suspectName.equals(playerlist[index].suspectName))
 			{
 				break;
 			}
@@ -282,7 +266,99 @@ public class Gameboard
 	    		System.out.println("Unable to take passage");
 	    	}
     }
-    
+ 
+    public boolean moveValidUp(Player p)
+    {
+		boolean result = false;
+		int index;
+		// get player in the list
+		for (index = 0; index < Constants.SUSPECTS.length; index++)
+		{
+			if (p.suspectName.equals(playerlist[index].suspectName))
+			{
+				break;
+			}
+		}
+		// valid movement
+		if (((gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col] instanceof Hallway) &&
+			!gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col].isOccupied()) ||
+			gameBoard[playerlist[index].positionOnBoard.row - 1][playerlist[index].positionOnBoard.col] instanceof Room)
+		{
+			result = true;
+		}
+		
+		return result;
+    }
+
+    public boolean moveValidRight(Player p)
+    {
+		boolean result = false;
+		int index;
+		// get player in the list
+		for (index = 0; index < Constants.SUSPECTS.length; index++)
+		{
+			if (p.suspectName.equals(playerlist[index].suspectName))
+			{
+				break;
+			}
+		}
+		// valid movement
+		if (((gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1] instanceof Hallway) &&
+			!gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1].isOccupied())  ||
+			gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col + 1] instanceof Room)
+		{
+			result = true;
+		}
+		
+		return result;
+    }
+
+    public boolean moveValidDown(Player p)
+    {
+		boolean result = false;
+		int index;
+		// get player in the list
+		for (index = 0; index < Constants.SUSPECTS.length; index++)
+		{
+			if (p.suspectName.equals(playerlist[index].suspectName))
+			{
+				break;
+			}
+		}
+		// valid movement
+		if (((gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col] instanceof Hallway) && 
+			!gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col].isOccupied()) || 
+			gameBoard[playerlist[index].positionOnBoard.row + 1][playerlist[index].positionOnBoard.col] instanceof Room)
+		{
+			result = true;
+		}
+		
+		return result;    	
+    }
+
+    public boolean moveValidLeft(Player p)
+    {
+		boolean result = false;
+		int index;
+		// get player in the list
+		for (index = 0; index < Constants.SUSPECTS.length; index++)
+		{
+			if (p.suspectName.equals(playerlist[index].suspectName))
+			{
+				break;
+			}
+		}
+		// valid movement
+		if (((gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1] instanceof Hallway) &&
+			!gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1].isOccupied()) ||
+			gameBoard[playerlist[index].positionOnBoard.row][playerlist[index].positionOnBoard.col - 1] instanceof Room)
+		{
+			result = true;
+		}
+    		
+    		return result;
+    }
+
     public void suspectMove(SuspectCard suspectCard, RoomCard roomCard)
     {
 	    	String suspect = suspectCard.getName();
@@ -295,44 +371,44 @@ public class Gameboard
 	    	try {
 		    	for(index = 0; index < playerlist.length; index++)
 		    	{
-		    		if(playerlist[index].suspectName == suspect)
+		    		if(playerlist[index].suspectName.equals(suspect))
 		    		{
 		    			break;
 		    		}    		
 		    	}
-		    	if(roomName == "Hall") {
+		    	if(roomName.equals("Hall")) {
 		    		newRoomRow = 0;
 		    		newRoomCol = 2;
 		    	}
-		    	else if(roomName == "Lounge") {
+		    	else if(roomName.equals("Lounge")) {
 		    		newRoomRow = 0;
 		    		newRoomCol = 4;
 		    	}
-		    	else if(roomName == "Dining Room") {
+		    	else if(roomName.equals("Dining Room")) {
 		    		newRoomRow = 2;
 		    		newRoomCol = 4;
 		    	}
-		    	else if(roomName == "Kitchen") {
+		    	else if(roomName.equals("Kitchen")) {
 		    		newRoomRow = 4;
 		    		newRoomCol = 4;
 		    	}
-		    	else if(roomName == "Ball Room") {
+		    	else if(roomName.equals("Ball Room")) {
 		    		newRoomRow = 4;
 		    		newRoomCol = 2;
 		    	}
-		    	else if(roomName == "Conservatory") {
+		    	else if(roomName.equals("Conservatory")) {
 		    		newRoomRow = 4;
 		    		newRoomCol = 0;
 		    	}
-		    	else if(roomName == "Billiard Room") {
+		    	else if(roomName.equals("Billiard Room")) {
 		    		newRoomRow = 2;
 		    		newRoomCol = 2;
 		    	}
-		    	else if(roomName == "Library") {
+		    	else if(roomName.equals("Library")) {
 		    		newRoomRow = 2;
 		    		newRoomCol = 0;
 		    	}
-		    	else if(roomName == "Study") {
+		    	else if(roomName.equals("Study")) {
 					newRoomRow = 0;
 		    		newRoomCol = 0;
 			}
@@ -353,33 +429,33 @@ public class Gameboard
 		// get player in the list
 		for (index = 0; index < Constants.SUSPECTS.length; index++)
 		{
-			if (p.suspectName == playerlist[index].suspectName)
+			if (p.suspectName.equals(playerlist[index].suspectName))
 			{
 				break;
 			}
 		}
 
-	    	if(p.suspectName == Constants.MISS_SCARLET_STR) {
+	    	if(p.suspectName.equals(Constants.MISS_SCARLET_STR)) {
 	    		gameBoard[0][3].enterRoom(playerlist[index]); // Hall-to-Lounge Hallway
 	    		playerlist[index].positionOnBoard = gameBoard[0][3];
 	    	}
-	    	else if(p.suspectName == Constants.COL_MUSTARD_STR) {
+	    	else if(p.suspectName.equals(Constants.COL_MUSTARD_STR)) {
 	    		gameBoard[1][4].enterRoom(playerlist[index]); // Lounge-to-Dining Room Hallway
 	    		playerlist[index].positionOnBoard = gameBoard[1][4];
 	    	}
-	    	else if(p.suspectName == Constants.MRS_WHITE_STR) {
+	    	else if(p.suspectName.equals(Constants.MRS_WHITE_STR)) {
 	    		gameBoard[4][3].enterRoom(playerlist[index]); // Ballroom-to-Kitchen Hallway
 	    		playerlist[index].positionOnBoard = gameBoard[4][3];
 	    	}
-	    	else if(p.suspectName == Constants.MR_GREEN_STR) {
+	    	else if(p.suspectName.equals(Constants.MR_GREEN_STR)) {
 	    		gameBoard[4][1].enterRoom(playerlist[index]); // Conservatory-to-Ballroom Hallway
 	    		playerlist[index].positionOnBoard = gameBoard[4][1];
 	    	}
-	    	else if(p.suspectName == Constants.MRS_PEACOCK_STR) {
+	    	else if(p.suspectName.equals(Constants.MRS_PEACOCK_STR)) {
 	    		gameBoard[3][0].enterRoom(playerlist[index]); // Library-to-Conservatory Hallway
 	    		playerlist[index].positionOnBoard = gameBoard[3][0];
 	    	}
-	    	else if(p.suspectName == Constants.PROF_PLUM_STR) {
+	    	else if(p.suspectName.equals(Constants.PROF_PLUM_STR)) {
 	    		gameBoard[1][0].enterRoom(playerlist[index]); // Study-to-Library Hallway
 	    		playerlist[index].positionOnBoard = gameBoard[1][0];
 	    	}

@@ -65,11 +65,11 @@ public class GameboardTests {
 			{
 				System.out.println("\n----------------------------------------------------------\n");
 			}
-			gb.moveRight(players[0]); // Move to Lounge
-			gb.moveUp(players[1]); // Move to Lounge
-			gb.moveLeft(players[2]); // Move to Ballroom
-			gb.moveRight(players[3]); // Move to Ballroom
-			gb.moveUp(players[4]); // Move to Library
+			gb.moveUp(players[0]); // Move to Lounge
+			gb.moveRight(players[1]); // Move to Lounge
+			gb.moveRight(players[2]); // Move to Ballroom
+			gb.moveUp(players[3]); // Move to Library
+			gb.moveLeft(players[4]); // Move to Ballroom
 			gb.moveDown(players[5]); // Move to Library
 			
 			for (int i = 0; i < 6; i++)
@@ -82,7 +82,10 @@ public class GameboardTests {
 			}
 		
 			// Now, move players into Positions to cause errors/expected failures
-			
+			if (print == true)
+			{
+				System.out.println("\n----------------------------------------------------------\n");
+			}
 			// Col. Mustard
 			gb.takePassage(players[0]); // Take Secret Passage to Conservatory
 			gb.moveUp(players[0]); // Li-to-C Hallway
@@ -95,8 +98,8 @@ public class GameboardTests {
 			gb.moveUp(players[1]); // Move to Library
 			gb.moveRight(players[1]); // L-to-BiR Hallway
 			
-			// Mrs. White
-			gb.moveDown(players[4]); // Li-to-C Hallway
+			// Mrs. Peacock
+			gb.moveDown(players[3]); // Li-to-C Hallway
 
 			for (int i = 0; i < 6; i++)
 			{

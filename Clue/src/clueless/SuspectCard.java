@@ -11,6 +11,11 @@ public class SuspectCard extends Card {
 		cardType = Constants.SUSPECT_CARD;
 	}
 	
+	public SuspectCard(String name)
+	{
+		this.name = name;
+	}
+	
 	public void setName(String string)
 	{
 		name = string;
