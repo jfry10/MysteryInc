@@ -113,7 +113,7 @@ public class CluelessClient
 					DealCard newCard = (DealCard)object;
 					player.addCardToHand(newCard.card);
 					// update GameFrame's detectiveNotes
-					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
+					GameFrame.detectiveNotes.setText(player.suspectName + "\n" + player.getDetectiveNotes().toString());
 					return;
 				}
 
@@ -151,11 +151,6 @@ public class CluelessClient
 					GameFrame.accusButton.setEnabled(pt.turn); // only available during turn
 					if (pt.turn == true)
 					{
-//            				JOptionPane.showMessageDialog(
-//            					null, 
-//            					"It is now your turn", 
-//            					"Player Turn", 
-//                          	JOptionPane.INFORMATION_MESSAGE);
 						GameFrame.addMessage("It is now your turn");
 
         					// Show only the move buttons that are valid
@@ -165,7 +160,7 @@ public class CluelessClient
         					GameFrame.moveLeftButton.setVisible(pt.left);
         					GameFrame.takePassageButton.setVisible(pt.passage);
         					GameFrame.suggestButton.setVisible(false); // wait until server enables this
-        					
+
         					// unique case, player cannot make any movements. Give them
         					// the option to end turn (or make accusation, should be true)
         					if (!pt.up && !pt.right && !pt.down && !pt.left && !pt.passage)
@@ -680,6 +675,7 @@ public class CluelessClient
 		//String ipAddress = args[0];
 		Log.set(Log.LEVEL_DEBUG);
 		//new CluelessClient(ipAddress);
-		new CluelessClient("localhost");
+		new CluelessClient("72.205.5.54");
+		//new CluelessClient("localhost");
 	}
 }

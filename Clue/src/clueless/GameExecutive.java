@@ -108,6 +108,7 @@ public class GameExecutive
 					conn.playerName = suspectName;
 	                	suspectConnectionMap.put(suspectName, playerID);
 	                	server.sendToTCP(playerID, new ChatMessage("You are now " + suspectName + "!"));
+	                	server.sendToAllExceptTCP(playerID, new ChatMessage(suspectName + " has joined the game!"));
 	                	return;
                 }
 
