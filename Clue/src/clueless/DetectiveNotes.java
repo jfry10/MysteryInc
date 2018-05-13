@@ -76,7 +76,7 @@ public class DetectiveNotes
 		StringBuilder sb = new StringBuilder();
 		String separator = "-----------------------------";
 		
-		sb.append("DETECTIVE NOTES");
+		sb.append("Detective Notes");
 		sb.append("\n\n");
 		sb.append("SUSPECTS");
 		sb.append("\n");
@@ -91,9 +91,10 @@ public class DetectiveNotes
 			sb.append("|");
 			sb.append(suspects[i] ? "X" : " ");
 			sb.append("|\n");
-			sb.append(separator);
-			sb.append("\n");
+			//sb.append(separator);
+			//sb.append("\n");
 		}
+		//sb.append(separator);
 		sb.append("\n");
 		sb.append("WEAPONS");
 		sb.append("\n");
@@ -108,9 +109,10 @@ public class DetectiveNotes
 			sb.append("|");
 			sb.append(weapons[i] ? "X" : " ");
 			sb.append("|\n");
-			sb.append(separator);
-			sb.append("\n");
+			//sb.append(separator);
+			//sb.append("\n");
 		}
+		//sb.append(separator);
 		sb.append("\n");
 		sb.append("ROOMS");
 		sb.append("\n");
@@ -125,8 +127,8 @@ public class DetectiveNotes
 			sb.append("|");
 			sb.append(rooms[i] ? "X" : " ");
 			sb.append("|\n");
-			sb.append(separator);
-			sb.append("\n");
+			//sb.append(separator);
+			//sb.append("\n");
 		}
 		return sb.toString();
 	}

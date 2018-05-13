@@ -113,7 +113,7 @@ public class CluelessClient
 					DealCard newCard = (DealCard)object;
 					player.addCardToHand(newCard.card);
 					// update GameFrame's detectiveNotes
-					GameFrame.detectiveNotes.setText(player.suspectName + "\n" + player.getDetectiveNotes().toString());
+					GameFrame.detectiveNotes.setText(player.suspectName + "'s " + player.getDetectiveNotes().toString());
 					return;
 				}
 
@@ -193,7 +193,7 @@ public class CluelessClient
                 		SuggestionDisprove sd = (SuggestionDisprove)object;
                 		player.updateDetectiveNotes(sd.card);
     					// update GameFrame's detectiveNotes
-    					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
+    					GameFrame.detectiveNotes.setText(player.suspectName + "'s " + player.getDetectiveNotes().toString());
     					// now print a message so the player knows why they were disproved
     					GameFrame.addMessage("Your suggestion was incorrect!\n" + sd.card.getName() + " is not in the Case File!");
                 		return;
@@ -430,6 +430,8 @@ public class CluelessClient
 						selected = true;
 						player = new Player(button.getText());
                 			client.sendTCP(new SetSuspect(player.suspectName));
+                			// Update your detectiveNotes
+                			GameFrame.detectiveNotes.setText(player.suspectName + "'s " + player.getDetectiveNotes().toString());
 						break;
 					}
 				}
@@ -552,7 +554,7 @@ public class CluelessClient
 			JLabel serverMessagesLabel = new JLabel("Game Messages"); 
 			serverMessagesPanel.add(serverMessagesLabel, BorderLayout.NORTH);
 			serverMessagesPanel.add(new JScrollPane(serverMessages = new JTextArea()));
-			serverMessages.setText("Welcome to Clueless!\n\n");
+			serverMessages.setText("Welcome to Clueless!\n");
 			serverMessages.setEditable(false);
 			serverMessages.setAutoscrolls(true);
 			contentPane.add(serverMessagesPanel);
@@ -675,7 +677,7 @@ public class CluelessClient
 		//String ipAddress = args[0];
 		Log.set(Log.LEVEL_DEBUG);
 		//new CluelessClient(ipAddress);
-		new CluelessClient("72.205.5.54");
-		//new CluelessClient("localhost");
+		//new CluelessClient("72.205.5.54");
+		new CluelessClient("localhost");
 	}
 }
