@@ -56,7 +56,7 @@ public class GameExecutive
 	
 	ArrayList<Integer> forfeitPlayerList;
 	
-	Location[][] gameBoard;
+	Gameboard gameBoard;
 	
 	
 
@@ -97,10 +97,10 @@ public class GameExecutive
 					playerMakingSuggestion = playerInfoMap.get(conn.getID());
 					
 					// First, move the Suggestion player to the room
-					Gameboard.suspectMove(currentSuggestion.suspect, currentSuggestion.room);
+					gameBoard.suspectMove(currentSuggestion.suspect, currentSuggestion.room);
 					
 					// Now, send out the updated board
-	        	    		server.sendToAllTCP(new DisplayGUI());
+	        	    		server.sendToAllTCP(new DisplayGUI(gameBoard));
 
 	        	    		// The player on the left gets the first guess
 					server.sendToTCP(playerMakingSuggestion.playerToLeft.playerId, currentSuggestion);
@@ -254,19 +254,19 @@ public class GameExecutive
 		        		switch(direction)
 		        		{
 			        		case Constants.DIR_UP:
-			        			Gameboard.moveUp(currentPlayer.player);
+			        			gameBoard.moveUp(currentPlayer.player);
 			        			break;
 			        		case Constants.DIR_DOWN:
-			        			Gameboard.moveDown(currentPlayer.player);
+			        			gameBoard.moveDown(currentPlayer.player);
 			        			break;
 			        		case Constants.DIR_LEFT:
-			        			Gameboard.moveLeft(currentPlayer.player);
+			        			gameBoard.moveLeft(currentPlayer.player);
 			        			break;
 			        		case Constants.DIR_RIGHT:
-			        			Gameboard.moveRight(currentPlayer.player);
+			        			gameBoard.moveRight(currentPlayer.player);
 			        			break;
 			        		case Constants.DIR_PASSAGE:
-			        			Gameboard.takePassage(currentPlayer.player);
+			        			gameBoard.takePassage(currentPlayer.player);
 			        			break;
 		        		}
 
@@ -286,7 +286,7 @@ public class GameExecutive
 		        	    }
 
 		        	    // Update the GameBoard after every move
-		        	    server.sendToAllTCP(new DisplayGUI());
+		        	    server.sendToAllTCP(new DisplayGUI(gameBoard));
 		        	    return;
 		        	}
 			}
@@ -337,10 +337,11 @@ public class GameExecutive
 		initializePlayerInfoObjects();
 		
 		// create a new GameBoard for the game
-		Gameboard.createNewBoard(players);
+		gameBoard = new Gameboard();
+		gameBoard.createNewBoard(players);
 
         // send the players to the clients so they can update the GUIDiplay / gameboard
-		server.sendToAllTCP(new DisplayGUI());
+		server.sendToAllTCP(new DisplayGUI(gameBoard));
 		
 		forfeitPlayerList = new ArrayList<Integer>();
 		

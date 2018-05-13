@@ -4,11 +4,17 @@ import java.util.ArrayList;
 
 public class Gameboard
 {
-	public static Player[] playerlist;
-	public static Location[][] gameBoard;
+	public Player[] playerlist;
+	public Location[][] gameBoard;
+
+	public Gameboard()
+	{
+		playerlist = null; // wait until we create a board
+		gameBoard = null; // wait until we create board
+	}
 
 	//Creates a new gameboard
-    public static void createNewBoard(Player[] listOfPlayers)
+    public void createNewBoard(Player[] listOfPlayers)
     {
 		int roomNum = 0;
 		int hallNum = 0;
@@ -43,7 +49,7 @@ public class Gameboard
     }
 
     //prints the board in a crude textual format - needs to be formatted is used
-    public static void printBoard()
+    public void printBoard()
     {
     		System.out.println("\n\n\n");	
     		for(int i = 0; i < 5; i++) {
@@ -66,7 +72,7 @@ public class Gameboard
     }
     
     //used to display which rooms have passages
-    public static void printPassages()
+    public void printPassages()
     {
 		for(int k=0; k<5;k++)
 		{
@@ -81,7 +87,7 @@ public class Gameboard
     }
      
     //list the possible moves a specific player has, based on their location
-    public static String listMoves(Player p)
+    public String listMoves(Player p)
     {
 		String moves = "";
     		int index;
@@ -144,7 +150,7 @@ public class Gameboard
     		return moves;
     }
     
-    public static void moveLeft(Player p)
+    public void moveLeft(Player p)
     {
     		Location newSpace;
     		int index;
@@ -171,7 +177,7 @@ public class Gameboard
     		}
     }
     
-    public static void moveRight(Player p)
+    public void moveRight(Player p)
     {
 		Location newSpace;
 		int index;
@@ -198,7 +204,7 @@ public class Gameboard
     		}
     }
     
-    public static void moveUp(Player p)
+    public void moveUp(Player p)
     {
 		Location newSpace;
 		int index;
@@ -225,7 +231,7 @@ public class Gameboard
 	    	}
     }
     
-    public static void moveDown(Player p)
+    public void moveDown(Player p)
     {
 		Location newSpace;
 		int index;
@@ -252,7 +258,7 @@ public class Gameboard
     		}
     }
     
-    public static void takePassage(Player p)
+    public void takePassage(Player p)
     {
 		Location newSpace;
 		int index;
@@ -277,7 +283,7 @@ public class Gameboard
 	    	}
     }
     
-    public static void suspectMove(SuspectCard suspectCard, RoomCard roomCard)
+    public void suspectMove(SuspectCard suspectCard, RoomCard roomCard)
     {
 	    	String suspect = suspectCard.getName();
 	    	String roomName = roomCard.getName();
@@ -341,7 +347,7 @@ public class Gameboard
     }
     
     //creates and sets the starting locations for each player up to 6.
-    public static void startPositions(Player p)
+    public void startPositions(Player p)
     {
 		int index;
 		// get player in the list
@@ -379,7 +385,7 @@ public class Gameboard
 	    	}
     }
     
-    public static String listToString(ArrayList list) {
+    public String listToString(ArrayList list) {
 		String occupants = "";
 
 	    	Player[] playersInRoom = new Player[list.size()];
@@ -390,12 +396,12 @@ public class Gameboard
 	    	return occupants;
     }
     
-    public static Player[] getPlayerlist()
+    public Player[] getPlayerlist()
     {
     		return playerlist;
     }
     
-    public static Location[][] getGameboard()
+    public Location[][] getGameboard()
     {
     		return gameBoard;
     }

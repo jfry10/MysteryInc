@@ -52,6 +52,10 @@ public class Network {
         kryo.register(GUIDisplay.class);
         kryo.register(SuggestionAsk.class); 
         kryo.register(Player[].class);
+        kryo.register(Gameboard.class);
+        kryo.register(Player.class);
+        kryo.register(Hallway.class);
+        kryo.register(Room.class);
 
 	}
 	
@@ -160,6 +164,18 @@ public class Network {
 	}
 	
 	static public class DisplayGUI {
+		
+		public Gameboard gameboard = null;
+		
+		public DisplayGUI()
+		{
+			
+		}
+
+		public DisplayGUI(Gameboard g)
+		{
+			gameboard = g;
+		}
 
 	}
 }

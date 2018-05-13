@@ -5,9 +5,7 @@ public class Hallway extends Location{
     boolean occupied = false;
     String hallName;
     
-    private Hallway() {
-    	
-    }
+    private Hallway() { }
 
     public Hallway(int number, int row, int col){
         determineHall(number);

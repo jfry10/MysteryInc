@@ -92,14 +92,10 @@ public class CluelessClient
 
 				if (object instanceof DisplayGUI)
 				{
-//					System.out.println("received the displayGUI object");
-//					Player[] players = ((DisplayGUI)object).players;
-//					GUIDisplay gui = new GUIDisplay(players);
-					GUIDisplay gui = new GUIDisplay();
-					gui.repaint();
-					System.out.println("created a GUIdisplay");
+					DisplayGUI dg = (DisplayGUI)object;
+					GUIDisplay gui = new GUIDisplay(dg.gameboard);
+					//gui.repaint();
 					GameFrame.updateGameboard(gui);
-					System.out.println("updated gameboard");
 					return;
 				}
 
@@ -285,8 +281,8 @@ public class CluelessClient
 			}
 		});
 
-		// This listener is called when the Start Game button is clicked
-		GameFrame.startGameListener(new Runnable() {
+		// This listener is called when the Action button is clicked
+		GameFrame.actionButtonListener(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -305,6 +301,8 @@ public class CluelessClient
 				{
 					client.sendTCP(new BeginGame()); // ? Restart Game object?
 				}
+				// hide the action button. We will not use this again till prompted
+				GameFrame.actionButton.setVisible(false);
 			}
 		});
 
@@ -599,7 +597,7 @@ public class CluelessClient
 			});
 		}
 
-		public void startGameListener (final Runnable listener) {
+		public void actionButtonListener (final Runnable listener) {
 			actionButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {

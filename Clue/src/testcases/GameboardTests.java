@@ -28,11 +28,12 @@ public class GameboardTests {
 			players[4] = new Player(Constants.MRS_WHITE_STR);
 			players[5] = new Player(Constants.PROF_PLUM_STR);
 
-			Gameboard.createNewBoard(players);
+			Gameboard gb = new Gameboard();
+			gb.createNewBoard(players);
 			if (print == true)
 			{
-				Gameboard.printBoard();
-				Gameboard.printPassages();
+				gb.printBoard();
+				gb.printPassages();
 			}
 		}
 		
@@ -49,10 +50,11 @@ public class GameboardTests {
 			players[4] = new Player(Constants.MRS_WHITE_STR);
 			players[5] = new Player(Constants.PROF_PLUM_STR);
 
-			Gameboard.createNewBoard(players);
+			Gameboard gb = new Gameboard();
+			gb.createNewBoard(players);
 			for (int i = 0; i < 6; i++)
 			{
-				moves = Gameboard.listMoves(players[i]);
+				moves = gb.listMoves(players[i]);
 				if (print == true)
 				{
 					System.out.println(players[i].suspectName + " is able to move: " + moves);
@@ -63,16 +65,16 @@ public class GameboardTests {
 			{
 				System.out.println("\n----------------------------------------------------------\n");
 			}
-			Gameboard.moveRight(players[0]); // Move to Lounge
-			Gameboard.moveUp(players[1]); // Move to Lounge
-			Gameboard.moveLeft(players[2]); // Move to Ballroom
-			Gameboard.moveRight(players[3]); // Move to Ballroom
-			Gameboard.moveUp(players[4]); // Move to Library
-			Gameboard.moveDown(players[5]); // Move to Library
+			gb.moveRight(players[0]); // Move to Lounge
+			gb.moveUp(players[1]); // Move to Lounge
+			gb.moveLeft(players[2]); // Move to Ballroom
+			gb.moveRight(players[3]); // Move to Ballroom
+			gb.moveUp(players[4]); // Move to Library
+			gb.moveDown(players[5]); // Move to Library
 			
 			for (int i = 0; i < 6; i++)
 			{
-				moves = Gameboard.listMoves(players[i]);
+				moves = gb.listMoves(players[i]);
 				if (print == true)
 				{
 					System.out.println(players[i].suspectName + " is able to move: " + moves);
@@ -82,23 +84,23 @@ public class GameboardTests {
 			// Now, move players into Positions to cause errors/expected failures
 			
 			// Col. Mustard
-			Gameboard.takePassage(players[0]); // Take Secret Passage to Conservatory
-			Gameboard.moveUp(players[0]); // Li-to-C Hallway
-			Gameboard.moveUp(players[0]); // Move to Library
-			Gameboard.moveUp(players[0]); // S-to-Li Hallway
+			gb.takePassage(players[0]); // Take Secret Passage to Conservatory
+			gb.moveUp(players[0]); // Li-to-C Hallway
+			gb.moveUp(players[0]); // Move to Library
+			gb.moveUp(players[0]); // S-to-Li Hallway
 			
 			// Miss Scarlet
-			Gameboard.takePassage(players[1]); // Take Secret Passage to Conservatory
-			Gameboard.moveUp(players[1]); // Li-to-C Hallway
-			Gameboard.moveUp(players[1]); // Move to Library
-			Gameboard.moveRight(players[1]); // L-to-BiR Hallway
+			gb.takePassage(players[1]); // Take Secret Passage to Conservatory
+			gb.moveUp(players[1]); // Li-to-C Hallway
+			gb.moveUp(players[1]); // Move to Library
+			gb.moveRight(players[1]); // L-to-BiR Hallway
 			
 			// Mrs. White
-			Gameboard.moveDown(players[4]); // Li-to-C Hallway
+			gb.moveDown(players[4]); // Li-to-C Hallway
 
 			for (int i = 0; i < 6; i++)
 			{
-				moves = Gameboard.listMoves(players[i]);
+				moves = gb.listMoves(players[i]);
 				if (print == true)
 				{
 					System.out.println(players[i].suspectName + " is able to move: " + moves);
@@ -112,13 +114,13 @@ public class GameboardTests {
 			}
 
 			// Prof. Plum (should have no moves available)
-			Gameboard.moveUp(players[5]);
-			Gameboard.moveRight(players[5]);
-			Gameboard.moveDown(players[5]);
-			Gameboard.takePassage(players[5]);
+			gb.moveUp(players[5]);
+			gb.moveRight(players[5]);
+			gb.moveDown(players[5]);
+			gb.takePassage(players[5]);
 			
 			// This will fail as expected, use in a different test case
-			//Gameboard.moveLeft(players[5]);
+			//gb.moveLeft(players[5]);
 		
 		}
 	}
