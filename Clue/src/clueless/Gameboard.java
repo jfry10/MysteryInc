@@ -279,6 +279,7 @@ public class Gameboard{
 	    		System.out.println("Issue moving Suspect from Suggestion");
 	    	}
     }
+    //
     
     //creates and sets the starting locations for each player up to 6.
     public static void startPositions(Location[][] board, Player player, String suspectName) {
