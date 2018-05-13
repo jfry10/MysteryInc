@@ -36,7 +36,7 @@ public class Gameboard{
 		
 		// Update Player Locations
 	    	for(int i=0;i<playerlist.length;i++) {
-	    		startPositions(gameBoard, playerlist[i],i);
+	    		startPositions(gameBoard, playerlist[i],playerlist[i].suspectName);
 	    	}
 
         return gameBoard;
@@ -281,29 +281,29 @@ public class Gameboard{
     }
     
     //creates and sets the starting locations for each player up to 6.
-    public static void startPositions(Location[][] board, Player player, int position) {
+    public static void startPositions(Location[][] board, Player player, String suspectName) {
 
-	    	if(position == 0) {
+	    	if(suspectName == Constants.MISS_SCARLET_STR) {
 	    		board[0][3].enterRoom(player); // Hall-to-Lounge Hallway
 	    		player.positionOnBoard = board[0][3];
 	    	}
-	    	else if(position == 1) {
+	    	else if(suspectName == Constants.COL_MUSTARD_STR) {
 	    		board[1][4].enterRoom(player); // Lounge-to-Dining Room Hallway
 	    		player.positionOnBoard = board[1][4];
 	    	}
-	    	else if(position == 2) {
+	    	else if(suspectName == Constants.MRS_WHITE_STR) {
 	    		board[4][3].enterRoom(player); // Ballroom-to-Kitchen Hallway
 	    		player.positionOnBoard = board[4][3];
 	    	}
-	    	else if(position == 3) {
+	    	else if(suspectName == Constants.MR_GREEN_STR) {
 	    		board[4][1].enterRoom(player); // Conservatory-to-Ballroom Hallway
 	    		player.positionOnBoard = board[4][1];
 	    	}
-	    	else if(position == 4) {
+	    	else if(suspectName == Constants.MRS_PEACOCK_STR) {
 	    		board[3][0].enterRoom(player); // Library-to-Conservatory Hallway
 	    		player.positionOnBoard = board[3][0];
 	    	}
-	    	else if(position == 5) {
+	    	else if(suspectName == Constants.PROF_PLUM_STR) {
 	    		board[1][0].enterRoom(player); // Study-to-Library Hallway
 	    		player.positionOnBoard = board[1][0];
 	    	}
