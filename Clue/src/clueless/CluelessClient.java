@@ -150,11 +150,12 @@ public class CluelessClient
 					GameFrame.accusButton.setEnabled(pt.turn); // only available during turn
 					if (pt.turn == true)
 					{
-            				JOptionPane.showMessageDialog(
-            					null, 
-            					"It is now your turn", 
-            					"Player Turn", 
-                          	JOptionPane.INFORMATION_MESSAGE);
+//            				JOptionPane.showMessageDialog(
+//            					null, 
+//            					"It is now your turn", 
+//            					"Player Turn", 
+//                          	JOptionPane.INFORMATION_MESSAGE);
+						GameFrame.addMessage("It is now your turn");
 
         					// Show only the move buttons that are valid
         					GameFrame.moveUpButton.setVisible(pt.up);

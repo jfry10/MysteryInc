@@ -177,7 +177,7 @@ public class AccusationGUI extends JFrame implements ActionListener
         suspectPanel.add(plumButton);
 
 
-        submit = new JButton("Submit");
+        submit = new JButton("\"You only get one accusation! If you are incorrect, you forfeit the rest of your turns.\n\nSubmit");
         submit.setVerticalTextPosition(AbstractButton.CENTER);
         submit.setHorizontalTextPosition(AbstractButton.LEADING);
         submit.setMnemonic(KeyEvent.VK_D);
@@ -231,21 +231,21 @@ public class AccusationGUI extends JFrame implements ActionListener
 	        			}	 
 	        		}
 	        		
-	        		// Warn the Player that they only get one accusation
-	        		int dialogButton = JOptionPane.YES_NO_OPTION;
-	        		int dialogResult = JOptionPane.showConfirmDialog(
-	        				null, 
-	        				"You only get one accusation! If you are incorrect, you forfeit the rest of your turns. Are you sure you want to submit?", 
-	        				"Making Accusation", 
-	        				dialogButton);
-	        		if(dialogResult == JOptionPane.YES_OPTION)
-	        		{ 
+//	        		// Warn the Player that they only get one accusation
+//	        		int dialogButton = JOptionPane.YES_NO_OPTION;
+//	        		int dialogResult = JOptionPane.showConfirmDialog(
+//	        				null, 
+//	        				"You only get one accusation! If you are incorrect, you forfeit the rest of your turns. Are you sure you want to submit?", 
+//	        				"Making Accusation", 
+//	        				dialogButton);
+//	        		if(dialogResult == JOptionPane.YES_OPTION)
+//	        		{ 
 	        			Accusation acc = new Accusation(rc, wc, sc);
 	        			client.sendTCP(acc);
     					// now endTurn
     					client.sendTCP(new EndTurn());
 	        			jFrame.dispose();
-	        		}
+	        		//}
 	        	}
         });
     }

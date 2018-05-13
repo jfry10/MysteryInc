@@ -479,7 +479,7 @@ public class GameExecutive
 		// grab the next PlayerInfo
 		PlayerInfo nextPlayer = playerInfoMap.get(nextPlayerId);
 		Location playerLocation = nextPlayer.player.positionOnBoard;
-		server.sendToAllTCP(new ChatMessage(nextPlayer.suspectName + " has the next move"));
+		server.sendToAllExceptTCP(nextPlayerId, new ChatMessage(nextPlayer.suspectName + " has the next move"));
 		
 		// assign moves for playerTurn
 	    	PlayerTurn playerTurn = new PlayerTurn();
