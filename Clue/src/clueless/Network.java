@@ -98,6 +98,10 @@ public class Network {
 		
 	}
 	
+	static public class EndGame {
+		
+	}
+	
 	static public class DealCard {
 		public Card card;
 	}

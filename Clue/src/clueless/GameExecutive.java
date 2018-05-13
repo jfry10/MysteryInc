@@ -38,6 +38,7 @@ import clueless.Network.SuggestionAsk;
 import clueless.Network.SuspectResponse;
 import clueless.Network.EndSuggestion;
 import clueless.Network.DisplayGUI;
+import clueless.Network.EndGame;
 
 public class GameExecutive
 {
@@ -57,7 +58,7 @@ public class GameExecutive
 	ArrayList<Integer> forfeitPlayerList;
 	
 	Gameboard gameBoard;
-	
+	boolean gameOver;
 	
 
 	public GameExecutive() throws IOException {
@@ -126,6 +127,7 @@ public class GameExecutive
 					{
 						server.sendToAllTCP(new BeginGame());
 						startGame();
+						gameOver = false; // reset this value in case we restarted
 						// Dream System: Do we really want a counter and 1 player's BeginGame to start a new game?
 						// What if someone clicked BeginGame before additional players have a chance to join?
 						// Not sure how we would handle this otherwise, so we'll leave as is for the presentation
@@ -254,7 +256,9 @@ public class GameExecutive
 						messageSB.append(currentPlayer.suspectName);
 						messageSB.append(" has won the game! ");
 						server.sendToAllTCP(new ChatMessage(messageSB.toString()));
+						server.sendToAllTCP(new EndGame());
 						endGame();
+						return;
 					}
 					else
 					{
@@ -281,12 +285,15 @@ public class GameExecutive
 				// Player has told us that they have ended the turn (directly or indirectly)
 				if (object instanceof EndTurn)
 				{
-					PlayerInfo currentPlayer = playerInfoMap.get(playerID);
-		    	    		// end current player's turn
-		    	    		server.sendToTCP(currentPlayer.playerId, new EndTurn());
-
-		    	    		// and start the next player's turn
-					prodNextPlayer(currentPlayer);
+					if (!gameOver)
+					{
+						PlayerInfo currentPlayer = playerInfoMap.get(playerID);
+			    	    		// end current player's turn
+			    	    		server.sendToTCP(currentPlayer.playerId, new EndTurn());
+	
+			    	    		// and start the next player's turn
+						prodNextPlayer(currentPlayer);
+					}
 		        	    	return;
 				}
 			}
@@ -504,6 +511,7 @@ public class GameExecutive
 	void endGame()
 	{
 		// do something crazy
+		gameOver = true;
 	}
 	
 	// This holds per connection state.

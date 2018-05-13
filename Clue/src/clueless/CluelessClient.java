@@ -45,6 +45,7 @@ import clueless.Network.DealCard;
 import clueless.Network.DetectiveInfo;
 import clueless.Network.EndTurn;
 import clueless.Network.DisplayGUI;
+import clueless.Network.EndGame;
 import clueless.Network.MoveToken;
 import clueless.Network.PlayerTurn;
 import clueless.Network.RegisterName;
@@ -239,6 +240,17 @@ public class CluelessClient
 					HideButtons();
 					return;
 				}
+				
+				// We receive an EndGame object, let the clients decide if they want to restart
+				if (object instanceof EndGame)
+				{
+					// Hide all the buttons, then display the restart button
+					HideButtons();
+					GameFrame.actionButton.setText("Restart Game");
+					GameFrame.actionButton.setVisible(true);
+					GameFrame.accusButton.setEnabled(false);
+					return;
+				}
 			}
 
 			public void disconnected (Connection connection) {
@@ -341,7 +353,11 @@ public class CluelessClient
 				}
 				else if (buttonText.equals("Restart Game"))
 				{
-					client.sendTCP(new BeginGame()); // ? Restart Game object?
+					// Dream system, allow the users to start a new game. 
+					// I imagine this would be similar to calling StartGame, however, we need the
+					// clients to delete all their data and stuff could get messy.
+					// We might not want to worry about that for this presentation
+					//client.sendTCP(new BeginGame()); // ? Restart Game object?
 				}
 				// hide the action button. We will not use this again till prompted
 				GameFrame.actionButton.setVisible(false);

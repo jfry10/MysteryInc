@@ -115,7 +115,7 @@ public class SuggestionGUI extends JFrame implements ActionListener
         suspectPanel.add(plumButton);
 
 
-        submit = new JButton("Submit");
+        submit = new JButton("SUBMIT");
         submit.setVerticalTextPosition(AbstractButton.CENTER);
         submit.setHorizontalTextPosition(AbstractButton.LEADING);
         submit.setMnemonic(KeyEvent.VK_D);
@@ -128,9 +128,10 @@ public class SuggestionGUI extends JFrame implements ActionListener
         
         submit.addActionListener (new ActionListener() {
 	        	public void actionPerformed(ActionEvent e) {
-				String r;
 				String w;
 				String s;
+				boolean wSet = false;
+				boolean sSet = false;
 				WeaponCard wc = new WeaponCard();
 				RoomCard rc = new RoomCard();
 				SuspectCard sc = new SuspectCard();
@@ -142,7 +143,8 @@ public class SuggestionGUI extends JFrame implements ActionListener
 	        			if(((AbstractButton) wbutton).isSelected())
 	        			{
 	        				w = ((AbstractButton) wbutton).getText();
-	        				wc.setName(w);	 
+	        				wc.setName(w);
+	        				wSet = true;
 	        			}	 
 				}
 	        		 
@@ -153,20 +155,23 @@ public class SuggestionGUI extends JFrame implements ActionListener
 	        			if(((AbstractButton) rbutton).isSelected())
 	        			{
 	        				s = ((AbstractButton) rbutton).getText();
-	        				sc.setName(s);	 
+	        				sc.setName(s);
+	        				sSet = true;
 	        			}	 
 	        		}
 
 				// Suggestions can only be made in player's current room
 				rc.setName(positionOnBoard.getName());
-				System.out.println("suggestion made in " + rc.getName());
 
-	        		// Player can submit a suggestion if available
-        			Suggestion sug = new Suggestion(rc, wc, sc);
-        			client.sendTCP(sug);
-				// now endTurn
-				client.sendTCP(new EndTurn());
-        			jFrame.dispose();
+	        		// Make sure all the fields have been set
+				if (wSet && sSet)
+				{
+	        			Suggestion sug = new Suggestion(rc, wc, sc);
+	        			client.sendTCP(sug);
+					// now endTurn
+					client.sendTCP(new EndTurn());
+	        			jFrame.dispose();
+				}
 	        	}
         });
     }
