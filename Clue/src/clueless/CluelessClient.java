@@ -101,8 +101,16 @@ public class CluelessClient
 				if (object instanceof DisplayGUI)
 				{
 					Player[] players = ((DisplayGUI)object).players;
+					System.out.println(players[0].suspectName);
+					System.out.println(players[1].suspectName);
+					System.out.println(players[2].suspectName);
 					GUIDisplay gui = new GUIDisplay(players);
 					GameFrame.updateGameboard(gui);
+				}
+
+				if (object instanceof BeginGame)
+				{
+					GameFrame.actionButton.setVisible(false);
 				}
 
 				if (object instanceof PlayerTurn)
@@ -641,7 +649,7 @@ public class CluelessClient
 	public static void main (String[] args)
 	{
 		//String ipAddress = args[0];
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(Log.LEVEL_ERROR);
 		//new CluelessClient(ipAddress);
 		new CluelessClient("localhost");
 	}

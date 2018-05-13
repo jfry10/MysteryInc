@@ -26,6 +26,13 @@ public class GUIDisplay extends JPanel{
 	int x5 = 0;
 	int y5 = 0;
 
+	Color player0 = Color.BLACK;
+	Color player1 = Color.BLACK;
+	Color player2 = Color.BLACK;
+	Color player3 = Color.BLACK;
+	Color player4 = Color.BLACK;
+	Color player5 = Color.BLACK;
+
 	private Color scarlet = new Color(220,20,60);
 	private Color green   = new Color(0,100,0);
 	private Color mustard = new Color(218,165,32);
@@ -36,6 +43,13 @@ public class GUIDisplay extends JPanel{
 	public GUIDisplay(Player[] players) {
 		playerlist = players;
 		setLocations();
+		
+		player0 = getPlayersColor(playerlist[0]);
+		player1 = getPlayersColor(playerlist[1]);
+		player2 = getPlayersColor(playerlist[2]);
+		player3 = getPlayersColor(playerlist[3]);
+		player4 = getPlayersColor(playerlist[4]);
+		player5 = getPlayersColor(playerlist[5]);
 	}
 	
 	public GUIDisplay(){
@@ -49,47 +63,46 @@ public class GUIDisplay extends JPanel{
     
 		if (playerlist != null)
 		{
-			setLocations();
 
 	        // Get Player 1 color
 			if (playerlist[0] != null)
 			{
-				g.setColor(getPlayersColor(playerlist[0]));
+				g.setColor(player0);
 				g.fillOval(y0, x0, 20, 20);
 			}
             
 	        // Get Player 2 color
 			if (playerlist[1] != null)
 			{
-				g.setColor(getPlayersColor(playerlist[1]));
+				g.setColor(player1);
 				g.fillOval(y1, x1, 20, 20);
 			}
             
 	        // Get Player 3 color
 			if (playerlist[2] != null)
 			{
-				g.setColor(getPlayersColor(playerlist[2]));
+				g.setColor(player2);
 				g.fillOval(y2, x2, 20, 20);
 			}
             
 	        // Get Player 4 color
 			if (playerlist[3] != null)
 			{
-				g.setColor(getPlayersColor(playerlist[3]));
+				g.setColor(player3);
 				g.fillOval(y3, x3, 20, 20);
 			}
             
 	        // Get Player 5 color
 			if (playerlist[4] != null)
 			{
-				g.setColor(getPlayersColor(playerlist[4]));
+				g.setColor(player4);
 				g.fillOval(y4, x4, 20, 20);
 			}
             
 	        // Get Player 6 color
 			if (playerlist[5] != null)
 			{
-				g.setColor(getPlayersColor(playerlist[5]));
+				g.setColor(player5);
 				g.fillOval(y5, x5, 20, 20);
 			}
 		}
