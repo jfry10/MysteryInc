@@ -10,9 +10,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class GUIDisplay extends JPanel{
+public class GUIDisplay extends JPanel
+{
 	
 	Player[] playerlist = null;
+	Location[][] gameBoard = null;
 	int x0 = 0;
 	int y0 = 0;
 	int x1 = 0;
@@ -32,25 +34,29 @@ public class GUIDisplay extends JPanel{
 	private Color white   = new Color(128,128,128);
 	private Color peacock = new Color(30,144,255);
 	private Color plum    = new Color(75,0,130);
-
-	public GUIDisplay(Player[] players) {
-		playerlist = players;
-		setLocations();
-	}
 	
-	public GUIDisplay(){
+	public GUIDisplay() {
 		
+	}
+
+	public GUIDisplay(Gameboard gb)
+	{
+		playerlist = gb.getPlayerlist();
+		gameBoard = gb.getGameboard();
+
+		if (playerlist != null)
+		{
+			setLocations();
+		}
 	}
 
 	public void paint(Graphics g)
 	{
 		Image image = new ImageIcon(this.getClass().getResource("ImageOfBoard.png")).getImage();
 		g.drawImage(image, 0, 0, this);
-    
+
 		if (playerlist != null)
 		{
-			setLocations();
-
 	        // Get Player 1 color
 			if (playerlist[0] != null)
 			{
@@ -99,70 +105,33 @@ public class GUIDisplay extends JPanel{
 	{
 		String name = player.suspectName;
 		Color result = null;
-		if (name == Constants.MISS_SCARLET_STR)
+
+		if (name.equals(Constants.MISS_SCARLET_STR))
 		{
 			result = scarlet;
 		}
-		if (name == Constants.COL_MUSTARD_STR)
+		else if (name.equals(Constants.COL_MUSTARD_STR))
 		{
 			result = mustard;
 		}
-		if (name == Constants.MRS_WHITE_STR)
+		else if (name.equals(Constants.MRS_WHITE_STR))
 		{
 			result = white;
 		}
-		if (name == Constants.MR_GREEN_STR)
+		else if (name.equals(Constants.MR_GREEN_STR))
 		{
 			result = green;
 		}
-		if (name == Constants.MRS_PEACOCK_STR)
+		else if (name.equals(Constants.MRS_PEACOCK_STR))
 		{
 			result = peacock;
 		}
-		if (name == Constants.PROF_PLUM_STR)
+		else if (name.equals(Constants.PROF_PLUM_STR))
 		{
 			result = plum;
 		}
 		return result;
 	}
-
-	public static void main(String[] args){
-		Player player1 = new Player(Constants.MISS_SCARLET_STR);
-	    	Player player2 = new Player(Constants.COL_MUSTARD_STR);
-	    	Player player3 = new Player(Constants.MRS_WHITE_STR);
-	    	Player player4 = new Player(Constants.MR_GREEN_STR);
-	    	Player player5 = new Player(Constants.MRS_PEACOCK_STR);
-	    	Player player6 = new Player(Constants.PROF_PLUM_STR);
-	    	Player[] players = {player1, player2, player3,player4,player5,player6};
-	    	Location[][] gameboard = Gameboard.createNewBoard(players);
-	    /*Gameboard.moveDown(gameboard, players[5]);
-	    Gameboard.moveUp(gameboard, players[4]);
-	    	Gameboard.moveLeft(gameboard, players[3]);
-	    	Gameboard.moveUp(gameboard, players[3]);
-	    Gameboard.moveUp(gameboard, players[3]);
-	    	Gameboard.moveLeft(gameboard, players[2]);
-	    	Gameboard.moveLeft(gameboard, players[2]);
-	    	Gameboard.moveLeft(gameboard, players[2]);
-	    Gameboard.moveUp(gameboard, players[2]);
-	    Gameboard.moveUp(gameboard, players[2]);
-	    	Gameboard.moveUp(gameboard, players[1]);
-	    	Gameboard.takePassage(gameboard, players[1]);
-	    	Gameboard.moveUp(gameboard, players[1]);
-	    Gameboard.moveUp(gameboard, players[1]);
-	    	Gameboard.moveRight(gameboard, players[0]);
-	    	Gameboard.takePassage(gameboard, players[0]);
-	    Gameboard.moveUp(gameboard, players[0]);
-	    Gameboard.moveUp(gameboard, players[0]);*/
-
-        JFrame frame= new JFrame("GameboardGUI");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	
-        frame.getContentPane().add(new GUIDisplay(players));
-        frame.setLocationRelativeTo(null);
-        frame.setSize(601, 575);
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setResizable(true);		
-    }
 
 	private void setLocations()
 	{

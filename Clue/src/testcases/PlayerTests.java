@@ -26,10 +26,10 @@ public class PlayerTests
 			Player p = new Player();
 			p.updateSuspectName("Mr. Green");
 			assertEquals("Mr. Green", p.suspectName);
-			p.updateDetectiveNotes(Constants.WEAPON_CARD, "Knife");
-           	p.updateDetectiveNotes(Constants.ROOM_CARD, "Ball Room");
-           	p.updateDetectiveNotes(Constants.SUSPECT_CARD, "Prof. Plum");
-           	p.updateDetectiveNotes(3, "no note");
+			p.updateDetectiveNotes(new WeaponCard("Knife"));
+           	p.updateDetectiveNotes(new RoomCard("Ball Room"));
+           	p.updateDetectiveNotes(new SuspectCard("Prof. Plum"));
+           	p.updateDetectiveNotes(new RoomCard("no note"));
            	DetectiveNotes dn = p.getDetectiveNotes();
            	
            	String text = dn.toString();

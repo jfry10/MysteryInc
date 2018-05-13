@@ -12,6 +12,11 @@ public class WeaponCard extends Card {
 		cardType = Constants.WEAPON_CARD;
 	}
 	
+	public WeaponCard(String name)
+	{
+		this.name = name;
+	}
+	
 	public void setName(String string)
 	{
 		name = string;

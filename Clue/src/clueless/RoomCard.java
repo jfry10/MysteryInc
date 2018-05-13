@@ -11,6 +11,11 @@ public class RoomCard extends Card {
 		cardType = Constants.ROOM_CARD;
 	}
 	
+	public RoomCard(String name)
+	{
+		this.name = name;
+	}
+	
 	public void setName(String string)
 	{
 		name = string;

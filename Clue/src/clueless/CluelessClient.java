@@ -41,6 +41,7 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
 import clueless.Network.ChatMessage;
+import clueless.Network.DealCard;
 import clueless.Network.DetectiveInfo;
 import clueless.Network.EndTurn;
 import clueless.Network.DisplayGUI;
@@ -54,7 +55,7 @@ import clueless.Network.BeginGame;
 import clueless.Network.GetSuspects;
 import clueless.Network.SetSuspect;
 import clueless.Network.SuggestionAsk;
-
+import clueless.Network.SuggestionDisprove;;
 
 public class CluelessClient
 {
@@ -89,27 +90,26 @@ public class CluelessClient
 
 			public void received (Connection connection, Object object)
 			{
-				// We can re-purpose this to any Game object.
-				// if we receive an object, do something with it
-				if (object instanceof UpdateNames)
-				{
-					UpdateNames updateNames = (UpdateNames)object;
-					// Do nothing with this for now
-					//GameFrame.setNames(updateNames.names);
-					return;
-				}
-				
+
 				if (object instanceof DisplayGUI)
 				{
-					Player[] players = ((DisplayGUI)object).players;
-					GUIDisplay gui = new GUIDisplay(players);
+					DisplayGUI dg = (DisplayGUI)object;
+					GUIDisplay gui = new GUIDisplay(dg.gameboard);
+					//gui.repaint();
 					GameFrame.updateGameboard(gui);
+					return;
 				}
-				
+
+				if (object instanceof BeginGame)
+				{
+					GameFrame.actionButton.setVisible(false);
+					return;
+				}
+
 				if (object instanceof PlayerTurn)
 				{
 					PlayerTurn pt = (PlayerTurn)object;
-					GameFrame.optionsPanel.setEnabled(pt.turn);
+					GameFrame.accusButton.setEnabled(pt.turn); // only available during turn
 					if (pt.turn == true)
 					{
             				JOptionPane.showMessageDialog(
@@ -120,10 +120,24 @@ public class CluelessClient
 
         					// Show only the move buttons that are valid
         					GameFrame.moveUpButton.setVisible(pt.up);
-        					GameFrame.moveUpButton.setVisible(pt.right);
-        					GameFrame.moveUpButton.setVisible(pt.down);
-        					GameFrame.moveUpButton.setVisible(pt.left);
-        					GameFrame.moveUpButton.setVisible(pt.passage);
+        					GameFrame.moveRightButton.setVisible(pt.right);
+        					GameFrame.moveDownButton.setVisible(pt.down);
+        					GameFrame.moveLeftButton.setVisible(pt.left);
+        					GameFrame.takePassageButton.setVisible(pt.passage);
+        					GameFrame.suggestButton.setVisible(false); // wait until server enables this
+        					
+        					// unique case, player cannot make any movements. Give them
+        					// the option to end turn (or make accusation, should be true)
+        					if (!pt.up && !pt.right && !pt.down && !pt.left && !pt.passage)
+        					{					
+        						// Make this button an EndTurn button
+        						GameFrame.actionButton.setText("End Turn");
+        						GameFrame.actionButton.setVisible(true);
+        					}
+					}
+					else // not your turn
+					{
+						HideButtons();
 					}
 					return;
 				}
@@ -149,21 +163,17 @@ public class CluelessClient
 				// We receive an EndTurn object, disable and hide unusable buttons
 				if (object instanceof EndTurn)
 				{
-					GameFrame.moveUpButton.setVisible(false);
-					GameFrame.moveRightButton.setVisible(false);
-					GameFrame.moveDownButton.setVisible(false);
-					GameFrame.moveLeftButton.setVisible(false);
-					GameFrame.takePassageButton.setVisible(false);
-					GameFrame.suggestButton.setVisible(false);
-					GameFrame.optionsPanel.setEnabled(false);
+					HideButtons();
 					return;
 				}
 
 				// The Server sends us a new Card
-				if (object instanceof Card)
+				if (object instanceof DealCard)
 				{
-					Card newCard = (Card)object;
-					player.addCardToHand(newCard);
+					DealCard newCard = (DealCard)object;
+					player.addCardToHand(newCard.card);
+					// update GameFrame's detectiveNotes
+					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
 					return;
 				}
 
@@ -171,49 +181,39 @@ public class CluelessClient
                 if (object instanceof Suggestion)
                 {
                 	    Suggestion sug = (Suggestion)object;
-                	    String no = "no disprove suggestion";
 
 					boolean disprove = player.canDisprove(sug.room, sug.weapon, sug.suspect);
 	
 					// if we can't disprove, then send a message back
 					if (disprove == false)
 					{
-						connection.sendTCP(no);
+						connection.sendTCP(new SuggestionDisprove(null));
 					}
 					else
 					{
 						Card disproveCard = player.getDisproveCard(sug.room, sug.weapon, sug.suspect);
-						connection.sendTCP(disproveCard);
+						connection.sendTCP(new SuggestionDisprove(disproveCard));
 					}
 					return;
                 }
 
                 // The Server sends us a Note / private message
-                if (object instanceof DetectiveInfo)
+                if (object instanceof SuggestionDisprove)
                 {
-                		DetectiveInfo pm = (DetectiveInfo)object;
-                		player.updateDetectiveNotes(pm.type, pm.name);
+                		SuggestionDisprove sd = (SuggestionDisprove)object;
+                		player.updateDetectiveNotes(sd.card);
+    					// update GameFrame's detectiveNotes
+    					GameFrame.detectiveNotes.setText(player.getDetectiveNotes().toString());
+    					// now print a message so the player knows why they were disproved
+    					GameFrame.addMessage("Your suggestion was incorrect!\n" + sd.card.getName() + " is not in the Case File!");
                 		return;
                 }
                 
-                // The Server sends us an update on our move request
-                if (object instanceof ValidMove)
+                if(object instanceof SuspectResponse)
                 {
-                		ValidMove vm = (ValidMove)object;
-                		if (vm.valid == false)
-                		{
-                			JOptionPane.showMessageDialog(
-                					null, 
-                					"Unable to make the provided move. Please select another location.", 
-                					"Invalid Move", 
-                              	JOptionPane.WARNING_MESSAGE);
-                		}
-                		return;
-                }
-                
-                if(object instanceof SuspectResponse) {
                 		String[] availableSuspectNames = ((SuspectResponse)object).suspectNames;
                 		selectSuspectName(availableSuspectNames);
+                		return;
                 }
 			}
 
@@ -227,12 +227,6 @@ public class CluelessClient
 			}
 		});
 
-		// Request the user's name.
-		String input = (String)JOptionPane.showInputDialog(null, "Name:", "Connect to Clueless Server", JOptionPane.QUESTION_MESSAGE, null,
-			null, "Player1");
-		if (input == null || input.trim().length() == 0) System.exit(1);
-		name = input.trim();
-
 
 		// All the ugly Swing stuff is hidden in GameFrame so it doesn't clutter the KryoNet example code.
 		GameFrame = new GameFrame();
@@ -242,6 +236,7 @@ public class CluelessClient
 			public void run () {
 				MoveToken token = new MoveToken();
 				token.direction = Constants.DIR_UP;
+				HideButtons(); // hide the other 
 				client.sendTCP(token);
 			}
 		});
@@ -251,6 +246,7 @@ public class CluelessClient
 			public void run () {
 				MoveToken token = new MoveToken();
 				token.direction = Constants.DIR_RIGHT;
+				HideButtons(); // hide the other 
 				client.sendTCP(token);
 			}
 		});
@@ -260,6 +256,7 @@ public class CluelessClient
 			public void run () {
 				MoveToken token = new MoveToken();
 				token.direction = Constants.DIR_DOWN;
+				HideButtons(); // hide the other 
 				client.sendTCP(token);
 			}
 		});
@@ -269,6 +266,7 @@ public class CluelessClient
 			public void run () {
 				MoveToken token = new MoveToken();
 				token.direction = Constants.DIR_LEFT;
+				HideButtons(); // hide the other 
 				client.sendTCP(token);
 			}
 		});
@@ -278,45 +276,51 @@ public class CluelessClient
 			public void run () {
 				MoveToken token = new MoveToken();
 				token.direction = Constants.DIR_PASSAGE;
+				HideButtons(); // hide the other 
 				client.sendTCP(token);
 			}
 		});
 		
 		///Accusation Listener
-				GameFrame.accusationListener(new Runnable() {
-					public void run () {
-						JFrame frame = new AccusationGui(client);
-						frame.setVisible(true);
-					}
-				});
-				
-				//Suggestion Listener
-				GameFrame.suggestionListener(new Runnable() {
-					public void run () {
-						JFrame frame = new main(client);
-				        frame.setVisible(true);	
-					}
-				});
-		// This listener is called when the Start Game button is clicked
-		GameFrame.startGameListener(new Runnable() {
+		GameFrame.accusationListener(new Runnable() {
+			public void run () {
+				JFrame frame = new AccusationGUI(client);
+				frame.setVisible(true);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
+		});
+
+		//Suggestion Listener
+		GameFrame.suggestionListener(new Runnable() {
+			public void run () {
+				JFrame frame = new SuggestionGUI(client);
+				frame.setVisible(true);	
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
+		});
+
+		// This listener is called when the Action button is clicked
+		GameFrame.actionButtonListener(new Runnable() {
 			
 			@Override
 			public void run() {
 				
 				String buttonText = GameFrame.actionButton.getText();
 				// Send an object based on the button pressed
-				if ("Start Game" == buttonText)
+				if (buttonText.equals("Start Game"))
 				{
 					client.sendTCP(new BeginGame());
 				}
-				else if ("End Turn" == buttonText)
+				else if (buttonText.equals("End Turn"))
 				{
 					client.sendTCP(new EndTurn());
 				}
-				else if ("Restart Game" == buttonText)
+				else if (buttonText.equals("Restart Game"))
 				{
 					client.sendTCP(new BeginGame()); // ? Restart Game object?
 				}
+				// hide the action button. We will not use this again till prompted
+				GameFrame.actionButton.setVisible(false);
 			}
 		});
 
@@ -391,9 +395,12 @@ public class CluelessClient
 					}
 				}
 				
-				if(player.suspectName != null) {
+				if(player.suspectName != null)
+				{
 					suspectJFrame.dispose();
-				} else {
+				}
+				else
+				{
 					JOptionPane.showMessageDialog(null, "You must select a suspect name", "Select a suspect name", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
@@ -404,33 +411,16 @@ public class CluelessClient
 		suspectJFrame.setLocationRelativeTo(null);
 	}
 
-	// Handle the Suggestion button, pressed by the JFrame
-	void MakeSuggestion(RoomCard room, WeaponCard weapon, SuspectCard suspect)
+	// Marks all buttons (except accuse) as Hidden
+	// and disables the accuse button
+	void HideButtons()
 	{
-		Suggestion sug = new Suggestion(room, weapon, suspect);
-		client.sendTCP(sug);
-	}
-
-	// Handle the Accusation button, pressed by the JFrame
-	void MakeAccusation(RoomCard room, WeaponCard weapon, SuspectCard suspect)
-	{
-		int dialogButton = JOptionPane.YES_NO_OPTION;
-		int dialogResult = JOptionPane.showConfirmDialog(
-				null, 
-				"You only get one accusation! If you are incorrect, you forfeit the rest of your turns. Are you sure you want to submit?", 
-				"Making Accusation", 
-				dialogButton);
-		if(dialogResult == JOptionPane.YES_OPTION)
-		{ 
-			Accusation acc = new Accusation(room, weapon, suspect);
-			client.sendTCP(acc);
-		}
-	}
-
-	// Handle the move request, pressed by the JFrame
-	void Move(Location location)
-	{
-		client.sendTCP(location);
+		GameFrame.moveUpButton.setVisible(false);
+		GameFrame.moveRightButton.setVisible(false);
+		GameFrame.moveDownButton.setVisible(false);
+		GameFrame.moveLeftButton.setVisible(false);
+		GameFrame.takePassageButton.setVisible(false);
+		GameFrame.suggestButton.setVisible(false);
 	}
 
 	static private class GameFrame extends JFrame implements ActionListener
@@ -467,7 +457,7 @@ public class CluelessClient
 			//////Detective Notes////////
 			JPanel detectiveNotesPanel = new JPanel(new BorderLayout());
 			detectiveNotesPanel.add(new JScrollPane(detectiveNotes = new JTextArea()), BorderLayout.CENTER);
-			detectiveNotes.setText(new Player().getDetectiveNotes().toString());
+			detectiveNotes.setText(new Player().getDetectiveNotes().toString()); // just a plain notepad for now
 			detectiveNotes.setEditable(false);
 			contentPane.add(detectiveNotesPanel);
 			// The Detective Notes in the top right
@@ -487,11 +477,11 @@ public class CluelessClient
 				optionsPanel.add(movementPanel);
 
 				// Hide all buttons to start
-				/*moveUpButton.setVisible(false);
+				moveUpButton.setVisible(false);
 				moveRightButton.setVisible(false);
 				moveDownButton.setVisible(false);
 				moveLeftButton.setVisible(false);
-				takePassageButton.setVisible(false);*/
+				takePassageButton.setVisible(false);
 			}
 
 			// middle column is the Start / Restart Game button
@@ -508,8 +498,8 @@ public class CluelessClient
 				optionsPanel.add(sugAccPanel);
 				
 				// Hide all buttons to start
-				/*suggestButton.setVisible(false);
-				accusButton.setVisible(false);*/
+				suggestButton.setVisible(false);
+				accusButton.setEnabled(false);
 			}
 
 			contentPane.add(optionsPanel);
@@ -531,7 +521,8 @@ public class CluelessClient
 
 		}
 
-		public void updateGameboard(GUIDisplay gui) {
+		public void updateGameboard(GUIDisplay gui)
+		{
 			Container contentPane = getContentPane();
 			contentPane.setLayout(null); // absolute positioning
 			contentPane.remove(guiDisplay);
@@ -583,24 +574,25 @@ public class CluelessClient
 			});
 		}
 		
-		///Accusation linstener
-				public void accusationListener (final Runnable listener) {
-					accusButton.addActionListener(new ActionListener() {
-						public void actionPerformed (ActionEvent evt) {
-							listener.run(); // call so we can send the move token
-						}
-					});
+		///Accusation listener
+		public void accusationListener (final Runnable listener) {
+			accusButton.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent evt) {
+					listener.run(); // call so we can send the move token
 				}
+			});
+		}
 				
-				//Suggestion
-				public void suggestionListener (final Runnable listener) {
-					accusButton.addActionListener(new ActionListener() {
-						public void actionPerformed (ActionEvent evt) {
-							listener.run(); // call so we can send the move token
-						}
-					});
+		//Suggestion
+		public void suggestionListener (final Runnable listener) {
+			suggestButton.addActionListener(new ActionListener() {
+				public void actionPerformed (ActionEvent evt) {
+					listener.run(); // call so we can send the move token
 				}
-		public void startGameListener (final Runnable listener) {
+			});
+		}
+
+		public void actionButtonListener (final Runnable listener) {
 			actionButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -609,8 +601,8 @@ public class CluelessClient
 			});
 		}
 
-		public void setCloseListener (final Runnable listener) {
-  
+		public void setCloseListener (final Runnable listener)
+		{
 			addWindowListener(new WindowAdapter() {
 				public void windowClosed (WindowEvent evt) {
 					listener.run();
@@ -641,7 +633,7 @@ public class CluelessClient
 	public static void main (String[] args)
 	{
 		//String ipAddress = args[0];
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(Log.LEVEL_ERROR);
 		//new CluelessClient(ipAddress);
 		new CluelessClient("localhost");
 	}

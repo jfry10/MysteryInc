@@ -24,7 +24,7 @@ public class DetectiveNotes
 	{
 		for (int index = 0; index < Constants.SUSPECTS.length; index++)
 		{
-			if (Constants.SUSPECTS[index] == name) 
+			if (name.equals(Constants.SUSPECTS[index])) 
 			{
 				this.suspects[index] = true;
 				return;
@@ -38,7 +38,7 @@ public class DetectiveNotes
 	{
 		for (int index = 0; index < Constants.WEAPONS.length; index++)
 		{
-			if (Constants.WEAPONS[index] == name) 
+			if (name.equals(Constants.WEAPONS[index]))
 			{
 				this.weapons[index] = true;
 				return;
@@ -52,7 +52,7 @@ public class DetectiveNotes
 	{
 		for (int index = 0; index < Constants.ROOMS.length; index++)
 		{
-			if (Constants.ROOMS[index] == name) 
+			if (name.equals(Constants.ROOMS[index]))
 			{
 				this.rooms[index] = true;
 				return;

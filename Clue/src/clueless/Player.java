@@ -44,18 +44,7 @@ public class Player {
 		myHand.addCard(newCard);
 		
 		// automatically add a detective note
-		if (newCard instanceof RoomCard)
-		{
-			updateDetectiveNotes(Constants.ROOM_CARD, newCard.getName());
-		}
-		if (newCard instanceof SuspectCard)
-		{
-			updateDetectiveNotes(Constants.SUSPECT_CARD, newCard.getName());
-		}
-		if (newCard instanceof WeaponCard)
-		{
-			updateDetectiveNotes(Constants.WEAPON_CARD, newCard.getName());
-		}
+		updateDetectiveNotes(newCard);
 	}
 
 	public DetectiveNotes getDetectiveNotes()
@@ -65,21 +54,19 @@ public class Player {
 
 	// We receive the Card Type and name, send it to the appropriate
 	// function inside of our Detective Notes
-	public void updateDetectiveNotes(int type, String name)
+	public void updateDetectiveNotes(Card card)
 	{
-		switch (type)
+		if (card instanceof WeaponCard)
 		{
-			case Constants.WEAPON_CARD:
-				myNotes.setWeapon(name);
-				break;
-			case Constants.SUSPECT_CARD:
-				myNotes.setSuspect(name);
-				break;
-			case Constants.ROOM_CARD:
-				myNotes.setRoom(name);
-				break;
-			default:
-				break;
+			myNotes.setWeapon(card.getName());
+		}
+		if (card instanceof SuspectCard)
+		{
+			myNotes.setSuspect(card.getName());
+		}
+		if (card instanceof RoomCard)
+		{
+			myNotes.setRoom(card.getName());
 		}
 	}
 
@@ -130,4 +117,5 @@ public class Player {
 		// Must return something, ideally we don't want 4 return statements but oh well
 		return null;
 	}
+
 }

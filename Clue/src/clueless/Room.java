@@ -8,6 +8,8 @@ public class Room extends Location
     boolean passage = false;
     String roomName;
     ArrayList<Player> playerSpace;
+    
+    public Room() { }
 
     public Room(int number, int row, int col)
     {
